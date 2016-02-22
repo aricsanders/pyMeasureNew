@@ -15,6 +15,9 @@ import xml.dom                                     # Xml document handling
 import xml.dom.minidom                             # For xml parsing
 from xml.dom.minidom import getDOMImplementation   # Making blank XML documents
 import datetime
+import urlparse                                    # To form proper URLs
+import socket                                      # To determine IPs and Hosts
+
 #-----------------------------------------------------------------------------
 # Third Party Imports
 # For XLST transformations of the data
@@ -48,7 +51,22 @@ XSLT_REPOSITORY='../XSL'
 TESTS_DIRECTORY=os.path.join(os.path.dirname(os.path.realpath(__file__)),'Tests')
 #-----------------------------------------------------------------------------
 # Module Functions
-
+def URL_to_path(URL,form='string'):
+    """Takes an URL and returns a path as form.
+    Argument form may be 'string' or 'list'"""
+    path=urlparse.urlparse(URL)[2]
+    if form in ['string', 'str', 's']:
+        return path
+    elif form in ['list','ls','li']:
+        path_list=path.split('/')
+        return path_list
+def condition_URL(URL):
+    """ Function that makes sure URL's have a / format and assigns host as
+    local host if there is not one. Also gives paths a file protocol."""
+    parsed_URL=urlparse.urlparse(URL.replace('\\','/'))
+    if not (parsed_URL[0] in ['file','http','ftp']):
+        parsed_URL=urlparse.urlparse('file:'+URL.replace('\\','/'))
+    return str(urlparse.urlunparse(parsed_URL).replace('///',''))
 #-----------------------------------------------------------------------------
 # Module Classes
 class XMLBase():
@@ -272,14 +290,14 @@ class Log(XMLBase):
         try:
             self.set_current_entry(new_Index)
         except KeyError:
-            Indexs=map(lambda x:int(x),self.Index_node_dictionary.keys()) 
-            if min(Indexs)<Index:
-               Indexs.sort()
-               new_Index=Indexs[Indexs.index(Index)-1]
+            Indices=map(lambda x:int(x),self.Index_node_dictionary.keys()) 
+            if min(Indices)<Index:
+               Indices.sort()
+               new_Index=Indices[Indices.index(Index)-1]
             else:
-                Indexs.remove(Index)
-                if len(Indexs)>0:
-                    new_Index=max(Indexs)
+                Indices.remove(Index)
+                if len(Indices)>0:
+                    new_Index=max(Indices)
                 else:
                     new_Index=Index
         self.set_current_entry(new_Index)
@@ -294,13 +312,13 @@ class Log(XMLBase):
         try:
             self.set_current_entry(new_Index)
         except KeyError:
-            Indexs=map(lambda x:int(x),self.Index_node_dictionary.keys()) 
-            if max(Indexs)>Index:
-               Indexs.sort()
-               new_Index=Indexs[Indexs.index(Index)+1]
+            Indices=map(lambda x:int(x),self.Index_node_dictionary.keys()) 
+            if max(Indices)>Index:
+               Indices.sort()
+               new_Index=Indices[Indices.index(Index)+1]
             else:
-                Indexs.remove(Index)
-                new_Index=min(Indexs)
+                Indices.remove(Index)
+                new_Index=min(Indices)
         self.set_current_entry(new_Index)
 
     def show(self,mode='text'):
