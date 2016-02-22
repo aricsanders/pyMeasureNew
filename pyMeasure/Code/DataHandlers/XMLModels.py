@@ -10,25 +10,34 @@ requires lxml to be installed. """
 
 #-----------------------------------------------------------------------------
 # Standard Imports
-
+import os
+import xml.dom                                     # Xml document handling
+import xml.dom.minidom                             # For xml parsing
+from xml.dom.minidom import getDOMImplementation   # Making blank XML documents
 #-----------------------------------------------------------------------------
 # Third Party Imports
+# For XLST transformations of the data
 try:
-    import lxml
+    from lxml import etree
+    XSLT_CAPABLE=1
 except:
-    print("Install lxml or put it on the python path")
+    print("Transformations using XSLT are not available please check the lxml module")
+    XSLT_CAPABLE=0
     pass
 # For auto generation of common method aliases
 try:
-    from pyMeasure.Code.Utils.Alias import * #TODO : Determine if I have to rename pyMeasure
+    from pyMeasure.Code.Utils.Alias import *
     METHOD_ALIASES=1
 except:
     print("The module pyMeasure.Code.Utils.Alias was not found")
     METHOD_ALIASES=0
     pass
+# For Auto-naming of files if path is not specified
+try:
+    from pyMeasure.Code.Utils.Names import
 #-----------------------------------------------------------------------------
 # Module Constants
-XSLT_REPOSITORY=os.path.join(os.path.dirname(os.path.realpath(pyMeasure.__file__))
+XSLT_REPOSITORY=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),'XSL')
 #-----------------------------------------------------------------------------
 # Module Functions
 
@@ -43,7 +52,7 @@ class XMLBase():
             self.path=file_path
         # This is a general pattern for adding a lot of options
         # The next more advanced thing to do is retrieve defaults from a settings file
-        defaults={}
+        defaults={"root":"root","style_sheet":os.path.join(XSLT_REPOSITORY,'DEFAULT_STYLE.xsl')}
         self.options={}
         for key,value in defaults.iteritems():
             self.options[key]=value
@@ -53,6 +62,20 @@ class XMLBase():
         if METHOD_ALIASES:
             for command in alias(self):
                 exec(command)
+        #if the file path is not supplied create a new xml sheet
+        if file_path is None:
+            impl=getDOMImplementation()
+            self.document=impl.createDocument(None,self.options['root'],None)
+            # Should be a relative path for
+            new_node=self.document.createProcessingInstruction('xml-stylesheet',
+            u'type="text/xsl" href="%s"'%self.options['style_sheet'])
+            self.document.insertBefore(new_node,self.document.documentElement)
+            self.path=os.path.join(os.getcwd(),'New_XML.xml')# TODO: Change to autoname
+        else:
+            file_in=open(file_path,'r')
+            self.document=xml.dom.minidom.parse(file_in)
+            file_in.close()
+            self.path=file_path
 
     def save(self,path=None):
         """" Saves as an XML file"""
@@ -61,15 +84,15 @@ class XMLBase():
         file_out=open(path,'w')
         file_out.write(self.document.toprettyxml())
         file_out.close()
-
-    def to_HTML(self,XSLT=None):
-        """ Returns HTML string by applying a XSL to the XML document"""
-        if XLST is None:
-            XLST=os.path.join()
-        XSL_data=etree.parse(XSLT)
-        XSL_transform=etree.XSLT(XSL_data)
-        HTML=XSL_transform(etree.XML(self.document.toxml()))
-        return HTML
+    if XSLT_CAPABLE:
+        def to_HTML(self,XSLT=None):
+            """ Returns HTML string by applying a XSL to the XML document"""
+            if XSLT is None:
+                XSLT=self.options['style_sheet']
+            XSL_data=etree.parse(XSLT)
+            XSL_transform=etree.XSLT(XSL_data)
+            HTML=XSL_transform(etree.XML(self.document.toxml()))
+            return HTML
 #-----------------------------------------------------------------------------
 # Module Scripts
 
