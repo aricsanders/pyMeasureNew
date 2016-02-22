@@ -51,6 +51,41 @@ XSLT_REPOSITORY='../XSL'
 TESTS_DIRECTORY=os.path.join(os.path.dirname(os.path.realpath(__file__)),'Tests')
 #-----------------------------------------------------------------------------
 # Module Functions
+def dictionary_to_xmlchunk(dictionary, level='attribute'):
+    "returns a string formatted as xml when given a python dictionary"
+    if type(dictionary) is not dict:raise
+    if re.match('attr',level,re.IGNORECASE):
+        prefix="<Tuple "
+        postfix=" />"
+        inner=""
+        for key,value in dictionary.iteritems():
+            inner=inner+"%s='%s' "%(key,value)
+        xml_out=prefix+inner+postfix
+
+    if re.match('tag',level,re.IGNORECASE):
+        xml_out=""
+        for key,value in dictionary.iteritems():
+            xml_out=xml_out+"<"+str(key)+">"+str(value)+"</"+str(key)+">"
+    return xml_out
+
+def dictionary_list_to_xmlchunk(list_of_dictionaries,level='attribute'):
+    """returns a string of xml given a list of dictionaries, level says if keys become attribute names or tag names"""
+    if type(list_of_dictionaries) is not list:raise
+    xml_out=""
+    for item in list_of_dictionaries:
+        xml_out=xml_out+dictionary_to_xmlchunk(item,level)+"\n"
+    return xml_out
+
+def get_XML_text(tag_name,path=None,text=None):
+    """ Returns the text in the first tag found with tag name """
+    if text is None:
+        f=open(path,'r')
+        text=f.read()
+    tag_match=re.search(
+    '<%s>(?P<XML_text>\w+)</%s>'%(tag_name,tag_name),
+     text)
+    return tag_match.group('XML_text')
+
 def URL_to_path(URL,form='string'):
     """Takes an URL and returns a path as form.
     Argument form may be 'string' or 'list'"""
@@ -60,6 +95,7 @@ def URL_to_path(URL,form='string'):
     elif form in ['list','ls','li']:
         path_list=path.split('/')
         return path_list
+
 def condition_URL(URL):
     """ Function that makes sure URL's have a / format and assigns host as
     local host if there is not one. Also gives paths a file protocol."""
