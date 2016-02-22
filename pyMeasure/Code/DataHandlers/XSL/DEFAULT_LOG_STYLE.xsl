@@ -9,7 +9,7 @@
 <body>
 <!-- Print a Description if it exists-->
 <h2> Description: </h2>
-<h3><xsl:value-of select="//Entry[@Id='-1']"/></h3>
+<h3><xsl:value-of select="//Entry[@Index='-1']"/></h3>
 <xsl:apply-templates/> 
 <br/><br/>
 <hr/>
@@ -20,10 +20,10 @@
 <!-- Template for entries-->
 <xsl:template match="Entry">
 <xsl:for-each select=".">
-<xsl:if test="@Id !=-1">
+<xsl:if test="@Index !=-1">
 <br/>
 <hr/>
-<b><i> Entry: </i></b><xsl:value-of select="./@Id"/><br/> 
+<b><i> Entry: </i></b><xsl:value-of select="./@Index"/><br/> 
 <b><i> Date: </i></b> <xsl:value-of select="./@Date"/><br/>
 <xsl:value-of select="."/>
 </xsl:if> 

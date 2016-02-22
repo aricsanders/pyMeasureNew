@@ -62,7 +62,11 @@ class XMLBase():
         # The next more advanced thing to do is retrieve defaults from a settings file
         defaults={"root":"root",
                   "style_sheet":os.path.join(XSLT_REPOSITORY,'DEFAULT_STYLE.xsl').replace('\\','/'),
-                  "specific_descriptor":'XML',"general_descriptor":'Document'}
+                  "specific_descriptor":'XML',
+                  "general_descriptor":'Document',
+                  "directory":None,
+                  "extension":'xml'
+                  }
         self.options={}
         for key,value in defaults.iteritems():
             self.options[key]=value
@@ -81,7 +85,10 @@ class XMLBase():
             u'type="text/xsl" href="%s"'%self.options['style_sheet'])
             self.document.insertBefore(new_node,self.document.documentElement)
             if DEFAULT_FILE_NAME is None:
-                self.path=auto_name(self.options["specific_descriptor"],self.options["general_descriptor"])
+                self.path=auto_name(self.options["specific_descriptor"],
+                                    self.options["general_descriptor"],
+                                    self.options["directory"],
+                                    self.options["extension"])
             else:
                 # Just a backup plan if the python path is messed up
                 self.path=DEFAULT_FILE_NAME
@@ -499,12 +506,27 @@ def test_show():
     print new_log.show('xml')
     #the window version
     new_log.show('wx')
+def test_to_HTML():
+    os.chdir(TESTS_DIRECTORY)
+    new_log=Log()
+    print 'New Log Created...'
+    print 'The Result of Show() is:'
+    print '*'*80
+    entries=['1','2','Now I see!', 'Today was a good day']
+    for entry in entries:
+        new_log.add_entry(entry)
+    print new_log.show()
+    print '\n'*4
+    print 'The Result of Log.to_HTML(xml) is:'
+    print '*'*80
+    print new_log.to_HTML()
 
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__=='__main__':
-    #test_XMLModel()
+    test_XMLModel()
     #test_Log()
     #test_log_addition()
-    test_EndOfDayLog()
+    #test_EndOfDayLog()
     #test_show()
+    #test_to_HTML()
