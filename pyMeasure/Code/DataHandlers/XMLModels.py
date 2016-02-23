@@ -55,6 +55,12 @@ except:
     print("Setting Default file name to New_XML.xml")
     DEFAULT_FILE_NAME='New_XML.xml'
     pass
+try:
+    from pyMeasure.Code.Utils.GetMetadata import *
+except:
+    print "Can not find the module GetMetadata, please add it to sys.path"
+    print "Anything that uses the functions from GetMetadata will be broken"
+    pass
 #-----------------------------------------------------------------------------
 # Module Constants
 XSLT_REPOSITORY='../XSL'
