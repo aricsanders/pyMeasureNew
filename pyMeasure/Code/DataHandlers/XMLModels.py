@@ -46,6 +46,15 @@ except:
     print("Setting Default file name to New_XML.xml")
     DEFAULT_FILE_NAME='New_XML.xml'
     pass
+# For retrieving metadata
+try:
+    from pyMeasure.Code.Utils.Names import auto_name
+    DEFAULT_FILE_NAME=None
+except:
+    print("The function auto_name in pyMeasure.Code.Utils.Names was not found")
+    print("Setting Default file name to New_XML.xml")
+    DEFAULT_FILE_NAME='New_XML.xml'
+    pass
 #-----------------------------------------------------------------------------
 # Module Constants
 XSLT_REPOSITORY='../XSL'
@@ -178,7 +187,7 @@ class XMLBase():
             return HTML
     def __str__(self):
         "Controls how XMLBAse is returned when a string function is called"
-        return self.document.toxml()
+        return self.document.toprettyxml()
 class Log(XMLBase):
     """ Data container for a general Log"""
     def __init__(self,file_path=None,**options):
@@ -581,7 +590,7 @@ class DataTable(XMLBase):
                 return out
         except:
             raise
-class FileRegister():
+class FileRegister(XMLBase):
     """ The base class for arbitrary database, which processes the
     File Register XML File."""
 
@@ -663,15 +672,15 @@ class FileRegister():
 
                 # If the Id_cache is not empty
                else:
-                    path_cache=dict([(URL,URL_to_path(URL,form='list'))\
-                    for URL in Id_cache.keys()])
+                    path_cache=dict([(URL,URL_to_path(URL,form='list'))
+                        for URL in Id_cache.keys()])
                     print Id_cache
                     part_cache=dict([(URL,[path_cache[URL][place],
-                    Id_cache[URL].split('.')[place+4]])\
-                    for URL in Id_cache.keys()])
+                        Id_cache[URL].split('.')[place+4]])
+                        for URL in Id_cache.keys()])
                     parts_list=[part_cache[URL][0]for URL in Id_cache.keys()]
-                    node_number=max([int(Id_cache[URL].split('.')[place+4][1:])\
-                    for URL in Id_cache.keys()])
+                    node_number=max([int(Id_cache[URL].split('.')[place+4][1:])
+                        for URL in Id_cache.keys()])
                 # If it is the last place
                     if place==len(path_list)-1:
                         new_node_number=node_number+1
@@ -755,8 +764,8 @@ class FileRegister():
         # Added boolean switch to speed up adding a lot of entries
 
         self.Id_dictionary=dict([(str(node.getAttribute('URL')),
-        str(node.getAttribute('Id'))) for node in \
-        self.document.getElementsByTagName('File')])
+            str(node.getAttribute('Id'))) for node in
+            self.document.getElementsByTagName('File')])
     # TODO : Add an input filter that guesses at what you inputed
 
     def add_tree(self,root,**options):
@@ -769,7 +778,7 @@ class FileRegister():
         tree_options=default_options
         for option,value in options.iteritems():
             tree_options[option]=value
-        print tree_options
+        #print tree_options
         #condition the URL
         root_URL=condition_URL(root)
         path=URL_to_path(root_URL)
@@ -778,7 +787,7 @@ class FileRegister():
 
             for (home,directories,files) in os.walk(path):
                 #print (home,directories,files)
-                for directory in directories:# had to change this 12/2012, used to be first element in list
+                for directory in directories:# had to change this, used to be first element in list
                     try:
                         if tree_options['files_only']:
                             if tree_options['print_ignored_files']:
@@ -811,18 +820,17 @@ class FileRegister():
                                 print "ignoring %s because it does not match the only option"%file
                             raise
                         else:
-                            print (home,file)
+                            #print (home,file)
                             self.add_entry(condition_URL(os.path.join(home,file)))
                             self.save()
                     except:raise
         except:
             raise
-
-
         #After all the files are added update the Id_dictionary
         self.Id_dictionary=dict([(str(node.getAttribute('URL')),
             str(node.getAttribute('Id'))) for node in
             self.document.getElementsByTagName('File')])
+
     def remove_entry(self,URL=None,Id=None):
         """ Removes an entry in the current File Register """
         File_Registry=self.document.documentElement
@@ -839,6 +847,173 @@ class FileRegister():
         self.Id_dictionary=dict([(str(node.getAttribute('URL')),
         str(node.getAttribute('Id'))) for node in \
         self.document.getElementsByTagName('File')])
+
+class Metadata(XMLBase):
+    """ Metadata holds the metadata tags for a FileRegistry, If it already exists
+    and the parser gives an error check the xml file for special characters like &#30;"""
+
+    def __init__(self,file_path=None,**options):#FileRegistry,Metadata_File=None)
+        """ Intializes the class Metadata"""
+        # This is a general pattern for adding a lot of options
+        # The next more advanced thing to do is retrieve defaults from a settings file
+        defaults={"root":"Metadata_Registry",
+                  "style_sheet":os.path.join(XSLT_REPOSITORY,'METADATA_STYLE.xsl').replace('\\','/'),
+                  "specific_descriptor":'Metadata',
+                  "general_descriptor":'Registry',
+                  "directory":None,
+                  "extension":'xml',
+                  "metadata_file":None
+                  }
+        self.options={}
+        for key,value in defaults.iteritems():
+            self.options[key]=value
+        for key,value in options.iteritems():
+            self.options[key]=value
+        FileRegistry=self.options['file_registry']
+        Metadata_File=self.options['metadata_file']
+        # Process the file register
+        if type(FileRegistry) is InstanceType:
+            self.FileRegister=FileRegistry
+        elif type(FileRegistry) in StringTypes:
+            self.FileRegister=FileRegister(FileRegistry)
+
+
+
+        # Process or create the Metadata File
+        if Metadata_File is None:
+            # Make the metadata file based on the file register
+            FileRegister_path=self.FileRegister.path.replace('\\','/')
+            FileRegister_name=FileRegister_path.split('/')[-1]
+            FileRegister_ext=FileRegister_name.split('.')[-1]
+            Metadata_name=FileRegister_name.replace('.'+FileRegister_ext,
+            '_Metadata.'+FileRegister_ext)
+            self.path=FileRegister_path.replace(FileRegister_name,Metadata_name)
+            self.document=self.FileRegister.document
+            # delete old processing instructions
+            for node in self.document.childNodes:
+                if node.nodeType is 7:
+                    self.document.removeChild(node)
+                    node.unlink()
+            # add in the default xsl
+            new_node=self.document.createProcessingInstruction(
+                'xml-stylesheet',
+                u'type="text/xsl" href="%s"'%self.options['style_sheet'])
+            self.document.insertBefore(new_node,self.document.documentElement)
+            # make sure there is a fileregister reference
+            FR_Path=self.FileRegister.path
+            new_node=self.document.createProcessingInstruction(\
+            'xml-FileRegistry',\
+            'href=\"%s\"'%(self.FileRegister.path))
+            self.document.insertBefore(new_node,self.document.documentElement)
+
+        else:
+            # The metadata file exists as a saved file or an instance
+            if type(Metadata_File) is InstanceType:
+                self.document=Metadata_File.document
+                self.path=Metadata_File.path
+            elif type(Metadata_File) in StringTypes:
+                XMLBase.__init__(self,file_path,**self.options)
+
+
+        # TODO: This dictionary of nodes worries me-- it may not scale well
+        self.node_dictionary=dict([(str(node.getAttribute('URL')),
+            node) for node in
+            self.document.getElementsByTagName('File')])
+
+        self.URL_dictionary=dict([(str(node.getAttribute('Id')),
+            str(node.getAttribute('URL'))) for node in
+            self.document.getElementsByTagName('File')])
+
+        self.name_dictionary=dict([(Id,os.path.split(self.URL_dictionary[Id])[1])
+            for Id in self.URL_dictionary.keys()])
+
+        self.current_node=self.node_dictionary.values()[0]
+
+    def search_name(self,name=None,re_flags=re.IGNORECASE):
+        """ Returns a list of URL's that have an element matching name"""
+        try:
+            if re_flags in [None,'']:
+                urls=filter(lambda x: re.search(name,x),
+                self.URL_dictionary.values())
+                return urls
+            else:
+                urls=filter(lambda x: re.search(name,x,flags=re_flags),
+                self.URL_dictionary.values())
+                return urls
+
+        except:
+            raise
+
+
+    if XSLT_CAPABLE:
+        def to_HTML(self,XSLT=None):
+            """ Returns HTML string by applying a XSL to the XML document"""
+            if XSLT is None:
+                # For some reason an absolute path tends to break here, maybe a spaces in file names problem
+                XSLT=self.options['style_sheet']
+            XSL_data=etree.parse(XSLT)
+            XSL_transform=etree.XSLT(XSL_data)
+            HTML=XSL_transform(etree.XML(self.document.toxml()))
+            return HTML
+
+    def get_file_node(self,URL=None,Id=None):
+        """ Returns the file node specified by URL or Id"""
+        if not URL is None:
+            URL=condition_URL(URL)
+            self.current_node=self.node_dictionary[URL]
+            return self.current_node
+        elif not Id is None:
+            self.current_node=self.node_dictionary[self.URL_dictionary[Id]]
+            return self.current_node
+    def set_current_node(self,URL=None,Id=None):
+        """ Sets the current file node to the one specified by URL or Id"""
+        if not URL is None:
+            URL=condition_URL(URL)
+            self.current_node=self.node_dictionary[URL]
+        elif not Id is None:
+            self.current_node=self.node_dictionary[self.URL_dictionary[Id]]
+
+    def add_element_to_current_node(self,XML_tag=None,value=None,node=None,**Atributes):
+        """Adds a metadata element to the current file node"""
+        if node is None:
+            new_element=self.document.createElement(XML_tag)
+        else:
+            new_element=node
+        if not value is None:
+            new_text=self.document.createTextNode(str(value))
+            new_element.appendChild(new_text)
+
+        attributes=[key for key in Atributes.keys()]
+        new_attributes=dict([(attribute,
+        self.document.createAttribute(attribute)) for attribute in \
+        attributes])
+
+        for (key,value) in Atributes.iteritems():
+            new_element.setAttribute(key,str(value))
+        self.current_node.appendChild(new_element)
+    def remove_element_in_current_node(self,element_name):
+        """Removes all metadata elements with the same tagname
+         in the current file node"""
+        nodes_to_remove=self.current_node.getElementsByTagName(element_name)
+        try:
+            for node in nodes_to_remove:
+                self.current_node.removeChild(node)
+        except:pass
+
+    if XSLT_CAPABLE:
+        def current_node_to_HTML(self,XSLT=None):
+            """Returns a HTML document from the current node"""
+            if XSLT is None:
+                # For some reason an absolute path tends to break here, maybe a spaces in file names problem
+                XSLT=self.options['style_sheet']
+            XSL_data=etree.parse(XSLT)
+            XSL_transform=etree.XSLT(XSL_data)
+            HTML=XSL_transform(etree.XML(self.current_node.toxml()))
+            return HTML
+
+    def print_current_node(self):
+        """ Prints the current node """
+        print self.current_node.toxml()
 #-----------------------------------------------------------------------------
 # Module Scripts
 def test_XMLModel(test_new=True,test_existing=False):
@@ -882,6 +1057,7 @@ def test_XMLModel(test_new=True,test_existing=False):
         print('*'*80)
         print("The new_xml has been saved")
         new_xml.save()
+
 def test_Log():
     print('Creating New Log..\n')
     os.chdir(TESTS_DIRECTORY)
@@ -912,6 +1088,7 @@ def test_log_addition():
     print log_2
     print('Log_1+Log_2 Contents: using print')
     print log_1+log_2
+
 def test_EndOfDayLog():
     """ Script to test that daily logs work properly"""
     os.chdir(TESTS_DIRECTORY)
@@ -932,7 +1109,9 @@ def test_EndOfDayLog():
     new_log.save()
     print(new_log)
     #new_log.show('wx')
+
 def test_show():
+    "Tests the show() method of the Log class"
     os.chdir(TESTS_DIRECTORY)
     new_log=Log()
     print 'New Log Created...'
@@ -950,6 +1129,7 @@ def test_show():
     new_log.show('wx')
 
 def test_to_HTML():
+    "Tests the to_HTML method of the Log class"
     os.chdir(TESTS_DIRECTORY)
     new_log=Log()
     print 'New Log Created...'
@@ -965,7 +1145,7 @@ def test_to_HTML():
     print new_log.to_HTML()
 
 def test_DataTable():
-    """ Test's the DataTable Class"""
+    """ Tests the DataTable Class"""
     test_data=[tuple([2*i+j for i in range(3)]) for j in range(5)]
     test_options={'data_table':test_data}
     new_table=DataTable(None,**test_options)
@@ -986,7 +1166,7 @@ def test_DataTable():
     new_table_3.get_header()
 
 def test_get_header():
-    """ Test of the get header function """
+    """ Test of the get header function of the DataTable Class """
     test_dictionary={'Data_Description':{'x':'X Distance in microns.',
     'y':'y Distance in microns.','Notes':'This data is fake'},'Data':[[1,2],[2,3]]}
     new_table=DataTable(**{'data_dictionary':test_dictionary})
@@ -1003,6 +1183,7 @@ def test_open_measurement(sheet_name='Data_Table_021311_1.xml'):
     print measurement.get_header()
 
 def test_get_attribute_names(sheet_name='Data_Table_021311_1.xml'):
+    "Tests the get_attribute_name method of the DataTable Class"
     os.chdir(TESTS_DIRECTORY)
     measurement=DataTable(sheet_name)
     names=measurement.get_attribute_names()
@@ -1014,6 +1195,23 @@ def test_get_attribute_names(sheet_name='Data_Table_021311_1.xml'):
         for name in names:
             row=measurement.to_list(name)[index] +'\t'+row
         print row
+
+def test_FileRegister():
+    "Tests the FileRegister Class"
+    os.chdir(TESTS_DIRECTORY)
+    new_file_register=FileRegister()
+    new_file_register.add_tree(os.getcwd())
+    print new_file_register
+
+def test_Metadata(File_Registry=None,Metadata_File=None):
+    os.chdir(TESTS_DIRECTORY)
+    if File_Registry is None:
+        File_Registry=os.path.join(TESTS_DIRECTORY,'Resource_Registry_20160222_001.xml')
+    options={'file_registry':File_Registry}
+    new_Metadata=Metadata(None,**options)
+    print new_Metadata.current_node_to_HTML()
+    new_Metadata.save()
+
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__=='__main__':
@@ -1025,5 +1223,7 @@ if __name__=='__main__':
     #test_to_HTML()
     #test_DataTable()
     #test_get_header()
-    test_open_measurement()
+    #test_open_measurement()
     #test_get_attribute_names()
+    #test_FileRegister()
+    test_Metadata()
