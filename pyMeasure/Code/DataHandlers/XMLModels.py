@@ -17,6 +17,7 @@ from xml.dom.minidom import getDOMImplementation   # Making blank XML documents
 import datetime
 import urlparse                                    # To form proper URLs
 import socket                                      # To determine IPs and Hosts
+from types import *                                # For Data Type testing
 
 #-----------------------------------------------------------------------------
 # Third Party Imports
@@ -49,6 +50,11 @@ except:
 # Module Constants
 XSLT_REPOSITORY='../XSL'
 TESTS_DIRECTORY=os.path.join(os.path.dirname(os.path.realpath(__file__)),'Tests')
+DRIVER_FILE_EXTENSIONS=['sys','SYS','drv','DRV']
+NODE_TYPE_DICTIONARY={'1':'ELEMENT_NODE', '2':'ATTRIBUTE_NODE', '3':'TEXT_NODE',
+    '4':'CDATA_SECTION_NODE', '6':'ENTITY_NODE', '7':'PROCESSING_INSTRUCTION_NODE',
+    '8':'COMMENT_NODE','9':'DOCUMENT_NODE','10':'DOCUMENT_TYPE_NODE',
+    '12':'NOTATION_NODE'}
 #-----------------------------------------------------------------------------
 # Module Functions
 def dictionary_to_xmlchunk(dictionary, level='attribute'):
@@ -181,7 +187,7 @@ class Log(XMLBase):
         defaults={"root":'Log',
                   'style_sheet':os.path.join(XSLT_REPOSITORY,'DEFAULT_LOG_STYLE.xsl').replace('\\','/'),
                   'entry_style_sheet':os.path.join(XSLT_REPOSITORY,'DEFAULT_LOG_STYLE.xsl').replace('\\','/'),
-                  'specific_descriptor':'Log','general_descriptor':'XML'}
+                  'specific_descriptor':'XML','general_descriptor':'Log'}
         self.options={}
         for key,value in defaults.iteritems():
             self.options[key]=value
@@ -450,7 +456,389 @@ class ErrorLog(Log):
 class ServiceLog(Log):
     """ A Log for servicing an instrument or experiment """
     def __init__(self,path=None,instrument_name=None):
-        Log.__init__(self,path)     
+        Log.__init__(self,path)
+class DataTable(XMLBase):
+    """ This is a XML data table class with an optional description"""
+    def __init__(self,file_path=None,**options):
+        """ Intializes the DataTable Class. Passing **{'data_table':[mylist]} creates a
+        table with x1 and x2 as column names. Passing **{'data_dictionary':{'Data_Description':{'Tag':'Text',etc},
+        'Data':[{'x':1,'y':2},{'x':2,'y':3}]
+         """
+        # the general idea is <Data_Description/><Data><Tuple i=''/></Data>
+
+        # This is a general pattern for adding a lot of options
+        # The next more advanced thing to do is retrieve defaults from a settings file
+        defaults={"root":"Data_Table",
+                  "style_sheet":os.path.join(XSLT_REPOSITORY,'DEFAULT_MEASUREMENT_STYLE.xsl').replace('\\','/'),
+                  "specific_descriptor":'Data',
+                  "general_descriptor":'Table',
+                  "directory":None,
+                  "extension":'xml'
+                  }
+        self.options={}
+        for key,value in defaults.iteritems():
+            self.options[key]=value
+        for key,value in options.iteritems():
+            self.options[key]=value
+        XMLBase.__init__(self,file_path,**self.options)
+
+        try:
+            data_table=self.options['data_table']
+            if len(data_table)>0:
+                data_node=self.list_to_XML(data_table)
+                self.document.documentElement.appendChild(data_node)
+        except: pass
+        try:
+            data_dictionary=self.options['data_dictionary']
+            if len(data_dictionary)>0:
+                for key,value in data_dictionary.iteritems():
+                    # This hanldes Tag:Text dictionaries
+                    if re.search('Description',key):
+                        new_entry=self.document.createElement(key)
+                        for tag,element_text in value.iteritems():
+                            new_tag=self.document.createElement(tag)
+                            new_text=self.document.createTextNode(element_text)
+                            new_tag.appendChild(new_text)
+                            new_entry.appendChild(new_tag)
+                        self.document.documentElement.appendChild(new_entry)
+                    if re.search('Data',key) and not re.search('Description',key):
+                        new_entry=self.list_to_XML(value)
+                        self.document.documentElement.appendChild(new_entry)
+        except:pass
+
+    def list_to_XML(self,data_list):
+        """ Converts a list to XML document"""
+        data_node=self.document.createElement('Data')
+        #self.document.documentElement.appendChild(data_node)
+        for row in data_list:
+            if type(row) in [ListType,TupleType]:
+                new_entry=self.document.createElement('Tuple')
+                for j,datum in enumerate(row):
+                    x_attribute=self.document.createAttribute('X%s'%j)
+                    new_entry.setAttributeNode(x_attribute)
+                    new_entry.setAttribute('X%s'%j,str(datum))
+                data_node.appendChild(new_entry)
+            elif type(row) is DictionaryType:
+                new_entry=self.document.createElement('Tuple')
+                for key,datum in row.iteritems():
+                    x_attribute=self.document.createAttribute(key)
+                    new_entry.setAttributeNode(x_attribute)
+                    new_entry.setAttribute(key,str(datum))
+                data_node.appendChild(new_entry)
+        return data_node
+
+    def get_attribute_names(self):
+        """ Returns the attribute names in the first tuple element in the 'data' element """
+        attribute_names=[]
+        data_nodes=self.document.getElementsByTagName('Data')
+        first_tuple_node=data_nodes[0].childNodes[1]
+        text=first_tuple_node.toprettyxml()
+        text_list=text.split(' ')
+        #print text_list
+        for item in text_list:
+            try:
+                match=re.search('(?P<attribute_name>\w+)=',item)
+                name=match.group('attribute_name')
+                #print name
+                attribute_names.append(name)
+            except:pass
+
+        return attribute_names
+
+    def to_list(self,attribute_name):
+        """ Outputs the data as a list given a data column (attribute) name"""
+        try:
+            node_list=self.document.getElementsByTagName('Tuple')
+            data_list=[node.getAttribute(attribute_name) for node in node_list]
+            return data_list
+        except:
+            return None
+
+    def to_tuple_list(self,attribute_names):
+        """ Returns a list of tuples for the specified list of attribute names"""
+        try:
+            node_list=self.document.getElementsByTagName('Tuple')
+            data_list=[tuple([node.getAttribute(attribute_name) for
+            attribute_name in attribute_names]) for node in node_list]
+            return data_list
+        except:
+            return None
+
+    def get_header(self,style='txt'):
+        """ Creates a header from the data description if there is one"""
+        try:
+            node_list=self.document.getElementsByTagName('Data_Description')
+            data_description=node_list[0]
+            out=''
+            if style in ['txt','text','ascii']:
+                for child in data_description.childNodes:
+                    try:
+                        out=out+'%s: %s'%(child.nodeName,child.firstChild.nodeValue)+'\n'
+                    except:pass
+                return out
+            elif re.search('xml',style,flags=re.IGNORECASE):
+                out=data_description.toprettyxml()
+                return out
+        except:
+            raise
+class FileRegister():
+    """ The base class for arbitrary database, which processes the
+    File Register XML File."""
+
+    def __init__(self,file_path=None,**options):
+        """ Initializes the File Register Class."""
+
+        # This is a general pattern for adding a lot of options
+        # The next more advanced thing to do is retrieve defaults from a settings file
+        defaults={"root":"File_Registry",
+                  "style_sheet":os.path.join(XSLT_REPOSITORY,'FR_STYLE.xsl').replace('\\','/'),
+                  "specific_descriptor":'Resource',
+                  "general_descriptor":'Registry',
+                  "directory":None,
+                  "extension":'xml'
+                  }
+        self.options={}
+        for key,value in defaults.iteritems():
+            self.options[key]=value
+        for key,value in options.iteritems():
+            self.options[key]=value
+        XMLBase.__init__(self,file_path,**self.options)
+
+        self.Id_dictionary=dict([(str(node.getAttribute('URL')),
+            str(node.getAttribute('Id'))) for node in
+            self.document.getElementsByTagName('File')])
+
+    def create_Id(self,URL):
+        """ Creates or returns the existing Id element of a URL"""
+        parsed_URL=urlparse.urlparse(condition_URL(URL))
+        try: # Look in self.Id_dictionary, if it is not there catch
+             # the exception KeyError and generate an Id.
+            return self.Id_dictionary[URL.replace('///','')]
+        except KeyError:
+            # The Id is not in the existing list so start buliding Id.
+            # Determine the IP Address of the host in the URL
+            if parsed_URL[1] in ['',u'']: #if it is empty assume local host
+                IP_address=socket.gethostbyaddr(socket.gethostname())[2][0]
+            else:
+                IP_address= socket.gethostbyaddr(parsed_URL[1])[2][0]
+            Id_cache={}
+            # We begin with all the entries with the same IP address
+            for (key,value) in self.Id_dictionary.iteritems():
+                if value.startswith(IP_address):
+                        Id_cache[key]=value
+            # If the Id_cache is empty then we just assign the number
+            temp_Id=IP_address
+            path_list=parsed_URL[2].split('/')
+            file_extension=path_list[-1].split('.')[-1]
+            if len(Id_cache) is 0:
+                for index,part in enumerate(path_list):
+                    if index<len(path_list)-1:
+                        temp_Id=temp_Id+'.'+'11'
+                    elif index==len(path_list)-1:
+                        if (file_extension in DRIVER_FILE_EXTENSIONS):
+                            temp_Id=temp_Id+'.'+'31'
+                        elif os.path.isdir(parsed_URL[2]):
+                            temp_Id=temp_Id+'.'+'11'
+                        else:
+                            temp_Id=temp_Id+'.'+'21'
+                return temp_Id
+            # if it is not empty we have to a little work
+            # remove the information about IP address
+            place=0
+            #print path_list
+            while place<=len(path_list):
+              # If the Id_cache is empty assign the rest of the Id.
+               if len(Id_cache) is 0:
+                    for index,part in enumerate(path_list[place:]):
+                        if index<len(path_list[place:])-1:
+                            temp_Id=temp_Id+'.'+'11'
+                        elif index==len(path_list[place:])-1:
+                            if (file_extension in DRIVER_FILE_EXTENSIONS):
+                                temp_Id=temp_Id+'.'+'31'
+                            elif os.path.isdir(parsed_URL[2]):
+                                temp_Id=temp_Id+'.'+'11'
+                            else:
+                                temp_Id=temp_Id+'.'+'21'
+                    return temp_Id
+
+                # If the Id_cache is not empty
+               else:
+                    path_cache=dict([(URL,URL_to_path(URL,form='list'))\
+                    for URL in Id_cache.keys()])
+                    print Id_cache
+                    part_cache=dict([(URL,[path_cache[URL][place],
+                    Id_cache[URL].split('.')[place+4]])\
+                    for URL in Id_cache.keys()])
+                    parts_list=[part_cache[URL][0]for URL in Id_cache.keys()]
+                    node_number=max([int(Id_cache[URL].split('.')[place+4][1:])\
+                    for URL in Id_cache.keys()])
+                # If it is the last place
+                    if place==len(path_list)-1:
+                        new_node_number=node_number+1
+                        if (file_extension in DRIVER_FILE_EXTENSIONS):
+                            new_node_type='3'
+                        elif os.path.isdir(parsed_URL[2]):
+                            new_node_type='1'
+                        else:
+                            new_node_type='2'
+                        temp_Id=temp_Id+'.'+new_node_type+str(new_node_number)
+                        return temp_Id
+                # If it is not the last place assume it is a directory
+                    else:
+                        new_node_type='1'
+                        # Check to see if it is already in the FR
+                        if path_list[place] in parts_list:
+                            for URL in Id_cache.keys():
+                                if part_cache[URL][0]==path_list[place]:
+                                    new_node=part_cache[URL][1]
+
+                        # If not add one to node
+                        else:
+                            new_node_number=node_number+1
+                            new_node=new_node_type+str(new_node_number)
+                        temp_Id=temp_Id+'.'+new_node
+                        # Update the Id_cache for the next round, and the place
+                        for URL in Id_cache.keys():
+                            try:
+                                if not part_cache[URL][0]==path_list[place]:
+                                    del(Id_cache[URL])
+                                Id_cache[URL].split('.')[place+5]
+                            except KeyError:
+                                pass
+                            except IndexError:
+                                #print Id_cache,URL
+                                del(Id_cache[URL])
+                        place=place+1
+
+    def add_entry(self,URL):
+        """ Adds an entry to the current File Register """
+        URL=condition_URL(URL)
+        if URL in self.Id_dictionary.keys():
+            print 'Already there'
+            return
+        # the xml entry is <File Date="" Host="" Type="" Id="" URL=""/>
+        File_Registry=self.document.documentElement
+        new_entry=self.document.createElement('File')
+        # Make all the new attributes
+        attributes=['Id','Host','Date','URL','Type']
+        new_attributes=dict([(attribute,
+        self.document.createAttribute(attribute)) for attribute in \
+        attributes])
+        # Add the new attributes to the new entry
+        for attribute in attributes:
+            new_entry.setAttributeNode(new_attributes[attribute])
+        # Now assign the values
+        attribute_values={}
+        attribute_values['URL']=URL
+        attribute_values['Id']=self.create_Id(URL)
+        attribute_values['Date']=datetime.datetime.utcnow().isoformat()
+        type_code=attribute_values['Id'].split('.')[-1][0]
+        if type_code in ['1',u'1']:
+            attribute_values['Type']="Directory"
+        elif type_code in ['2',u'2']:
+            attribute_values['Type']="Ordinary"
+        elif type_code in ['3',u'3']:
+            attribute_values['Type']="Driver"
+        else:
+            attribute_values['Type']="Other"
+        parsed_URL=urlparse.urlparse(condition_URL(URL))
+        if parsed_URL[1] in ['',u'']: #if it is empty assume local host
+            attribute_values['Host']= socket.gethostbyaddr(socket.gethostname())[0]
+        else:
+            attribute_values['Host']= parsed_URL[1]
+
+        # Now set them all in the actual attribute
+        for (key,value) in attribute_values.iteritems():
+            new_entry.setAttribute(key,value)
+        File_Registry.appendChild(new_entry)
+        # Finally update the self.Id_dictionary
+        # Added boolean switch to speed up adding a lot of entries
+
+        self.Id_dictionary=dict([(str(node.getAttribute('URL')),
+        str(node.getAttribute('Id'))) for node in \
+        self.document.getElementsByTagName('File')])
+    # TODO : Add an input filter that guesses at what you inputed
+
+    def add_tree(self,root,**options):
+        """ Adds a directory and all sub folders and sub directories, **options
+        provides a way to {'ignore','.pyc|etc'} or {'only','.png|.bmp'}"""
+
+        # Deal with the optional parameters, these tend to make life easier
+        default_options={'ignore':None,'only':None,'print_ignored_files':True,
+        'directories_only':False,'files_only':False}
+        tree_options=default_options
+        for option,value in options.iteritems():
+            tree_options[option]=value
+        print tree_options
+        #condition the URL
+        root_URL=condition_URL(root)
+        path=URL_to_path(root_URL)
+        # now we add the files and directories that jive with the options
+        try:
+
+            for (home,directories,files) in os.walk(path):
+                #print (home,directories,files)
+                for directory in directories:# had to change this 12/2012, used to be first element in list
+                    try:
+                        if tree_options['files_only']:
+                            if tree_options['print_ignored_files']:
+                                print "ignoring %s because it is not a file"%file
+                            raise
+                        if tree_options['ignore'] is not None and re.search(tree_options['ignore'],directory):
+                            if tree_options['print_ignored_files']:
+                                print "ignoring %s because it does not match the only option"%directory
+                            raise
+                        elif tree_options['only'] is not None and not re.search(tree_options['only'],directory):
+                            if tree_options['print_ignored_files']:
+                                print "ignoring %s because it does not match the only option"%directory
+                            raise
+                        else:
+                            self.add_entry(condition_URL(os.path.join(home,directory)))
+                            self.save()
+                    except:pass
+                for file in files: # had to change this 12/2012, used to be Second element in list
+                    try:
+                        if tree_options['directories_only']:
+                            if tree_options['print_ignored_files']:
+                                print "ignoring %s because it is not a directory"%file
+                            raise
+                        if tree_options['ignore'] is not None and re.search(tree_options['ignore'],file):
+                            if tree_options['print_ignored_files']:
+                                print "ignoring %s because it matches the ignore option"%file
+                            raise
+                        elif tree_options['only'] is not None and not re.search(tree_options['only'],file):
+                            if tree_options['print_ignored_files']:
+                                print "ignoring %s because it does not match the only option"%file
+                            raise
+                        else:
+                            print (home,file)
+                            self.add_entry(condition_URL(os.path.join(home,file)))
+                            self.save()
+                    except:raise
+        except:
+            raise
+
+
+        #After all the files are added update the Id_dictionary
+        self.Id_dictionary=dict([(str(node.getAttribute('URL')),
+            str(node.getAttribute('Id'))) for node in
+            self.document.getElementsByTagName('File')])
+    def remove_entry(self,URL=None,Id=None):
+        """ Removes an entry in the current File Register """
+        File_Registry=self.document.documentElement
+        if not URL is None:
+            URL=condition_URL(URL)
+            URL_FileNode_dictionary=dict([(node.getAttribute('URL'),
+            node) for node in self.document.getElementsByTagName('File')])
+            File_Registry.removeChild(URL_FileNode_dictionary[URL])
+        else:
+            Id_FileNode_dictionary=dict([(node.getAttribute('Id'),
+            node) for node in self.document.getElementsByTagName('File')])
+            File_Registry.removeChild(Id_FileNode_dictionary[Id])
+        # Finally update the self.Id_dictionary
+        self.Id_dictionary=dict([(str(node.getAttribute('URL')),
+        str(node.getAttribute('Id'))) for node in \
+        self.document.getElementsByTagName('File')])
 #-----------------------------------------------------------------------------
 # Module Scripts
 def test_XMLModel(test_new=True,test_existing=False):
@@ -560,6 +948,7 @@ def test_show():
     print new_log.show('xml')
     #the window version
     new_log.show('wx')
+
 def test_to_HTML():
     os.chdir(TESTS_DIRECTORY)
     new_log=Log()
@@ -575,12 +964,66 @@ def test_to_HTML():
     print '*'*80
     print new_log.to_HTML()
 
+def test_DataTable():
+    """ Test's the DataTable Class"""
+    test_data=[tuple([2*i+j for i in range(3)]) for j in range(5)]
+    test_options={'data_table':test_data}
+    new_table=DataTable(None,**test_options)
+    print new_table
+    test_dictionary={'Data_Description':{'x':'X Distance in microns.',
+    'y':'y Distance in microns.','Notes':'This data is fake'},'Data':[[1,2],[2,3]]}
+    test_dictionary_2={'Data_Description':{'x':'x Distance in microns.',
+    'y':'y Distance in microns.'},'Data':[{'x':1,'y':2},{'x':2,'y':3}]}
+    test_options_2={'data_dictionary':test_dictionary}
+    test_options_3={'data_dictionary':test_dictionary_2}
+    new_table_2=DataTable(**test_options_2)
+    new_table_3=DataTable(**test_options_3)
+    print new_table_2
+    print new_table_3
+    print new_table_3.to_list('x')
+    print new_table_3.to_tuple_list(['x','y'])
+    print new_table_3.path
+    new_table_3.get_header()
+
+def test_get_header():
+    """ Test of the get header function """
+    test_dictionary={'Data_Description':{'x':'X Distance in microns.',
+    'y':'y Distance in microns.','Notes':'This data is fake'},'Data':[[1,2],[2,3]]}
+    new_table=DataTable(**{'data_dictionary':test_dictionary})
+    header=new_table.get_header()
+    print header
+    print new_table.get_header('xml')
+
+def test_open_measurement(sheet_name='Data_Table_021311_1.xml'):
+    """Tests opening a sheet"""
+    os.chdir(TESTS_DIRECTORY)
+    measurement=DataTable(sheet_name)
+    print("The file path is {0}".format(measurement.path))
+    #print measurement
+    print measurement.get_header()
+
+def test_get_attribute_names(sheet_name='Data_Table_021311_1.xml'):
+    os.chdir(TESTS_DIRECTORY)
+    measurement=DataTable(sheet_name)
+    names=measurement.get_attribute_names()
+    print 'the names list is:',names
+    print 'Using the names list to create a data table:'
+    print '*'*80+'\n'+'%s   %s  %s'%(names[0], names[1], names[2])+'\n'+'*'*80
+    for index,item in enumerate(measurement.to_list(names[0])):
+        row=''
+        for name in names:
+            row=measurement.to_list(name)[index] +'\t'+row
+        print row
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__=='__main__':
-    test_XMLModel()
+    #test_XMLModel()
     #test_Log()
     #test_log_addition()
     #test_EndOfDayLog()
     #test_show()
     #test_to_HTML()
+    #test_DataTable()
+    #test_get_header()
+    test_open_measurement()
+    #test_get_attribute_names()
