@@ -72,6 +72,14 @@ NODE_TYPE_DICTIONARY={'1':'ELEMENT_NODE', '2':'ATTRIBUTE_NODE', '3':'TEXT_NODE',
     '12':'NOTATION_NODE'}
 #-----------------------------------------------------------------------------
 # Module Functions
+def dictionary_to_xml(dictionary=None,char_between='\n'):
+    string_output=''
+    for key,value in dictionary.iteritems():
+        xml_open="<"+str(key)+">"
+        xml_close="</"+str(key)+">"
+        string_output=string_output+xml_open+str(value)+xml_close+char_between
+    return string_output
+
 def dictionary_to_xmlchunk(dictionary, level='attribute'):
     "returns a string formatted as xml when given a python dictionary"
     if type(dictionary) is not dict:raise
@@ -131,8 +139,6 @@ class XMLBase():
     """
     def __init__(self,file_path=None,**options):
         "Initializes the XML Base Class "
-        if file_path is not None:
-            self.path=file_path
         # This is a general pattern for adding a lot of options
         # The next more advanced thing to do is retrieve defaults from a settings file
         defaults={"root":"root",
