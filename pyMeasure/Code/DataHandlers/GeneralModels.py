@@ -10,6 +10,7 @@
 #-----------------------------------------------------------------------------
 # Standard Imports
 from types import *
+import os
 #-----------------------------------------------------------------------------
 # Third Party Imports
 try:
@@ -35,7 +36,7 @@ except:
     pass
 #-----------------------------------------------------------------------------
 # Module Constants
-
+TESTS_DIRECTORY=os.path.join(os.path.dirname(os.path.realpath(__file__)),'Tests')
 #-----------------------------------------------------------------------------
 # Module Functions
 def string_list_collapse(list_of_strings):
@@ -92,6 +93,24 @@ def line_list_comment_string(comment_list,comment_begin=None,comment_end=None,bl
             string_out=string_out+line_comment_string(item,comment_begin=comment_begin,comment_end=comment_end)
     return string_out
 
+def ensure_string(input_object,  list_delimiter="",  end_if_list=""):
+    """Returns a string given an object. If the object is a string just returns it,
+    if it is a list of strings, returns a collapsed version. If is another type of object returns str(object).
+      If all else fails it returns an empty string"""
+    string_out=""
+    try:
+        if type(input_object) in StringTypes:
+            string_out=input_object
+        elif type(input_object) in [ListType,np.ndarray]:
+            if type(input_object[0]) in [ListType,np.ndarray]:
+                string_out=list_list_to_string(input_object,data_delimiter=list_delimiter,end=end_if_list)
+            else:
+                string_out=list_to_string(input_object,data_delimiter=list_delimiter,end=end_if_list)
+        else:
+            string_out=str(input_object)
+    except:
+        pass
+    return string_out
 
 #-----------------------------------------------------------------------------
 # Module Classes
@@ -124,7 +143,8 @@ class AsciiDataTable():
                   "footer_end_token":None,
                   "header_begin_token":None,
                   "header_end_token":None,
-                  "column_name_token":None,
+                  "column_name_begin_token":None,
+                  "column_name_end_token":None,
                   "data_begin_token":None,
                   "data_end_token":None,
                   "metadata_delimiter":None,
@@ -136,7 +156,9 @@ class AsciiDataTable():
                   "row_formatter_string":None,
                   "empty_value":None,
                   "escape_character":None,
-                  "data_table_element_separator":'\n'
+                  "data_table_element_separator":'\n',
+                  "treat_header_as_comment":True,
+                  "treat_footer_as_comment":True
                   }
         #some of the options have the abiltiy to confilct with each other, so there has to be a
         #built-in way to determine the precedence of each option
@@ -152,12 +174,17 @@ class AsciiDataTable():
         if file_path is None:
             #create a new data table
             if DEFAULT_FILE_NAME is None:
-                self.path=auto_name(self.options["specific_descriptor"],
+                self.name=auto_name(self.options["specific_descriptor"],
                                     self.options["general_descriptor"],
                                     self.options["directory"],
                                     self.options["extension"])
+                if self.options['directory'] is None:
+                    self.path=self.name
+                else:
+                    self.path=os.path.join(self.options["directory"],self.name)
             #Now we see if the table has been defined in the options
-
+            # We should reset the self.options versions to None after this so as to not recreate or we
+            # can use it as a cache and add a method reset_table which either redoes the below or reloads the saved file
             self.header=self.options["header"]
             self.column_names=self.options["column_names"]
             self.data=self.options["data"]
@@ -165,6 +192,11 @@ class AsciiDataTable():
 
         else:
             # open the file and read it in as lines
+            # do we parse it here?
+            # once parsed we should end up with the major components
+            # if we are given options we should use them, if not try to autodetect them?
+            # we can just return an error right now and then have an __autoload__ method
+            # we can assume it is in ascii or utf-8
             file_in=open(file_path,'r')
             self.lines=[]
             for line in file_in:
@@ -172,27 +204,37 @@ class AsciiDataTable():
             file_in.close()
             self.path=file_path
 
-        self.string=""
+        self.string=self.build_string()
 
     def __str__(self):
         "Controls the str output of AsciiDataTable"
+        self.string=self.build_string()
         return self.string
 
     def update_model(self):
         """Updates the model after a change has been made"""
         pass
 
-    def save(self,path=None,**options):
-        """" Saves the file, to save in another ascii format specify elements in options """
+    def save(self,path=None,**temp_options):
+        """" Saves the file, to save in another ascii format specify elements in temp_options, the options
+        specified do not permanently change the objects options """
+        original_options=self.options
+        for key,value in temp_options.iteritems():
+            self.options[key]=value
+        out_string=self.build_string(**temp_options)
         if path is None:
             path=self.path
         file_out=open(path,'w')
-        file_out.write(self.string)
+        file_out.write(out_string)
         file_out.close()
+        self.options=original_options
 
-    def build_string(self,**options):
-        "Builds a string representation of the data table based on self.options"
-        for key,value in options.iteritems():
+    def build_string(self,**temp_options):
+        """Builds a string representation of the data table based on self.options, or temp_options.
+        Passing temp_options does not permanently change the model"""
+        # store the original options to be put back after the string is made
+        original_options=self.options
+        for key,value in temp_options.iteritems():
             self.options[key]=value
         string_out=""
         if self.header is None:
@@ -211,14 +253,31 @@ class AsciiDataTable():
             pass
         else:
             string_out=string_out+self.get_footer_string()+self.options['data_table_element_separator']
+        # set the options back after the string has been made
+        self.options=original_options
         return string_out
 
     def get_header_string(self):
+        """Returns the header using options in self.options. If block comment is specified, and the header is a
+        list it will block comment out the header. If comment_begin and comment_end are specified it will use
+        those to represent each line of the header. If header_begin_token and/or header_end_token are specified it
+         will wrap the header in those.
+        """
         string_out=""
+        header_begin=""
+        header_end=""
+        if self.options["header_begin_token"] is None:
+            header_begin=""
+        else:
+            header_begin=self.options["header_begin_token"]
+        if self.options["header_end_token"] is None:
+            header_end=""
+        else:
+            header_end=self.options["header_end_token"]
         # This writes the header
         if self.header is None:
             string_out= ""
-        else:
+        elif self.options['treat_header_as_comment']:
             if type(self.header) is StringType:
                 string_out=line_comment_string(self.header,
                                                comment_begin=self.options["comment_begin"],
@@ -230,38 +289,36 @@ class AsciiDataTable():
                 else:
                     string_out=line_list_comment_string(self.header,comment_begin=self.options['block_comment_begin'],
                                                         comment_end=self.options['block_comment_end'],block=True)
-            else:
-                try:
-                    string_out=str(self.header)
-                except:raise
-        return string_out
+        else:
+            string_out=ensure_string(self.header)
+        return header_begin+string_out+header_end
 
     def get_column_names_string(self):
         "Returns the column names as a string using options"
         string_out=""
         # This writes the column_names
+        column_name_begin=""
+        column_name_end=""
+        if self.options["column_name_begin_token"] is None:
+            column_name_begin=""
+        else:
+            column_name_begin=self.options["column_name_begin_token"]
+        if self.options["column_name_end_token"] is None:
+            column_name_end=""
+        else:
+            column_name_end=self.options["column_name_end_token"]
+
         if self.column_names is None:
             string_out=""
         else:
             if type(self.column_names) is StringType:
-                if self.options['column_name_token'] is None:
-                    string_out=self.column_names
-                else:
-                    if re.match(self.options['column_name_token'],self.column_names):
-                        string_out=self.column_names
-                    else:
-                        string_out=self.options['column_name_token']+self.column_names
+                string_out=self.column_names
             elif type(self.column_names) is ListType:
-                if self.options['column_name_token'] is None:
-                    string_out=list_to_string(self.column_names,self.options['column_name_delimiter'],end="")
-                else:
-                    string_out=self.options['column_name_token']+\
-                               list_to_string(self.column_names,self.options['column_name_delimiter'],end="")
+                string_out=list_to_string(self.column_names,
+                                          data_delimiter=self.options["column_name_delimiter"],end="")
             else:
-                try:
-                    string_out=str(self.column_names)
-                except:raise
-        return string_out
+                string_out=ensure_string(self.column_names)
+        return column_name_begin+string_out+column_name_end
 
     def get_data_string(self):
         "Returns the data as a string"
@@ -284,7 +341,7 @@ class AsciiDataTable():
                                 string_out=self.data
                             else:
                                 string_out=self.options['data_begin_token']+self.data
-            elif type(self.data) is ListType:
+            elif type(self.data) in [ListType,np.ndarray]:
                     if type(self.data[0]) is StringType:
                         if self.options['data_begin_token'] is None:
                             string_out=string_list_collapse(self.data)
@@ -327,24 +384,49 @@ class AsciiDataTable():
                     else:
                         string_out=list_to_string(self.data,data_delimiter=self.options['data_delimiter'],
                                                                row_formatter_string=self.options['row_formatter_string'])
+            else:
+                string_out=ensure_string(self.data)
         return string_out
+
     def get_footer_string(self):
-        "Returns a string representation of the footer"
-        # writes the footer
+        """Returns the footer using options in self.options. If block comment is specified, and the footer is a
+        list it will block comment out the footer. If comment_begin and comment_end are specified it will use
+        those to represent each line of the footer. If footer_begin_token and/or footer_end_token are specified it
+         will wrap the footer in those.
+        """
         string_out=""
-        if self.footer is None:
-            pass
+        footer_begin=""
+        footer_end=""
+        if self.options["footer_begin_token"] is None:
+            footer_begin=""
         else:
-            string_out=string_out+self.options["data_table_element_seperator"]
+            footer_begin=self.options["footer_begin_token"]
+        if self.options["footer_end_token"] is None:
+            footer_end=""
+        else:
+            footer_end=self.options["footer_end_token"]
+        # This writes the footer
+        if self.footer is None:
+            string_out= ""
+        elif self.options['treat_footer_as_comment']:
             if type(self.footer) is StringType:
-                string_out=self.header
+                string_out=line_comment_string(self.footer,
+                                               comment_begin=self.options["comment_begin"],
+                                               comment_end=self.options["comment_end"])
             elif type(self.footer) is ListType:
-                string_out=string_list_collapse(self.footer)
+                if self.options['block_comment_begin'] is None:
+                    string_out=line_list_comment_string(self.footer,comment_begin=self.options['comment_begin'],
+                                                        comment_end=self.options['comment_end'])
+                else:
+                    string_out=line_list_comment_string(self.footer,comment_begin=self.options['block_comment_begin'],
+                                                        comment_end=self.options['block_comment_end'],block=True)
             else:
                 try:
                     string_out=str(self.footer)
                 except:raise
-        return string_out
+        else:
+            string_out=ensure_string(self.footer)
+        return footer_begin+string_out+footer_end
 
     def __add__(self, other):
         """Controls the behavior of the addition operator, if column_names are equal it adds rows at the end
@@ -367,11 +449,19 @@ class AsciiDataTable():
         pass
 
     def add_index(self):
-        "Adds a column with name index and values that are 0 referenced indices"
-        pass
+        """Adds a column with name index and values that are 0 referenced indices, does nothing if there is
+        already a column with name index"""
+        if 'index' in self.column_names:
+            print("I passed")
+            pass
+        else:
+            self.column_names.insert(0,'index')
+            for index,row in enumerate(self.data):
+                self.data[index].insert(0,index)
 
     def move_footer_to_header(self):
         """Moves the DataTable's footer to the header and updates the model"""
+
         pass
 
     def add_comment(self,comment):
@@ -389,14 +479,23 @@ class AsciiDataTable():
 # Module Scripts
 def test_AsciiDataTable():
     options={"column_names":["a","b","c"],"data":[[0,1,2],[2,3,4]],"data_delimiter":'\t',
-             "header":['Hello There\n',"My Darling\n"],"column_name_token":'!',"comment_begin":'#'}
+             "header":['Hello There\n',"My Darling"],"column_name_begin_token":'!',"comment_begin":'#',
+             "directory":TESTS_DIRECTORY}
     new_table=AsciiDataTable(file_path=None,**options)
     print new_table.data
-    print dir(new_table)
+    #print dir(new_table)
+    for key,value in new_table.options.iteritems():
+        print("{0} = {1}".format(key,value))
     print new_table.get_header_string()
     print new_table.get_data_string()
     print new_table.build_string()
     print new_table.path
+    new_table.save()
+    print("Test add_index")
+    new_table.add_index()
+    new_table.add_index()
+    new_table.add_index()
+    print new_table
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
