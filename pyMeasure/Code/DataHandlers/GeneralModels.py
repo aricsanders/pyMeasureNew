@@ -27,6 +27,12 @@ except:
     print("Setting Default file name to New_Data_Table.txt")
     DEFAULT_FILE_NAME='New_Data_Table.txt'
     pass
+try:
+    import numpy as np
+except:
+    np.ndarray='np.ndarray'
+    print("Numpy was not imported")
+    pass
 #-----------------------------------------------------------------------------
 # Module Constants
 
@@ -38,6 +44,55 @@ def string_list_collapse(list_of_strings):
     for item in list_of_strings:
         out_string=out_string+item
     return out_string
+
+def list_to_string(row_list,data_delimiter=None,row_formatter_string=None,end='\n'):
+    """Given a list of values returns a string"""
+    if data_delimiter is None:
+        data_delimiter=','
+    string_out=""
+    if row_formatter_string is None:
+        for index,item in enumerate(row_list):
+            if index is len(row_list)-1:
+                string_out=string_out+str(item)
+            else:
+                string_out=string_out+str(item)+data_delimiter
+    else:
+        string_out=row_formatter_string.format(*row_list,delimiter=data_delimiter)
+    return string_out+end
+
+def list_list_to_string(list_lists,data_delimiter=None,row_formatter_string=None):
+    "coverts a list of lists to a string"
+    string_out=""
+    for row in list_lists:
+        string_out=string_out+list_to_string(row,data_delimiter=data_delimiter,row_formatter_string=row_formatter_string)
+    return string_out
+
+def line_comment_string(comment,comment_begin=None,comment_end=None):
+    "Creates a comment optionally wrapped with comment_begin and comment_end"
+    string_out=""
+    if comment_begin is None:
+        if comment_end is None:
+            string_out=comment
+        else:
+            string_out=comment+comment_end
+    else:
+        if comment_end is None:
+            string_out=comment_begin+comment
+        else:
+            string_out=comment_begin+comment+comment_end
+    return string_out
+def line_list_comment_string(comment_list,comment_begin=None,comment_end=None,block=False):
+    """Creates a string with each line wrapped in comment_begin and comment_end
+    or the full string wrapped with block_comment_begin and block_comment_end"""
+    string_out=""
+    if block:
+        string_out=comment_begin+string_list_collapse(comment_list)+comment_end
+    else:
+        for item in comment_list:
+            string_out=string_out+line_comment_string(item,comment_begin=comment_begin,comment_end=comment_end)
+    return string_out
+
+
 #-----------------------------------------------------------------------------
 # Module Classes
 class AsciiDataTable():
@@ -81,7 +136,7 @@ class AsciiDataTable():
                   "row_formatter_string":None,
                   "empty_value":None,
                   "escape_character":None,
-                  "data_table_element_seperator":'\n'
+                  "data_table_element_separator":'\n'
                   }
         #some of the options have the abiltiy to confilct with each other, so there has to be a
         #built-in way to determine the precedence of each option
@@ -102,12 +157,11 @@ class AsciiDataTable():
                                     self.options["directory"],
                                     self.options["extension"])
             #Now we see if the table has been defined in the options
-            data_table_elements=['header','column_names','data','footer']
-            for item in data_table_elements:
-                try:
-                    exec('self.%s=%s'%(item,self.options[item]))
-                except:pass #could catch the KeyError here
 
+            self.header=self.options["header"]
+            self.column_names=self.options["column_names"]
+            self.data=self.options["data"]
+            self.footer=self.options["footer"]
 
         else:
             # open the file and read it in as lines
@@ -117,7 +171,6 @@ class AsciiDataTable():
                 self.lines.append(line)
             file_in.close()
             self.path=file_path
-
 
         self.string=""
 
@@ -142,31 +195,24 @@ class AsciiDataTable():
         for key,value in options.iteritems():
             self.options[key]=value
         string_out=""
-        # This writes the header
         if self.header is None:
             pass
         else:
-            if type(self.header) is StringType:
-                string_out=self.header
-            elif type(self.header) is ListType:
-                string_out=string_list_collapse(self.header)
-            else:
-                try:
-                    string_out=str(self.header)
-                except:raise
-        # writes the footer
+            string_out=self.get_header_string()+self.options['data_table_element_separator']
+        if self.column_names is None:
+            pass
+        else:
+            string_out=string_out+self.get_column_names_string()+self.options['data_table_element_separator']
+        if self.data is None:
+            pass
+        else:
+            string_out=string_out+self.get_data_string()+self.options['data_table_element_separator']
         if self.footer is None:
             pass
         else:
-            string_out=string_out+self.options["data_table_element_seperator"]
-            if type(self.footer) is StringType:
-                string_out=self.header
-            elif type(self.footer) is ListType:
-                string_out=string_list_collapse(self.footer)
-            else:
-                try:
-                    string_out=str(self.footer)
-                except:raise
+            string_out=string_out+self.get_footer_string()+self.options['data_table_element_separator']
+        return string_out
+
     def get_header_string(self):
         string_out=""
         # This writes the header
@@ -174,9 +220,12 @@ class AsciiDataTable():
             return ""
         else:
             if type(self.header) is StringType:
-                string_out=self.header
+                string_out=line_comment_string(self.header,
+                                               comment_begin=self.options["comment_begin"],
+                                               comment_end=self.options["comment_end"])
             elif type(self.header) is ListType:
-                string_out=string_list_collapse(self.header)
+                if self.options['block_comment_begin'] is None:
+                    string_out=line_comment_string(string_list_collapse(self.header))
             else:
                 try:
                     string_out=str(self.header)
@@ -188,26 +237,33 @@ class AsciiDataTable():
         string_out=""
         # This writes the column_names
         if self.column_names is None:
-            return ""
+            string_out=""
         else:
             if type(self.column_names) is StringType:
-                if self.column_names[0] is self.options['column_name_token']:
-                    string_out=string_out+self.column_names
+                if self.options['column_name_token'] is None:
+                    string_out=self.column_names
                 else:
-                    string_out=string_out+self.options['column_name_token']+self.column_names
+                    if re.match(self.options['column_name_token'],self.column_names):
+                        string_out=self.column_names
+                    else:
+                        string_out=self.options['column_name_token']+self.column_names
             elif type(self.column_names) is ListType:
                 if self.options['column_name_token'] is None:
-                    string_out=string_out+string_list_collapse(self.column_names)
+                    string_out=list_to_string(self.column_names,self.options['column_name_delimiter'],end="")
                 else:
-                    string_out=string_out+self.options['column_name_token']+string_list_collapse(self.column_names)
+                    string_out=self.options['column_name_token']+\
+                               list_to_string(self.column_names,self.options['column_name_delimiter'],end="")
             else:
                 try:
-                    string_out=string_out+str(self.column_names)
+                    string_out=str(self.column_names)
                 except:raise
+        return string_out
+
     def get_data_string(self):
         "Returns the data as a string"
+        string_out=""
         if self.data is None:
-            return ""
+            string_out= ""
         else:
             if type(self.data) is StringType:
                 if self.options['data_begin_token'] is None:
@@ -247,15 +303,44 @@ class AsciiDataTable():
                                         string_out=self.options['data_begin_token']+\
                                                    string_list_collapse(self.data)+\
                                                    self.options['data_end_token']
-                    elif type(self.data[0]) is ListType:
+                    elif type(self.data[0]) in [ListType,np.ndarray]:
                         prefix=""
                         if self.options['data_begin_token'] is None:
-
-
-
-
-                    string_out=string_out+self.options['column_name_token']+self.column_names
-            elif type(self.data) is np.ndarray:
+                            if self.options['data_end_token'] is None:
+                                string_out=list_list_to_string(self.data,data_delimiter=self.options['data_delimiter'],
+                                                               row_formatter_string=self.options['row_formatter_string'])
+                        else:
+                            if self.options['data_end_token'] is None:
+                                string_out=self.options['data_begin_token']+\
+                                           list_list_to_string(self.data,data_delimiter=self.options['data_delimiter'],
+                                                               row_formatter_string=self.options['row_formatter_string'])
+                            else:
+                                string_out=self.options['data_begin_token']+\
+                                           list_list_to_string(self.data,data_delimiter=self.options['data_delimiter'],
+                                                               row_formatter_string=\
+                                                               self.options['row_formatter_string'])+\
+                                                                self.options['data_end_token']
+                    else:
+                        string_out=list_to_string(self.data,data_delimiter=self.options['data_delimiter'],
+                                                               row_formatter_string=self.options['row_formatter_string'])
+        return string_out
+    def get_footer_string(self):
+        "Returns a string representation of the footer"
+        # writes the footer
+        string_out=""
+        if self.footer is None:
+            pass
+        else:
+            string_out=string_out+self.options["data_table_element_seperator"]
+            if type(self.footer) is StringType:
+                string_out=self.header
+            elif type(self.footer) is ListType:
+                string_out=string_list_collapse(self.footer)
+            else:
+                try:
+                    string_out=str(self.footer)
+                except:raise
+        return string_out
 
     def __add__(self, other):
         """Controls the behavior of the addition operator, if column_names are equal it adds rows at the end
@@ -299,8 +384,16 @@ class AsciiDataTable():
 #-----------------------------------------------------------------------------
 # Module Scripts
 def test_AsciiDataTable():
-    pass
+    options={"column_names":["a","b","c"],"data":[[0,1,2],[2,3,4]],"data_delimiter":',',
+             "header":'Hello There',"column_name_token":'!'}
+    new_table=AsciiDataTable(file_path=None,**options)
+    print new_table.data
+    print dir(new_table)
+    print new_table.get_header_string()
+    print new_table.get_data_string()
+    print new_table.build_string()
+    print new_table.path
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
-    pass
+    test_AsciiDataTable()
