@@ -217,7 +217,7 @@ class AsciiDataTable():
         string_out=""
         # This writes the header
         if self.header is None:
-            return ""
+            string_out= ""
         else:
             if type(self.header) is StringType:
                 string_out=line_comment_string(self.header,
@@ -225,7 +225,11 @@ class AsciiDataTable():
                                                comment_end=self.options["comment_end"])
             elif type(self.header) is ListType:
                 if self.options['block_comment_begin'] is None:
-                    string_out=line_comment_string(string_list_collapse(self.header))
+                    string_out=line_list_comment_string(self.header,comment_begin=self.options['comment_begin'],
+                                                        comment_end=self.options['comment_end'])
+                else:
+                    string_out=line_list_comment_string(self.header,comment_begin=self.options['block_comment_begin'],
+                                                        comment_end=self.options['block_comment_end'],block=True)
             else:
                 try:
                     string_out=str(self.header)
@@ -384,8 +388,8 @@ class AsciiDataTable():
 #-----------------------------------------------------------------------------
 # Module Scripts
 def test_AsciiDataTable():
-    options={"column_names":["a","b","c"],"data":[[0,1,2],[2,3,4]],"data_delimiter":',',
-             "header":'Hello There',"column_name_token":'!'}
+    options={"column_names":["a","b","c"],"data":[[0,1,2],[2,3,4]],"data_delimiter":'\t',
+             "header":['Hello There\n',"My Darling\n"],"column_name_token":'!',"comment_begin":'#'}
     new_table=AsciiDataTable(file_path=None,**options)
     print new_table.data
     print dir(new_table)
