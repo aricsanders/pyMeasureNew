@@ -111,6 +111,63 @@ def ensure_string(input_object,  list_delimiter="",  end_if_list=""):
     except:
         pass
     return string_out
+def strip_tokens(string_list,begin_token=None,end_token=None):
+    """Strips a begin and end token if present from a list of strings"""
+    try:
+        if begin_token is not None:
+            string_list[0].replace(begin_token,'')
+        if end_token is not None:
+            string_list[-1].replace(end_token,'')
+    except:
+        pass
+    return string_list
+
+def strip_line_tokens(string,begin_token=None,end_token=None):
+    """Strips a begin and end token if present from a strings"""
+    try:
+        if begin_token is not None:
+            string.replace(begin_token,'')
+        if end_token is not None:
+            string.replace(end_token,'')
+    except:
+        pass
+    return string
+
+def strip_all_line_tokens(string_list,begin_token=None,end_token=None):
+    """Strips all line tokens from a list of strings"""
+    stripped_list=[]
+    for row in string_list:
+        stripped_list.append(strip_line_tokens(row,begin_token=begin_token,end_token=end_token))
+    return stripped_list
+
+def split_row(row_string,delimiter=None,escape_character=None):
+    """Splits a row given a delimiter, and ignores any delimiters after an escape character
+    returns a list. If the string is unsplit returns a list of length 1"""
+    if type(row_string) is not StringType:
+        print("Split row argument was not string")
+        return row_string
+    if delimiter is None:
+        row_list=[row_string]
+        return row_list
+    if escape_character is None:
+        row_list=row_string.split(delimiter)
+    else:
+        temp_row_string=row_string.replace(escape_character+delimiter,'TempPlaceHolder')
+        temp_row_list=temp_row_string.split(delimiter)
+        for item in temp_row_list:
+            item.replace('TempPlaceHolder',escape_character+delimiter)
+        row_list=temp_row_list
+    return row_list
+def split_all_rows(row_list,delimiter=None,escape_character=None):
+    """Splits all rows in a list of rows and returns a 2d list """
+    if type(row_list) is not ListType:
+        print("Split all rows argument was not a list")
+        return row_list
+    out_list=[]
+    for row in row_list:
+        out_list.append(split_row(row,delimiter=delimiter,escape_character=escape_character))
+    return out_list
+
 
 #-----------------------------------------------------------------------------
 # Module Classes
@@ -121,7 +178,7 @@ class AsciiDataTable():
         " Initializes the AsciiDataTable class "
         # This is a general pattern for adding a lot of options
         defaults={"data_delimiter":None,
-                  "column_name_delimiter":None,
+                  "column_names_delimiter":None,
                   "specific_descriptor":'Data',
                   "general_descriptor":'Table',
                   "directory":None,
@@ -144,8 +201,8 @@ class AsciiDataTable():
                   "footer_end_token":None,
                   "header_begin_token":None,
                   "header_end_token":None,
-                  "column_name_begin_token":None,
-                  "column_name_end_token":None,
+                  "column_names_begin_token":None,
+                  "column_names_end_token":None,
                   "data_begin_token":None,
                   "data_end_token":None,
                   "metadata_delimiter":None,
@@ -199,46 +256,130 @@ class AsciiDataTable():
             # if we are given options we should use them, if not try to autodetect them?
             # we can just return an error right now and then have an __autoload__ method
             # we can assume it is in ascii or utf-8
-            elements=['header','column_names','data','footer']
-
-            # set any attribute that has no options set to None
-            for item in elements:
+            self.elements=['header','column_names','data','footer']
+            # set any attribute that has no options to None
+            import_table=[]
+            for item in self.elements:
                 if len(filter(lambda x: None!=x,self.get_options_by_element(item).values()))==0:
                     self.__dict__[item]=None
                     #elements.remove(item)
                 else:
                     self.__dict__[item]=[]
-
+                    import_row=[self.options['%s_begin_line'%item],
+                                self.options['%s_end_line'%item],
+                                self.options['%s_begin_token'%item],
+                                self.options['%s_end_token'%item]]
+                    import_table.append(import_row)
             file_in=open(file_path,'r')
-            #self.string=file_in.read()
-            # in order to parse the file we need to know either line #'s, begin or end tokens or something
-
+            # in order to parse the file we need to know line #'s, once we deduce them we use __parse__
             self.lines=[]
             for line in file_in:
                 self.lines.append(line)
             file_in.close()
             self.path=file_path
-            for index,element in enumerate(elements):
-                if self.__dict__[element] is not None:
-                    #first try is just having begin and/or end values set
-                    try:
-                        if not None in [self.options['%s_begin_line'%element],self.options['%s_end_line'%element]]:
-                            self.__dict__[element]=self.lines[self.options['%s_begin_line'%element]:self.options['%s_end_line'%element]]
-                         # try begin lines
-                        elif self.options['%s_begin_line'%element]:
-                            if element is 'footer':
-                                self.__dict__['footer']=self.lines[self.options['footer_begin_line']:]
+            if self.lines_defined():
+                self.__parse__()
+            else:
+                import_table[0][0]=0
+                import_table[1][-1]=-1
+                self.update_import_options(import_table=import_table)
+                if self.lines_defined():
+                    self.__parse__()
+                for index,item in enumerate(import_table[0]):
+                    if index>0:
+                        if item is not None:
+                            import_table[1][index-1]=item+1
+                            self.update_import_options(import_table)
+                            if self.lines_defined():
+                                self.__parse__()
                             else:
+                                for index,item in enumerate(import_table[1]):
+                                    if index<range(len(import_table[1])):
+                                        if item is not None:
+                                            import_table[0][index+1]=item-1
+                                            self.update_import_options(import_table)
+                                            if self.lines_defined():
+                                                self.__parse__()
+                                            else:
+                                                for index,item in enumerate(import_table[2]):
+                                                    if item is not None:
+                                                        import_table[0]=self.find_line(item)
+                                                for index,item in enumerate(import_table[0]):
+                                                    if index>0:
+                                                        if item is not None:
+                                                            import_table[1][index-1]=item+1
+                                                            self.update_import_options(import_table)
+                                                            if self.lines_defined():
+                                                                self.__parse__()
+                                                            else:
+                                                                for index,item in enumerate(import_table[3]):
+                                                                    if item is not None:
+                                                                        import_table[0]=self.find_line(item)
+                                                                for index,item in enumerate(import_table[1]):
+                                                                    if index<range(len(import_table[1])):
+                                                                        if item is not None:
+                                                                            import_table[0][index+1]=item-1
+                                                                            self.update_import_options(import_table)
+                                                                            if self.lines_defined():
+                                                                                self.__parse__()
+                                                                            else:
+                                                                                raise
 
-                                self.__dict__[element]=self.lines[self.options['%s_begin_line'%element]:self.options['%s_begin_line'%elements[index+1]]-1]
-                        elif self.options['%s_end_line'%element]:
-                            if element is 'header':
-                                self.__dict__[element]=self.lines[0:self.options['%s_end_line'%element]]
-                            else:
-                                self.__dict__[element]=self.lines[self.options['%s_end_line'%elements[index-1]]+1:self.options['%s_end_line'%element]]
-                    except:
-                        raise
-                        print("Did Not work!!!!")
+    def find_line(self,begin_token):
+        """Finds the fiirst line that has begin token in it"""
+        for index,line in enumerate(self.lines):
+            if re.match(begin_token,line):
+                return index
+
+    def update_import_options(self,import_table):
+        """Updates the options in the import table"""
+        for index,element in enumerate(self.elements):
+            if self.__dict__[element] is not None:
+                [self.options['%s_begin_line'%element],
+                                self.options['%s_end_line'%element],
+                                self.options['%s_begin_token'%element],
+                                self.options['%s_end_token'%element]]=import_table[index]
+    def lines_defined(self):
+        """If begin_line and end_line for all elements that are None are defined returns True"""
+        for index,element in enumerate(self.elements):
+            if self.__dict__[element] is not None:
+                try:
+                    if not None in [self.options['%s_begin_line'%element],self.options['%s_end_line'%element]]:
+                        return True
+                    else:
+                        return False
+                except:pass
+
+    def __parse__(self):
+        """Parses self.lines into its components once all the relevant begin and end lines have been set. It assumes
+         that the self.__dict__[self.element[i]]=None for elements that are not defined"""
+        for index,element in enumerate(self.elements):
+            if self.__dict__[element] is not None:
+                try:
+                    if not None in [self.options['%s_begin_line'%element],self.options['%s_end_line'%element]]:
+                        self.__dict__[element]=self.lines[
+                                            self.options['%s_begin_line'%element]:self.options['%s_end_line'%element]]
+                except:
+                    raise
+        for index,element in enumerate(self.elements):
+            if self.__dict__[element] is not None:
+                        self.__dict__[element]=strip_tokens(self.__dict__[element],
+                                            begin_token=self.options['%s_begin_token'%element],
+                                                            end_token=self.options['%s_end_token'%element])
+        if self.header is not None:
+            self.header=strip_all_line_tokens(self.header,begin_token=self.options['comment_begin'],
+                                              end_token=self.options['comment_end'])
+        if self.column_names is not None:
+            self.column_names=split_row(self.column_names,delimiter=self.options["column_names_delimiter"],
+                                        escape_character=self.options["escape_character"])
+        if self.data is not None:
+            self.data=split_all_rows(self.data,delimiter=self.options["data_delimiter"],
+                                     escape_character=self.options["escape_character"])
+        if self.footer is not None:
+            self.footer=strip_all_line_tokens(self.footer,begin_token=self.options['comment_begin'],
+                                              end_token=self.options['comment_end'])
+
+
 
     def get_options_by_element(self,element_name):
         """ returns a dictionary
@@ -360,14 +501,14 @@ class AsciiDataTable():
         # This writes the column_names
         column_name_begin=""
         column_name_end=""
-        if self.options["column_name_begin_token"] is None:
+        if self.options["column_names_begin_token"] is None:
             column_name_begin=""
         else:
-            column_name_begin=self.options["column_name_begin_token"]
-        if self.options["column_name_end_token"] is None:
+            column_name_begin=self.options["column_names_begin_token"]
+        if self.options["column_names_end_token"] is None:
             column_name_end=""
         else:
-            column_name_end=self.options["column_name_end_token"]
+            column_name_end=self.options["column_names_end_token"]
 
         if self.column_names is None:
             string_out=""
@@ -376,9 +517,13 @@ class AsciiDataTable():
                 string_out=self.column_names
             elif type(self.column_names) is ListType:
                 string_out=list_to_string(self.column_names,
-                                          data_delimiter=self.options["column_name_delimiter"],end="")
+                                          data_delimiter=self.options["column_names_delimiter"],end="")
+                print("I got Here")
             else:
+
                 string_out=ensure_string(self.column_names)
+
+        print column_name_begin,string_out,column_name_end
         return column_name_begin+string_out+column_name_end
 
     def get_data_string(self):
