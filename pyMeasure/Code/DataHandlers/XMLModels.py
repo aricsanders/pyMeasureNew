@@ -64,7 +64,8 @@ except:
 #-----------------------------------------------------------------------------
 # Module Constants
 XSLT_REPOSITORY='../XSL'
-TESTS_DIRECTORY=os.path.join(os.path.dirname(os.path.realpath(__file__)),'Tests')
+
+
 DRIVER_FILE_EXTENSIONS=['sys','SYS','drv','DRV']
 NODE_TYPE_DICTIONARY={'1':'ELEMENT_NODE', '2':'ATTRIBUTE_NODE', '3':'TEXT_NODE',
     '4':'CDATA_SECTION_NODE', '6':'ENTITY_NODE', '7':'PROCESSING_INSTRUCTION_NODE',

@@ -136,7 +136,8 @@ class AsciiDataTable():
                   "footer_end_line":None,
                   "header_begin_line":None,
                   "header_end_line":None,
-                  "column_name_line":None,
+                  "column_names_begin_line":None,
+                  "column_names_end_line":None,
                   "data_begin_line":None,
                   "data_end_line":None,
                   "footer_begin_token":None,
@@ -168,9 +169,9 @@ class AsciiDataTable():
         for key,value in options.iteritems():
             self.options[key]=value
         # Define Method Aliases if they are available
-        if METHOD_ALIASES:
-            for command in alias(self):
-                exec(command)
+        # if METHOD_ALIASES:
+        #     for command in alias(self):
+        #         exec(command)
         if file_path is None:
             #create a new data table
             if DEFAULT_FILE_NAME is None:
@@ -189,6 +190,7 @@ class AsciiDataTable():
             self.column_names=self.options["column_names"]
             self.data=self.options["data"]
             self.footer=self.options["footer"]
+            self.string=self.build_string()
 
         else:
             # open the file and read it in as lines
@@ -197,23 +199,82 @@ class AsciiDataTable():
             # if we are given options we should use them, if not try to autodetect them?
             # we can just return an error right now and then have an __autoload__ method
             # we can assume it is in ascii or utf-8
+            elements=['header','column_names','data','footer']
+
+            # set any attribute that has no options set to None
+            for item in elements:
+                if len(filter(lambda x: None!=x,self.get_options_by_element(item).values()))==0:
+                    self.__dict__[item]=None
+                    #elements.remove(item)
+                else:
+                    self.__dict__[item]=[]
+
             file_in=open(file_path,'r')
+            #self.string=file_in.read()
+            # in order to parse the file we need to know either line #'s, begin or end tokens or something
+
             self.lines=[]
             for line in file_in:
                 self.lines.append(line)
             file_in.close()
             self.path=file_path
+            for index,element in enumerate(elements):
+                if self.__dict__[element] is not None:
+                    #first try is just having begin and/or end values set
+                    try:
+                        if not None in [self.options['%s_begin_line'%element],self.options['%s_end_line'%element]]:
+                            self.__dict__[element]=self.lines[self.options['%s_begin_line'%element]:self.options['%s_end_line'%element]]
+                         # try begin lines
+                        elif self.options['%s_begin_line'%element]:
+                            if element is 'footer':
+                                self.__dict__['footer']=self.lines[self.options['footer_begin_line']:]
+                            else:
 
-        self.string=self.build_string()
+                                self.__dict__[element]=self.lines[self.options['%s_begin_line'%element]:self.options['%s_begin_line'%elements[index+1]]-1]
+                        elif self.options['%s_end_line'%element]:
+                            if element is 'header':
+                                self.__dict__[element]=self.lines[0:self.options['%s_end_line'%element]]
+                            else:
+                                self.__dict__[element]=self.lines[self.options['%s_end_line'%elements[index-1]]+1:self.options['%s_end_line'%element]]
+                    except:
+                        raise
+                        print("Did Not work!!!!")
+
+    def get_options_by_element(self,element_name):
+        """ returns a dictionary
+         of all the options that have to do with element. Element must be header,column_names,data, or footer"""
+        keys_regarding_element=filter(lambda x: re.match(element_name,str(x),re.IGNORECASE),self.options.keys())
+        out_dictionary={key:self.options[key] for key in keys_regarding_element}
+        return out_dictionary
 
     def __str__(self):
         "Controls the str output of AsciiDataTable"
         self.string=self.build_string()
         return self.string
 
+    def update_index(self):
+        """ Updates the index column if it exits, otherwise exits quietly
+        """
+        if 'index' not in self.column_names:
+            return
+        else:
+            try:
+                #This should be 0 but just in case
+                index_column_number=self.column_names.index('index')
+                for i in range(len(self.data)):
+                    self.data[i][index_column_number]=i
+            except:
+                pass
+
     def update_model(self):
-        """Updates the model after a change has been made"""
-        pass
+        """Updates the model after a change has been made. If you add anything to the attributes of the model,
+        or change this updates the values. If the model has an index column it will make sure the numbers are correct.
+        In addition, it will update the options dictionary to reflect added rows, changes in deliminators etc.  """
+
+        if 'index' in self.column_names:
+            self.update_index()
+        self.string=self.build_string()
+
 
     def save(self,path=None,**temp_options):
         """" Saves the file, to save in another ascii format specify elements in temp_options, the options
@@ -342,48 +403,53 @@ class AsciiDataTable():
                             else:
                                 string_out=self.options['data_begin_token']+self.data
             elif type(self.data) in [ListType,np.ndarray]:
-                    if type(self.data[0]) is StringType:
-                        if self.options['data_begin_token'] is None:
-                            string_out=string_list_collapse(self.data)
-                        else:
-                            if re.match(self.options['data_begin_token'],self.data[0]):
-                                if self.options['data_end_token'] is None:
-                                    string_out=string_list_collapse(self.data)
-                                else:
-                                    if re.search(self.options['data_end_token'],self.data[-1]):
+                try:
+                        if type(self.data[0]) is StringType:
+                            if self.options['data_begin_token'] is None:
+                                string_out=string_list_collapse(self.data)
+                            else:
+                                if re.match(self.options['data_begin_token'],self.data[0]):
+                                    if self.options['data_end_token'] is None:
                                         string_out=string_list_collapse(self.data)
                                     else:
-                                        string_out=string_list_collapse(self.data)+self.options['data_end_token']
-                            else:
-                                if self.options['data_end_token'] is None:
-                                    string_out=self.options['data_begin_token']+string_list_collapse(self.data)
+                                        if re.search(self.options['data_end_token'],self.data[-1]):
+                                            string_out=string_list_collapse(self.data)
+                                        else:
+                                            string_out=string_list_collapse(self.data)+self.options['data_end_token']
                                 else:
-                                    if re.search(self.options['data_end_token'],self.data[-1]):
+                                    if self.options['data_end_token'] is None:
                                         string_out=self.options['data_begin_token']+string_list_collapse(self.data)
                                     else:
-                                        string_out=self.options['data_begin_token']+\
-                                                   string_list_collapse(self.data)+\
-                                                   self.options['data_end_token']
-                    elif type(self.data[0]) in [ListType,np.ndarray]:
-                        prefix=""
-                        if self.options['data_begin_token'] is None:
-                            if self.options['data_end_token'] is None:
-                                string_out=list_list_to_string(self.data,data_delimiter=self.options['data_delimiter'],
-                                                               row_formatter_string=self.options['row_formatter_string'])
-                        else:
-                            if self.options['data_end_token'] is None:
-                                string_out=self.options['data_begin_token']+\
-                                           list_list_to_string(self.data,data_delimiter=self.options['data_delimiter'],
-                                                               row_formatter_string=self.options['row_formatter_string'])
+                                        if re.search(self.options['data_end_token'],self.data[-1]):
+                                            string_out=self.options['data_begin_token']+string_list_collapse(self.data)
+                                        else:
+                                            string_out=self.options['data_begin_token']+\
+                                                       string_list_collapse(self.data)+\
+                                                       self.options['data_end_token']
+
+                        elif type(self.data[0]) in [ListType,np.ndarray]:
+                            prefix=""
+                            if self.options['data_begin_token'] is None:
+                                if self.options['data_end_token'] is None:
+                                    string_out=list_list_to_string(self.data,data_delimiter=self.options['data_delimiter'],
+                                                                   row_formatter_string=self.options['row_formatter_string'])
                             else:
-                                string_out=self.options['data_begin_token']+\
-                                           list_list_to_string(self.data,data_delimiter=self.options['data_delimiter'],
-                                                               row_formatter_string=\
-                                                               self.options['row_formatter_string'])+\
-                                                                self.options['data_end_token']
-                    else:
-                        string_out=list_to_string(self.data,data_delimiter=self.options['data_delimiter'],
-                                                               row_formatter_string=self.options['row_formatter_string'])
+                                if self.options['data_end_token'] is None:
+                                    string_out=self.options['data_begin_token']+\
+                                               list_list_to_string(self.data,data_delimiter=self.options['data_delimiter'],
+                                                                   row_formatter_string=self.options['row_formatter_string'])
+                                else:
+                                    string_out=self.options['data_begin_token']+\
+                                               list_list_to_string(self.data,data_delimiter=self.options['data_delimiter'],
+                                                                   row_formatter_string=\
+                                                                   self.options['row_formatter_string'])+\
+                                                                    self.options['data_end_token']
+                        else:
+                            string_out=list_to_string(self.data,data_delimiter=self.options['data_delimiter'],
+                                                                   row_formatter_string=self.options['row_formatter_string'])
+
+                except IndexError:
+                    pass
             else:
                 string_out=ensure_string(self.data)
         return string_out
@@ -427,30 +493,87 @@ class AsciiDataTable():
         else:
             string_out=ensure_string(self.footer)
         return footer_begin+string_out+footer_end
+    def __radd__(self, other):
+        "Controls the behavior of radd to use the sum fucntion it is required"
+        if other==0:
+            return self
+        else:
+            return self.__add__(other)
 
     def __add__(self, other):
         """Controls the behavior of the addition operator, if column_names are equal it adds rows at the end
         and increments any column named index. If the column_names are different it adds columns to the table and
         fills the non-defined rows with self.options['empty_character'] which is None by default. If the headers are
         different it string adds them"""
-        pass
+        if self.column_names is other.column_names:
+            for row in other.data:
+                self.add_row(row)
+        else:
+            for column in other.column_names:
+                self.add_column(column)
+            for row in other.data:
+                data=[self.options['empty_value'] for i in self.column_names]
+                self.add_row(data.append(row))
+
+        if self.header is not other.header:
+            self.header=self.header+other.header
+
+        if self.header is not other.header:
+            self.header=self.header+other.header
+        return self
 
     def is_vaid(self):
-        """Returns True if ascii table conforms to its specification"""
-        pass
+        """Returns True if ascii table conforms to its specification given by column_type"""
+        if self.options['column_types'] is None:
+            return True
+        else:
+            column_types=self.options['column_types']
+            for row in self.data:
+                for index,item in enumerate(row):
+                    if type(item) is not column_types[index]:
+                        return False
+        return True
+
+
 
     def add_row(self,row_data):
         """Adds a single row given row_data which can be an ordered list/tuple or a dictionary with
         column names as keys"""
-        pass
+        if len(row_data) not in [len(self.column_names),len(self.column_names)]:
+            print(" could not add the row")
+            return
+        if type(row_data) in [ListType,np.ndarray]:
+            self.data.append(row_data)
+        elif type(row_data) in [DictionaryType]:
+            data_list=[row_data[column_name] for column_name in self.column_names]
+            self.data.append(data_list)
 
-    def add_column(self,column_name=None,column_type=None,**options):
-        """Adds a column with column_name, and column_type"""
-        pass
+
+    def add_column(self,column_name=None,column_type=None,column_data=None):
+        """Adds a column with column_name, and column_type. If column data is supplied and it's length is the
+        same as data(same number of rows) then it is added, else self.options['empty_character'] is added in each
+        spot"""
+        original_column_names=self.column_names
+        try:
+            self.column_names.append(column_name)
+            if len(column_data) is len(self.data):
+                for index,row in enumerate(self.data):
+                    row.append(column_data[index])
+            else:
+                for index,row in enumerate(self.data):
+                    row.append(self.options['empty_value'])
+                    if column_data is not None:
+                        for item in column_data:
+                            empty_row=[self.options['empty_value'] for column in original_column_names]
+                            self.add_row(empty_row.append(item))
+        except:
+            self.column_names=original_column_names
+            print("Could not add columns")
+            pass
 
     def add_index(self):
         """Adds a column with name index and values that are 0 referenced indices, does nothing if there is
-        already a column with name index"""
+        already a column with name index, always inserts it at the 0 position"""
         if 'index' in self.column_names:
             print("I passed")
             pass
@@ -461,20 +584,31 @@ class AsciiDataTable():
 
     def move_footer_to_header(self):
         """Moves the DataTable's footer to the header and updates the model"""
-
-        pass
+        self.header=ensure_string(self.header)+ensure_string(self.footer)
+        self.footer=None
+        # Todo: call __parse_self__?
 
     def add_comment(self,comment):
-        "Adds a comment to the header"
-        pass
+        "Adds a line comment to the header"
+        new_comment=line_comment_string(comment,comment_begin=self.options["comment_begin"],
+                                               comment_end=self.options["comment_end"])
+        self.header=ensure_string(self.header)+new_comment
 
-    def add_inline_comment(self,comment,location=None):
+    def add_inline_comment(self,comment,element=None,location=None):
         "Adds an inline in the specified location"
-        pass
+        try:
+            new_comment=line_comment_string(comment,comment_begin=self.options["inline_comment_begin"],
+                                               comment_end=self.options["inline_comment_end"])
+            self.__dict__[element]=self.__dict__[element].insert(location,new_comment)
+        except:pass
 
-    def add_block_comment(self,comment,location=None):
+    def add_block_comment(self,comment,element=None,location=None):
         "Adds a block comment in the specified location"
-        pass
+        try:
+            new_comment=line_comment_string(comment,comment_begin=self.options["inline_comment_begin"],
+                                               comment_end=self.options["inline_comment_end"])
+            self.__dict__[element]=self.__dict__[element].insert(location,new_comment)
+        except:pass
 #-----------------------------------------------------------------------------
 # Module Scripts
 def test_AsciiDataTable():
@@ -496,7 +630,62 @@ def test_AsciiDataTable():
     new_table.add_index()
     new_table.add_index()
     print new_table
+    new_table.data[1][0]=4
+    print new_table
+    new_table.update_index()
+    print new_table
+def test_open_existing_AsciiDataTable():
+    options={"data_delimiter":'\t',
+             "column_name_begin_token":'!',"comment_begin":'#',
+             "directory":TESTS_DIRECTORY,'header_begin_line':0,'header_end_line':2,'column_names_begin_line':2,
+             'column_names_end_line':3,'data_begin_line':3,'data_end_line':5}
+    os.chdir(TESTS_DIRECTORY)
+    new_table=AsciiDataTable(file_path="Data_Table_20160225_001.txt",**options)
+    #print new_table.string
+    print new_table.lines
+    print new_table.header
+    print new_table.get_header_string()
+    print new_table.column_names
+    print new_table.get_column_names_string()
+    print new_table.data
+    print new_table.get_data_string()
+    print new_table.footer
+    print new_table.get_footer_string()
+    options={"data_delimiter":'\t',
+             "column_name_begin_token":'!',"comment_begin":'#',
+             "directory":TESTS_DIRECTORY,'header_begin_line':0,'column_names_begin_line':2,
+             'data_begin_line':3}
+    os.chdir(TESTS_DIRECTORY)
+    new_table=AsciiDataTable(file_path="Data_Table_20160225_001.txt",**options)
+    #print new_table.string
+    print new_table.lines
+    print new_table.header
+    print new_table.get_header_string()
+    print new_table.column_names
+    print new_table.get_column_names_string()
+    print new_table.data
+    print new_table.get_data_string()
+    print new_table.footer
+    print new_table.get_footer_string()
+    options={"data_delimiter":'\t',
+             "column_name_begin_token":'!',"comment_begin":'#',
+             "directory":TESTS_DIRECTORY,'header_begin_line':0,'header_end_line':2,'column_names_begin_line':2,
+             'column_names_end_line':3,'data_begin_line':3,'data_end_line':5}
+    os.chdir(TESTS_DIRECTORY)
+    new_table=AsciiDataTable(file_path="Data_Table_20160225_001.txt",**options)
+    #print new_table.string
+    print new_table.lines
+    print new_table.header
+    print new_table.get_header_string()
+    print new_table.column_names
+    print new_table.get_column_names_string()
+    print new_table.data
+    print new_table.get_data_string()
+    print new_table.footer
+    print new_table.get_footer_string()
+
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
-    test_AsciiDataTable()
+    #test_AsciiDataTable()
+    test_open_existing_AsciiDataTable()

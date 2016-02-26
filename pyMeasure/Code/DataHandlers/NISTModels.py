@@ -19,6 +19,12 @@ except:
     print("The module pyMeasure.Code.Utils.Alias was not found")
     METHOD_ALIASES=0
     pass
+try:
+    from pyMeasure.Code.DataHandlers.GeneralModels import *
+except:
+    print("The module pyMeasure.Code.DataHandlers.General.Models was not found,"
+          "please put it on the python path")
+    raise
 #-----------------------------------------------------------------------------
 # Module Constants
 
