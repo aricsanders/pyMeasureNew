@@ -1,0 +1,9 @@
+BEGIN HEADER
+#Hello There
+#My Darling
+END HEADER
+#a,b,c
+BEGIN DATA
+0,1,2
+2,3,4
+END DATA
