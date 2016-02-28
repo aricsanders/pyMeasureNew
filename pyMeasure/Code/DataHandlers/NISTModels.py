@@ -70,6 +70,8 @@ class SwitchTermsFR():
     pass
 class NoiseCalRaw():
     pass
+class ReverbChamber():
+    pass
 
 #-----------------------------------------------------------------------------
 # Module Scripts
