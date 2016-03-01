@@ -39,6 +39,17 @@ except:
 TESTS_DIRECTORY=os.path.join(os.path.dirname(os.path.realpath(__file__)),'Tests')
 #-----------------------------------------------------------------------------
 # Module Functions
+def print_comparison(var_1,var_2):
+    """If var_1==var_2 prints True, else Prints false and a string representation of the 2 vars"""
+    print(var_1==var_2)
+    if var_1!=var_2:
+        print("The value of variable 1 is :")
+        print(var_1)
+        print("-"*80)
+        print("The value of variable 2 is :")
+        print(var_2)
+        print("-"*80)
+
 def check_arg_type(arg,arg_type):
     "Checks argument and prints out a statement if arg is not type"
     if type(arg) is arg_type:
@@ -122,7 +133,7 @@ def line_list_comment_string(comment_list,comment_begin=None,comment_end=None,bl
     check_arg_type(comment_list,ListType)
     string_out=""
     if block:
-        string_out=comment_begin+string_list_collapse(comment_list)+comment_end
+        string_out=comment_begin+string_list_collapse(comment_list,string_delimiter='\n')+comment_end
     else:
         for item in comment_list:
             string_out=string_out+line_comment_string(item,comment_begin=comment_begin,comment_end=comment_end)
@@ -147,24 +158,24 @@ def ensure_string(input_object,  list_delimiter="",  end_if_list=""):
         pass
     return string_out
 
-def strip_tokens(string_list,begin_token=None,end_token=None):
-    """Strips a begin and end token from the first position in a list and the
-    last positon in a list if present. Returns the list with 2 less elements if the first and last position are now
-    empty. Meant to reverse the action of line_list_comment_string for a list of strings"""
+def strip_tokens(string_list,*remove_tokens):
+    """Strips all tokens in the list remove_tokens from a list of strings
+    Returns the list with less elements if the tokens contained "\n". Now newline characters are returned in the list
+    elements. Meant to reverse the action of adding tokens to a list of strings"""
     check_arg_type(string_list,ListType)
-    new_string_list=string_list
+    temp_string=string_list_collapse(string_list,string_delimiter="")
+    remove_list=[]
+    for token in remove_tokens:
+        if token:
+            remove_list.append(token)
     try:
-        if begin_token is not None:
-            new_string_list[0]=string_list[0].replace(begin_token,'')
-            if new_string_list[0] is "":
-                new_string_list.pop(0)
-        if end_token is not None:
-            new_string_list[-1]=string_list[-1].replace(end_token,'')
-            if new_string_list[-1] is "":
-                new_string_list.pop(-1)
+        for item in remove_list:
+            temp_string=re.sub(item,"",temp_string)
     except:
         print("Strip Tokens Did not work")
         pass
+    # spliting using "\n" seems to give an extra empty element at the end always
+    new_string_list=temp_string.splitlines()
     return new_string_list
 
 def strip_line_tokens(string,begin_token=None,end_token=None):
@@ -236,17 +247,24 @@ def insert_inline_comment(list_of_strings,comment="",line_number=None,string_pos
 
 def collect_inline_comments(list_of_strings,begin_token=None,end_token=None):
     """Reads a list of strings and returns all of the inline comments in a list.
-    Output form is ['comment',line_number,string_location]"""
+    Output form is ['comment',line_number,string_location] returns None  if there are none or tokens are set to None"""
+    if begin_token in [None] and end_token in [None]:
+        return None
     match=re.compile('{0}(?P<inline_comments>.+){1}'.format(re.escape(begin_token),re.escape(end_token)))
     inline_comment_list=[]
     for index,line in enumerate(list_of_strings):
         comment_match=re.search(match,line)
         if comment_match:
             inline_comment_list.append([comment_match.group('inline_comments'),index,comment_match.start()])
-    return inline_comment_list
+    if inline_comment_list:
+        return inline_comment_list
+    else:
+        return None
 
 def strip_inline_comments(list_of_strings,begin_token='(*',end_token='*)'):
     "Removes inline coments from a list of strings"
+    if begin_token in [None] and end_token in [None]:
+        return list_of_strings
     match=re.compile('{0}(?P<inline_comments>.+){1}'.format(re.escape(begin_token),re.escape(end_token)))
     out_list=[]
     for index,line in enumerate(list_of_strings):
@@ -338,7 +356,16 @@ class AsciiDataTable():
             self.data=self.options["data"]
             self.footer=self.options["footer"]
             self.inline_comments=self.options["inline_comments"]
-            self.string=self.build_string()
+            self.initial_state=[self.options["header"],self.options["column_names"],
+                                self.options["data"],self.options["footer"],
+                                self.options["inline_comments"]]
+            [self.options["header"],self.options["column_names"],
+                                self.options["data"],self.options["footer"],
+                                self.options["inline_comments"]]=[None for i in self.elements]
+
+
+            self.update_model()
+
 
         else:
             # open the file and read it in as lines
@@ -362,7 +389,7 @@ class AsciiDataTable():
                                 self.options['%s_end_token'%item]]
                     import_table.append(import_row)
                 elif item in ['inline_comments']:
-                    self.inline_comments=None
+                    self.inline_comments=self.options['inline_comments']
             file_in=open(file_path,'r')
             # in order to parse the file we need to know line #'s, once we deduce them we use __parse__
             self.lines=[]
@@ -486,34 +513,44 @@ class AsciiDataTable():
     def __parse__(self):
         """Parses self.lines into its components once all the relevant begin and end lines have been set. It assumes
          that the self.__dict__[self.element[i]]=None for elements that are not defined"""
+        # Collect the inline comments if they are not already defined
         if self.inline_comments is None:
-            pass
-        else:
-            self.lines=strip_inline_comments(self.lines,
+           self.inline_comments=collect_inline_comments(self.lines,begin_token=self.options["inline_comment_begin"],
+                                                             end_token=self.options["inline_comment_end"])
+        # Strip the inline comments
+        self.lines=strip_inline_comments(self.lines,
                                              begin_token=self.options['inline_comment_begin'],
                                              end_token=self.options['inline_comment_end'])
+        # Define each major element that are not inline comments by their line numbers
         for index,element in enumerate(self.elements):
             if self.__dict__[element] is not None and element not in ['inline_comments']:
                 try:
-                    if not None in [self.options['%s_begin_line'%element],self.options['%s_end_line'%element]]:
+                    if not None in [self.options['%s_begin_line'%element]]:
                         content_list=self.lines[
                                             self.options['%s_begin_line'%element]:self.options['%s_end_line'%element]]
                         self.__dict__[element]=content_list
                         print("The result of parsing is self.{0} = {1}".format(element,content_list))
                 except:
                     raise
+        # Remove any defined begin and end tokens
         for index,element in enumerate(self.elements):
             if self.__dict__[element] is not None and element not in ["inline_comments"]:
                         content_list=strip_tokens(self.__dict__[element],
-                                            begin_token=self.options['%s_begin_token'%element],
-                                                            end_token=self.options['%s_end_token'%element])
-                        content_list=strip_all_line_tokens(content_list,end_token='\n')
+                                                  *[self.options['%s_begin_token'%element],
+                                                    self.options['%s_end_token'%element]])
                         self.__dict__[element]=content_list
-                        print("The result of parsing is self.{0} = {1}".format(element,content_list))
+                        #print("The result of parsing is self.{0} = {1}".format(element,content_list))
+        # parse the header
         if self.header is not None:
-            #print self.header
-            self.header=strip_all_line_tokens(self.header,begin_token=self.options['comment_begin'],
-                                              end_token=self.options['comment_end'])
+            #print("The {0} variable is {1}".format('self.header',self.header))
+            remove_tokens=[self.options['comment_begin'],self.options['comment_end'],
+                           self.options['block_comment_begin'],self.options['block_comment_end']]
+            temp_header=[item+"\n" for item in self.header]
+            temp_header=strip_tokens(temp_header,*remove_tokens)
+            #print("The {0} variable is {1}".format('temp_header',temp_header))
+            self.header=temp_header
+            #print("The {0} variable is {1}".format('self.header',self.header))
+        # parse the column_names
         if self.column_names is not None:
             self.column_names=strip_all_line_tokens(self.column_names,begin_token=self.options['column_names_begin_token'],
                                               end_token=self.options['column_names_end_token'])
@@ -522,15 +559,19 @@ class AsciiDataTable():
                                         escape_character=self.options["escape_character"])
             self.column_names=self.column_names[0]
             #print("The result of parsing is self.{0} = {1}".format('column_names',self.column_names))
-
-
+        # parse the data
         if self.data is not None:
             self.data=split_all_rows(self.data,delimiter=self.options["data_delimiter"],
                                      escape_character=self.options["escape_character"])
+        # parse the footer
         if self.footer is not None:
-            self.footer=strip_all_line_tokens(self.footer,begin_token=self.options['comment_begin'],
-                                              end_token=self.options['comment_end'])
-
+            #print("The {0} variable is {1}".format('self.footer',self.footer))
+            remove_tokens=[self.options['comment_begin'],self.options['comment_end'],
+                           self.options['block_comment_begin'],self.options['block_comment_end']]
+            temp_footer=[item+"\n" for item in self.footer]
+            temp_footer=strip_tokens(temp_footer,*remove_tokens)
+            #print("The {0} variable is {1}".format('temp_header',temp_header))
+            self.footer=temp_footer
 
 
     def get_options_by_element(self,element_name):
@@ -566,8 +607,16 @@ class AsciiDataTable():
         In addition, it will update the options dictionary to reflect added rows, changes in deliminators etc.  """
         if 'index' in self.column_names:
             self.update_index()
+        #make sure there are no "\n" characters in the element lists (if so replace them with "") for data this is
+        # done on import
+        list_types=["header","column_names","footer"]
+        for element in list_types:
+            if self.__dict__[element] is not None:
+                for index,item in enumerate(self.__dict__[element]):
+                    self.__dict__[element][index]=item.replace("\n","")
+
         self.string=self.build_string()
-        self.lines=self.string.split('\n')
+        self.lines=self.string.splitlines()
 
     def save(self,path=None,**temp_options):
         """" Saves the file, to save in another ascii format specify elements in temp_options, the options
@@ -652,7 +701,7 @@ class AsciiDataTable():
         if self.inline_comments is None:
             pass
         else:
-            lines=string_out.split('\n')
+            lines=string_out.splitlines()
             for comment in self.inline_comments:
                 lines=insert_inline_comment(lines,comment=comment[0],line_number=comment[1],
                                             string_position=comment[2],
@@ -684,32 +733,39 @@ class AsciiDataTable():
             string_out= ""
         elif self.options["header_line_types"] is not None:
             for index,line in enumerate(self.options["header_line_types"]):
+                if index == len(self.options["header_line_types"])-1:
+                    end=''
+                else:
+                    end='\n'
                 if line in ['header','header_line','normal']:
-                    string_out=string_out+self.header[index]+'\n'
+                    string_out=string_out+self.header[index]+end
                 elif line in ['line_comment','comment']:
                     string_out=string_out+line_comment_string(self.header[index],
                                                comment_begin=self.options["comment_begin"],
-                                               comment_end=self.options["comment_end"])
+                                               comment_end=self.options["comment_end"])+end
                 elif line in ['block_comment','block']:
                     if index-1<0:
                         block_comment_begin=index
+                        block_comment_end=index+2
                         continue
                     elif self.options["header_line_types"][index-1] not in ['block_comment','block']:
                         block_comment_begin=index
+                        block_comment_end=index+2
                         continue
                     else:
                         if index+1>len(self.options["header_line_types"])-1:
                             string_out=string_out+line_list_comment_string(self.header[block_comment_begin:],
                                                                            comment_begin=self.options['block_comment_begin'],
                                                                              comment_end=self.options['block_comment_end'],
-                                                                           block=True)
+                                                                           block=True)+end
                         elif self.options["header_line_types"][index+1] in ['block_comment','block']:
                             block_comment_end+=1
                         else:
-                            string_out=string_out+line_list_comment_string(self.header[block_comment_begin:block_comment_end],
-                                                                           comment_begin=self.options['block_comment_begin'],
-                                                                             comment_end=self.options['block_comment_end'],
-                                                                           block=True)
+                            string_out=string_out+\
+                                       line_list_comment_string(self.header[block_comment_begin:block_comment_end],
+                                                                comment_begin=self.options['block_comment_begin'],
+                                                                comment_end=self.options['block_comment_end'],
+                                                                block=True)+end
                 else:
                     string_out=string_out+line
         elif self.options['treat_header_as_comment'] in [None,True] and self.options["header_line_types"] in [None]:
@@ -946,7 +1002,7 @@ class AsciiDataTable():
         """Returns True if ascii table conforms to its specification given by options"""
         self.update_model()
         self.string=self.build_string()
-        self.lines=self.string.split("\n")
+        self.lines=self.string.splitlines()
         newtable=AsciiDataTable()
         newtable.lines=self.lines
         newtable.options=self.options
@@ -1273,7 +1329,7 @@ def show_structure_script():
     print("-"*80)
     print new_table
     test_string=str(new_table)
-    test_lines=test_string.split('\n')
+    test_lines=test_string.splitlines()
     print("Printing the lines representation of the table with line numbers")
     print("-"*80)
     for index,line in enumerate(test_lines):
@@ -1295,7 +1351,7 @@ def show_structure_script():
     print("-"*80)
     print new_table
     test_string=str(new_table)
-    test_lines=test_string.split('\n')
+    test_lines=test_string.splitlines()
     print("Printing the lines representation of the table with line numbers")
     print("-"*80)
     for index,line in enumerate(test_lines):
@@ -1329,7 +1385,7 @@ def test_save_schema():
                   "directory":None,
                   "extension":'txt',
                   "comment_begin":"{comment_begin}",
-                  "comment_end":"{comment_end}\n",
+                  "comment_end":"{comment_end}",
                   "inline_comment_begin":"{inline_comment_begin}",
                   "inline_comment_end":"{inline_comment_end}",
                   "block_comment_begin":"{block_comment_begin}\n",
@@ -1343,24 +1399,27 @@ def test_save_schema():
                   "data_begin_token":"{data_begin_token}\n",
                   "data_end_token":"\n{data_end_token}",
                   "metadata_delimiter":"{metadata_delimiter}",
-                  "header":["self.header[0]","self.header[1]","self.header[2]","self.header[3]","self.header{4]"],
+                  "header":["self.header[0]","self.header[1]","self.header[2]","self.header[3]","","self.header[4]"],
                   "column_names":["column_names[0]","column_names[1]","column_names[2]"],
                   "data":[["data[0][0]","data[1][0]","data[2][0]"],["data[0][1]","data[1][1]","data[2][1]"]],
                   "footer":["self.footer[0]","self.footer[1]"],
                   "inline_comments":[["inline_comments[0][0]",2,-1]],
                   "row_formatter_string":None,
                   "empty_value":None,
-                  "data_table_element_separator":'\n\n\n{data_table_element_separator}\n',
+                  "data_table_element_separator":'\n{data_table_element_separator}\n',
                   "treat_header_as_comment":None,
-                  "treat_footer_as_comment":None
+                  "treat_footer_as_comment":None,
+                  "header_line_types":["block_comment","block_comment","line_comment","header","header","line_comment"]
                   }
     new_table=AsciiDataTable(None,**options)
+    print(" New Table is:")
+    print new_table
+    print("-"*80)
     new_table.save()
     new_table.save_schema()
     options_2=new_table.options
     new_table_2=AsciiDataTable(new_table.path,**options_2)
-    print new_table_2
-    print new_table_2.header
+    print_comparison(new_table.header,new_table_2.header)
 
 #-----------------------------------------------------------------------------
 # Module Runner
