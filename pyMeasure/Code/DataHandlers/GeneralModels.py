@@ -289,8 +289,10 @@ class AsciiDataTable():
                   "data_begin_token":None,
                   "data_end_token":None,
                   "metadata_delimiter":None,
+                  "header_line_types":None,
                   "column_types":None,
                   "column_description":None,
+                  "footer_line_types":None,
                   "header":None,
                   "column_names":None,
                   "data":None,
@@ -352,13 +354,15 @@ class AsciiDataTable():
                 if len(filter(lambda x: None!=x,self.get_options_by_element(item).values()))==0:
                     self.__dict__[item]=None
                     #elements.remove(item)
-                else:
+                elif item not in ['inline_comments']:
                     self.__dict__[item]=[]
                     import_row=[self.options['%s_begin_line'%item],
                                 self.options['%s_end_line'%item],
                                 self.options['%s_begin_token'%item],
                                 self.options['%s_end_token'%item]]
                     import_table.append(import_row)
+                elif item in ['inline_comments']:
+                    self.inline_comments=True
             file_in=open(file_path,'r')
             # in order to parse the file we need to know line #'s, once we deduce them we use __parse__
             self.lines=[]
@@ -458,7 +462,7 @@ class AsciiDataTable():
         last_element=""
         output=False
         for index,element in enumerate(self.elements):
-            if self.__dict__[element] is not None:
+            if element not in ['inline_comments'] and self.__dict__[element] is not None:
                 try:
                     last_element=element
                     if not None in [self.options['%s_begin_line'%element],self.options['%s_end_line'%element]]:
@@ -485,21 +489,21 @@ class AsciiDataTable():
         if self.inline_comments is None:
             pass
         else:
-            self.lines=strip_inline_comments(self.inline_comments,
+            self.lines=strip_inline_comments(self.lines,
                                              begin_token=self.options['inline_comment_begin'],
                                              end_token=self.options['inline_comment_end'])
-        for index,element in enumerate(self.elements.remove('inline_comments')):
-            if self.__dict__[element] is not None:
+        for index,element in enumerate(self.elements):
+            if self.__dict__[element] is not None and element not in ['inline_comments']:
                 try:
                     if not None in [self.options['%s_begin_line'%element],self.options['%s_end_line'%element]]:
                         content_list=self.lines[
                                             self.options['%s_begin_line'%element]:self.options['%s_end_line'%element]]
                         self.__dict__[element]=content_list
-                        #print("The result of parsing is self.{0} = {1}".format(element,content_list))
+                        print("The result of parsing is self.{0} = {1}".format(element,content_list))
                 except:
                     raise
-        for index,element in enumerate(self.elements.remove('inline_comments')):
-            if self.__dict__[element] is not None:
+        for index,element in enumerate(self.elements):
+            if self.__dict__[element] is not None and element not in ["inline_comments"]:
                         content_list=strip_tokens(self.__dict__[element],
                                             begin_token=self.options['%s_begin_token'%element],
                                                             end_token=self.options['%s_end_token'%element])
@@ -507,6 +511,7 @@ class AsciiDataTable():
                         self.__dict__[element]=content_list
                         #print("The result of parsing is self.{0} = {1}".format(element,content_list))
         if self.header is not None:
+            #print self.header
             self.header=strip_all_line_tokens(self.header,begin_token=self.options['comment_begin'],
                                               end_token=self.options['comment_end'])
         if self.column_names is not None:
@@ -602,7 +607,7 @@ class AsciiDataTable():
             self.options["header_begin_line"]=0
             if self.data is None and self.column_names is None and self.footer is None:
                 string_out=self.get_header_string()
-                self.options["header_end_line"]=-1
+                self.options["header_end_line"]=None
             else:
                 string_out=self.get_header_string()+between_section
                 last_header_line=self.get_header_string().count('\n')+1
@@ -614,7 +619,7 @@ class AsciiDataTable():
         else:
             self.options["column_names_begin_line"]=next_section_begin
             if self.data is None and self.footer is None:
-                self.options["column_names_end_line"]=-1
+                self.options["column_names_end_line"]=None
                 string_out=string_out+self.get_column_names_string()
             else:
                 string_out=string_out+self.get_column_names_string()+between_section
@@ -628,7 +633,7 @@ class AsciiDataTable():
         else:
             self.options["data_begin_line"]=next_section_begin
             if self.footer is None:
-                self.options["data_end_line"]=-1
+                self.options["data_end_line"]=None
                 string_out=string_out+self.get_data_string()
             else:
                 string_out=string_out+self.get_data_string()+between_section
@@ -678,8 +683,36 @@ class AsciiDataTable():
         if self.header is None:
             string_out= ""
         elif self.options["header_line_types"] is not None:
-            pass
-        elif self.options['treat_header_as_comment'] is None or self.options['treat_header_as_comment'] is True:
+            for index,line in enumerate(self.options["header_line_types"]):
+                if line in ['header','header_line','normal']:
+                    string_out=string_out+self.header[index]+'\n'
+                elif line in ['line_comment','comment']:
+                    string_out=string_out+line_comment_string(self.header[index],
+                                               comment_begin=self.options["comment_begin"],
+                                               comment_end=self.options["comment_end"])
+                elif line in ['block_comment','block']:
+                    if index-1<0:
+                        block_comment_begin=index
+                        continue
+                    elif self.options["header_line_types"][index-1] not in ['block_comment','block']:
+                        block_comment_begin=index
+                        continue
+                    else:
+                        if index+1>len(self.options["header_line_types"])-1:
+                            string_out=string_out+line_list_comment_string(self.header[block_comment_begin:],
+                                                                           comment_begin=self.options['block_comment_begin'],
+                                                                             comment_end=self.options['block_comment_end'],
+                                                                           block=True)
+                        elif self.options["header_line_types"][index+1] in ['block_comment','block']:
+                            block_comment_end+=1
+                        else:
+                            string_out=string_out+line_list_comment_string(self.header[block_comment_begin:block_comment_end],
+                                                                           comment_begin=self.options['block_comment_begin'],
+                                                                             comment_end=self.options['block_comment_end'],
+                                                                           block=True)
+                else:
+                    string_out=string_out+line
+        elif self.options['treat_header_as_comment'] in [None,True] and self.options["header_line_types"] in [None]:
             # Just happens if the user has set self.header manually
             if type(self.header) is StringType:
                 string_out=line_comment_string(self.header,
@@ -693,11 +726,11 @@ class AsciiDataTable():
                     else:
                         string_out=line_list_comment_string(self.header,comment_begin=self.options['comment_begin'],
                                                         comment_end=self.options['comment_end'])
-                        self.options["header_line_types"]=["line_comment" for line in self.header]
+                        #self.options["header_line_types"]=["line_comment" for line in self.header]
                 else:
                     string_out=line_list_comment_string(self.header,comment_begin=self.options['block_comment_begin'],
                                                         comment_end=self.options['block_comment_end'],block=True)
-                    self.options["header_line_types"]=["block_comment" for line in self.header]
+                    #self.options["header_line_types"]=["block_comment" for line in self.header]
         else:
             string_out=ensure_string(self.header,list_delimiter="\n",end_if_list="")
         return header_begin+string_out+header_end
@@ -827,6 +860,37 @@ class AsciiDataTable():
         # This writes the footer
         if self.footer is None:
             string_out= ""
+        elif self.options["footer_line_types"] is not None:
+            for index,line in enumerate(self.options["footer_line_types"]):
+                if line in ['footer','footer_line','normal']:
+                    string_out=string_out+self.footer[index]+'\n'
+                elif line in ['line_comment','comment']:
+                    string_out=string_out+line_comment_string(self.footer[index],
+                                               comment_begin=self.options["comment_begin"],
+                                               comment_end=self.options["comment_end"])
+                elif line in ['block_comment','block']:
+                    if index-1<0:
+                        block_comment_begin=index
+                        continue
+                    elif self.options["footer_line_types"][index-1] not in ['block_comment','block']:
+                        block_comment_begin=index
+                        continue
+                    else:
+                        if index+1>len(self.options["footer_line_types"])-1:
+                            string_out=string_out+line_list_comment_string(self.footer[block_comment_begin:],
+                                                                           comment_begin=self.options['block_comment_begin'],
+                                                                             comment_end=self.options['block_comment_end'],
+                                                                           block=True)
+                        elif self.options["footer_line_types"][index+1] in ['block_comment','block']:
+                            block_comment_end+=1
+                        else:
+                            string_out=string_out+line_list_comment_string(self.footer[block_comment_begin:block_comment_end],
+                                                                           comment_begin=self.options['block_comment_begin'],
+                                                                             comment_end=self.options['block_comment_end'],
+                                                                           block=True)
+                else:
+                    string_out=string_out+line
+
         elif self.options['treat_footer_as_comment'] is None or self.options['treat_footer_as_comment'] is True:
             if type(self.footer) is StringType:
                 string_out=line_comment_string(self.footer,
@@ -929,7 +993,7 @@ class AsciiDataTable():
         """Adds a single row given row_data which can be an ordered list/tuple or a dictionary with
         column names as keys"""
         if len(row_data) not in [len(self.column_names),len(self.column_names)]:
-            print(" could not add the row")
+            print(" could not add the row, dimensions do not match")
             return
         if type(row_data) in [ListType,np.ndarray]:
             self.data.append(row_data)
@@ -1020,6 +1084,17 @@ class AsciiDataTable():
             column_selector=self.column_names.index(column_name)
         out_list=[self.data[i][column_selector] for i in range(len(self.data))]
         return out_list
+
+    def save_schema(self,path=None):
+        """Saves the tables options as a text file. If no name is supplied, autonames it and saves"""
+        if path is None:
+            path=auto_name(self.name.replace('.'+self.options["extension"],""),'Schema',self.options["directory"],'txt')
+        file_out=open(path,'w')
+        string_out=str(self.options)
+        file_out.write(string_out)
+        file_out.close()
+
+
 #-----------------------------------------------------------------------------
 # Module Scripts
 def test_AsciiDataTable():
@@ -1158,6 +1233,7 @@ def show_structure_script():
     """ Shows a table elements by substituting the names Explicitly
     :return: None
     """
+    os.chdir(TESTS_DIRECTORY)
     options={"data_delimiter":'{data_delimiter}',
                   "column_names_delimiter":"{column_names_delimiter}",
                   "specific_descriptor":'Data',
@@ -1165,7 +1241,7 @@ def show_structure_script():
                   "directory":None,
                   "extension":'txt',
                   "comment_begin":"{comment_begin}",
-                  "comment_end":"{comment_end}",
+                  "comment_end":"{comment_end}\n",
                   "inline_comment_begin":"{inline_comment_begin}",
                   "inline_comment_end":"{inline_comment_end}",
                   "block_comment_begin":"{block_comment_begin}\n",
@@ -1179,7 +1255,7 @@ def show_structure_script():
                   "data_begin_token":"{data_begin_token}\n",
                   "data_end_token":"\n{data_end_token}",
                   "metadata_delimiter":"{metadata_delimiter}",
-                  "header":["self.header[0]","self.header[1]"],
+                  "header":["self.header[0]","self.header[1]","self.header[2]","self.header[3]","self.header{4]"],
                   "column_names":["column_names[0]","column_names[1]","column_names[2]"],
                   "data":[["data[0][0]","data[1][0]","data[2][0]"],["data[0][1]","data[1][1]","data[2][1]"]],
                   "footer":["self.footer[0]","self.footer[1]"],
@@ -1187,10 +1263,34 @@ def show_structure_script():
                   "row_formatter_string":None,
                   "empty_value":None,
                   "data_table_element_separator":'\n\n\n{data_table_element_separator}\n',
-                  "treat_header_as_comment":True,
+                  "treat_header_as_comment":None,
                   "treat_footer_as_comment":None
                   }
     new_table=AsciiDataTable(**options)
+    #new_table.options["block_comment_begin"]=new_table.options["block_comment_end"]=None
+    new_table.options["header_line_types"]=["header","header","line_comment","block_comment","block_comment"]
+    print("Printing the string representation of the table")
+    print("-"*80)
+    print new_table
+    test_string=str(new_table)
+    test_lines=test_string.split('\n')
+    print("Printing the lines representation of the table with line numbers")
+    print("-"*80)
+    for index,line in enumerate(test_lines):
+        print("{0} {1}".format(index,line))
+
+    for item in new_table.elements:
+        if item is 'inline_comments':
+            pass
+        else:
+            begin_line=new_table.options["%s_begin_line"%item]
+            end_line=new_table.options["%s_end_line"%item]
+            print("-"*80)
+            print("The result of self.lines[{0}:{1}] is :".format(begin_line,end_line))
+            for line in test_lines[begin_line:end_line]:
+                print line
+            print("-"*80)
+    new_table.footer=None
     print("Printing the string representation of the table")
     print("-"*80)
     print new_table
@@ -1219,7 +1319,48 @@ def show_structure_script():
     # for line in test_lines[:end_line]:
     #     print line
     #print new_table.get_options()
-
+def test_save_schema():
+    "tests the save schema method of the Ascii Data Table"
+    os.chdir(TESTS_DIRECTORY)
+    options={"data_delimiter":'{data_delimiter}',
+                  "column_names_delimiter":"{column_names_delimiter}",
+                  "specific_descriptor":'Data',
+                  "general_descriptor":'Table',
+                  "directory":None,
+                  "extension":'txt',
+                  "comment_begin":"{comment_begin}",
+                  "comment_end":"{comment_end}\n",
+                  "inline_comment_begin":"{inline_comment_begin}",
+                  "inline_comment_end":"{inline_comment_end}",
+                  "block_comment_begin":"{block_comment_begin}\n",
+                  "block_comment_end":"\n{block_comment_end}",
+                  "footer_begin_token":"{footer_begin_token}\n",
+                  "footer_end_token":"\n{footer_end_token}",
+                  "header_begin_token":"{header_begin_token}\n",
+                  "header_end_token":"\n{header_end_token}",
+                  "column_names_begin_token":"{column_names_begin_token}",
+                  "column_names_end_token":"{column_names_end_token}",
+                  "data_begin_token":"{data_begin_token}\n",
+                  "data_end_token":"\n{data_end_token}",
+                  "metadata_delimiter":"{metadata_delimiter}",
+                  "header":["self.header[0]","self.header[1]","self.header[2]","self.header[3]","self.header{4]"],
+                  "column_names":["column_names[0]","column_names[1]","column_names[2]"],
+                  "data":[["data[0][0]","data[1][0]","data[2][0]"],["data[0][1]","data[1][1]","data[2][1]"]],
+                  "footer":["self.footer[0]","self.footer[1]"],
+                  "inline_comments":[["inline_comments[0][0]",2,-1]],
+                  "row_formatter_string":None,
+                  "empty_value":None,
+                  "data_table_element_separator":'\n\n\n{data_table_element_separator}\n',
+                  "treat_header_as_comment":None,
+                  "treat_footer_as_comment":None
+                  }
+    new_table=AsciiDataTable(None,**options)
+    new_table.save()
+    new_table.save_schema()
+    options_2=new_table.options
+    new_table_2=AsciiDataTable(new_table.path,**options_2)
+    print new_table_2
+    print new_table_2.header
 
 #-----------------------------------------------------------------------------
 # Module Runner
@@ -1230,4 +1371,5 @@ if __name__ == '__main__':
     #test_inline_comments()
     #test_add_row()
     #test_add_index()
-    show_structure_script()
+    #show_structure_script()
+    test_save_schema()
