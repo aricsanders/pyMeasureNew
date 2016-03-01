@@ -362,7 +362,7 @@ class AsciiDataTable():
                                 self.options['%s_end_token'%item]]
                     import_table.append(import_row)
                 elif item in ['inline_comments']:
-                    self.inline_comments=True
+                    self.inline_comments=None
             file_in=open(file_path,'r')
             # in order to parse the file we need to know line #'s, once we deduce them we use __parse__
             self.lines=[]
@@ -509,7 +509,7 @@ class AsciiDataTable():
                                                             end_token=self.options['%s_end_token'%element])
                         content_list=strip_all_line_tokens(content_list,end_token='\n')
                         self.__dict__[element]=content_list
-                        #print("The result of parsing is self.{0} = {1}".format(element,content_list))
+                        print("The result of parsing is self.{0} = {1}".format(element,content_list))
         if self.header is not None:
             #print self.header
             self.header=strip_all_line_tokens(self.header,begin_token=self.options['comment_begin'],
