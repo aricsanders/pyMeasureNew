@@ -11,6 +11,7 @@
 # Standard Imports
 from types import *
 import os
+import pickle
 #-----------------------------------------------------------------------------
 # Third Party Imports
 try:
@@ -227,6 +228,37 @@ def split_all_rows(row_list,delimiter=None,escape_character=None):
     for row in row_list:
         out_list.append(split_row(row,delimiter=delimiter,escape_character=escape_character))
     return out_list
+def convert_row(row_list_strings,column_types=None):
+    "converts a row list of strings to native python types using a column types list"
+    out_row=[]
+    if column_types is None or len(row_list_strings) != len(column_types):
+        print("Convert row could not convert {0} using {1}".format(row_list_strings,column_types))
+        return row_list_strings
+    else:
+        for index,column_type in column_types:
+            if re.match('int',column_type,re.IGNORECASE):
+                out_row[index]=int(row_list_strings[index])
+            elif re.match('float',column_type,re.IGNORECASE):
+                out_row[index]=float(row_list_strings[index])
+            elif re.match('str|char',column_type,re.IGNORECASE):
+                out_row[index]=str(row_list_strings[index])
+            elif re.match('com',column_type,re.IGNORECASE):
+                out_row[index]=complex(row_list_strings[index])
+            elif re.match('list',column_type,re.IGNORECASE):
+                out_row[index]=list(row_list_strings[index])
+            elif re.match('dict',column_type,re.IGNORECASE):
+                out_row[index]=dict(row_list_strings[index])
+            else:
+                out_row[index]=row_list_strings[index]
+    return out_row
+
+def convert_all_rows(list_rows,column_types=None):
+    "Converts all the rows (list of strings) in a list of rows using column types "
+    check_arg_type(list_rows,ListType)
+    out_list=[]
+    for index,row in enumerate(list_rows):
+        out_list[index]=convert_row(row,column_types)
+    return out_list
 
 def insert_inline_comment(list_of_strings,comment="",line_number=None,string_position=None,begin_token='(*',end_token='*)'):
     "Inserts an inline comment in a list of strings, location is determined by line_number and string_position"
@@ -270,6 +302,21 @@ def strip_inline_comments(list_of_strings,begin_token='(*',end_token='*)'):
     for index,line in enumerate(list_of_strings):
         out_list.append(re.sub(match,'',line))
     return out_list
+
+def read_schema(file_path,format=None):
+    """Reads in a schema and returns it as a python dictionary, the default format is a single string"""
+    if format in[None,'python','pickle']:
+        schema=pickle.load(open(file_path,'rb'))
+    elif format in ['txt','text','.txt']:
+        #Todo fix the other formats
+        schema={}
+        in_file=open(file_path,'r')
+        in_lines=[]
+        for line in in_file:
+            in_lines.append(line)
+            schema[line.split(":")[0]]=line.split(":")[1].replace("\\n","\n")
+        #in_dictionary=dict(*str(in_dictionary).split(","))
+    return schema
 #-----------------------------------------------------------------------------
 # Module Classes
 class AsciiDataTable():
@@ -374,7 +421,6 @@ class AsciiDataTable():
             # if we are given options we should use them, if not try to autodetect them?
             # we can just return an error right now and then have an __autoload__ method
             # we can assume it is in ascii or utf-8
-
             # set any attribute that has no options to None
             import_table=[]
             for item in self.elements:
@@ -563,6 +609,7 @@ class AsciiDataTable():
         if self.data is not None:
             self.data=split_all_rows(self.data,delimiter=self.options["data_delimiter"],
                                      escape_character=self.options["escape_character"])
+            self.data=convert_all_rows(self.data,self.options["column_types"])
         # parse the footer
         if self.footer is not None:
             #print("The {0} variable is {1}".format('self.footer',self.footer))
@@ -1061,10 +1108,11 @@ class AsciiDataTable():
     def add_column(self,column_name=None,column_type=None,column_data=None):
         """Adds a column with column_name, and column_type. If column data is supplied and it's length is the
         same as data(same number of rows) then it is added, else self.options['empty_character'] is added in each
-        spot"""
+        spot in the preceding rows"""
         original_column_names=self.column_names
         try:
             self.column_names.append(column_name)
+            self.options["column_types"].append(column_type)
             if len(column_data) is len(self.data):
                 for index,row in enumerate(self.data):
                     row.append(column_data[index])
@@ -1141,14 +1189,22 @@ class AsciiDataTable():
         out_list=[self.data[i][column_selector] for i in range(len(self.data))]
         return out_list
 
-    def save_schema(self,path=None):
+    def save_schema(self,path=None,format=None):
         """Saves the tables options as a text file. If no name is supplied, autonames it and saves"""
         if path is None:
             path=auto_name(self.name.replace('.'+self.options["extension"],""),'Schema',self.options["directory"],'txt')
-        file_out=open(path,'w')
-        string_out=str(self.options)
-        file_out.write(string_out)
-        file_out.close()
+
+        if format in [None,'python','pickle']:
+            pickle.dump(self.options,open(path,'wb'))
+        elif format in ['txt','text','.txt']:
+            file_out=open(path,'w')
+            keys=self.options.keys()
+            keys.sort()
+            for key in keys:
+                out_key=str(key).replace("\n","\\n")
+                out_value=str(self.options[key]).replace("\n","\\n")
+                file_out.write("{0} : {1} \n".format(out_key,out_value))
+            file_out.close()
 
 
 #-----------------------------------------------------------------------------
@@ -1420,6 +1476,14 @@ def test_save_schema():
     options_2=new_table.options
     new_table_2=AsciiDataTable(new_table.path,**options_2)
     print_comparison(new_table.header,new_table_2.header)
+def test_read_schema():
+    """ Tests the read_schema function
+    """
+    os.chdir(TESTS_DIRECTORY)
+    file_path="Data_Table_20160301_031_Schema_20160301_001.txt"
+    schema=read_schema(file_path)
+    print schema
+
 
 #-----------------------------------------------------------------------------
 # Module Runner
@@ -1431,4 +1495,5 @@ if __name__ == '__main__':
     #test_add_row()
     #test_add_index()
     #show_structure_script()
-    test_save_schema()
+    #test_save_schema()
+    test_read_schema()
