@@ -5,7 +5,8 @@
 # Created:     2/24/2016
 # License:     MIT License
 #-----------------------------------------------------------------------------
-""" Module that contains general data models """
+""" Module that contains general data models and functions for handling them """
+#Todo: add a handler for when self.data contains a string with the data_delimiter in it
 
 #-----------------------------------------------------------------------------
 # Standard Imports
@@ -666,9 +667,30 @@ class AsciiDataTable():
             if self.__dict__[element] is not None:
                 for index,item in enumerate(self.__dict__[element]):
                     self.__dict__[element][index]=item.replace("\n","")
-
+        self.update_column_names()
+        if self.data is not None:
+            self.data=convert_all_rows(self.data,self.options["column_types"])
         self.string=self.build_string()
         self.lines=self.string.splitlines()
+
+    def update_column_names(self):
+        """Update column names adds the value x# for any column that exists in self.data that is not named"""
+        if self.data is None:
+            return
+        elif type(self.column_names) is StringType:
+            self.column_names=split_row(self.column_names,self.options["column_names_delimiter"])
+        elif self.column_names is None:
+            column_names=[]
+            for index,column in enumerate(self.data[0]):
+                column_names.append("x"+str(index))
+            self.column_names=column_names
+            return
+        elif len(self.column_names)==len(self.data[0]):
+            return
+        elif len(self.column_names) < len(self.data[0]):
+            for index in range(len(self.column_names),len(self.data[0])):
+                self.column_names.append("x"+str(index))
+            return
 
     def save(self,path=None,**temp_options):
         """" Saves the file, to save in another ascii format specify elements in temp_options, the options
@@ -1146,7 +1168,11 @@ class AsciiDataTable():
             if self.options['column_types']:
                 self.options['column_types'].insert(0,'int')
             if self.options['row_formatter_string']:
-                self.options['row_formatter_string']='{0}{delimiter}'+self.options['row_formatter_string']
+                temp_formatter_list=self.options['row_formatter_string'].split("{delimiter}")
+                iterated_row_formatter_list=[temp_formatter_list[i].replace(str(i),str(i+1))
+                                             for i in range(len(temp_formatter_list))]
+                new_formatter=string_list_collapse(iterated_row_formatter_list,string_delimiter="{delimiter}")
+                self.options['row_formatter_string']='{0}{delimiter}'+new_formatter
 
     def move_footer_to_header(self):
         """Moves the DataTable's footer to the header and updates the model"""
@@ -1193,6 +1219,26 @@ class AsciiDataTable():
             column_selector=self.column_names.index(column_name)
         out_list=[self.data[i][column_selector] for i in range(len(self.data))]
         return out_list
+    def get_data_dictionary_list(self,use_row_formatter_string=True):
+        """Returns a python list with a row dictionary of form {column_name:data_column}"""
+        try:
+            if self.options["row_formatter_string"] is None:
+                use_row_formatter_string=False
+            if use_row_formatter_string:
+                list_formatter=[item.replace(str(index),"0")
+                                for index,item in enumerate(self.options["row_formatter_string"].split("{delimiter}"))]
+            else:
+                list_formatter=["{0}" for i in self.column_names]
+            # print self.column_names
+            # print self.data[0]
+            # print list_formatter
+            # print len(self.column_names)==len(self.data[0])
+            out_list=dictionary_list=[{self.column_names[i]:list_formatter[i].format(value)
+                                       for i,value in enumerate(line)} for line in self.data]
+            return out_list
+        except:
+            print("Could not form a data_dictionary_list")
+            raise
 
     def save_schema(self,path=None,format=None):
         """Saves the tables options as a text file. If no name is supplied, autonames it and saves"""
@@ -1462,7 +1508,7 @@ def test_save_schema():
                   "metadata_delimiter":"{metadata_delimiter}",
                   "header":["self.header[0]","self.header[1]","self.header[2]","self.header[3]","","self.header[4]"],
                   "column_names":["column_names[0]","column_names[1]","column_names[2]"],
-                  "data":[["data[0][0]","data[1][0]","data[2][0]","1"],["data[0][1]","data[1][1]","data[2][1]","2"]],
+                  "data":[["data[0][0]","data[1][0]","data[2][0]",'1.0'],["data[0][1]","data[1][1]","data[2][1]",2.0]],
                   "footer":["self.footer[0]","self.footer[1]"],
                   "inline_comments":[["inline_comments[0][0]",2,-1]],
                   "row_formatter_string":None,
@@ -1471,14 +1517,18 @@ def test_save_schema():
                   "treat_header_as_comment":None,
                   "treat_footer_as_comment":None,
                   "header_line_types":["block_comment","block_comment","line_comment","header","header","line_comment"],
-                  "column_types":["str","string","STR","int"]
+                  "column_types":["str","string","STR","float"],
+                  "row_formatter_string":"{0}{delimiter}{1}{delimiter}{2}{delimiter}{3:.2f}"
 
                   }
     new_table=AsciiDataTable(None,**options)
     print(" New Table is:")
     new_table.__parse__()
-    print new_table.data
+    print new_table
     print type(new_table.data[0][3])
+    print new_table.get_data_dictionary_list()
+    new_table.add_index()
+    print new_table.get_data_dictionary_list(False)
     #print("-"*80)
     #new_table.save()
     #new_table.save_schema()
