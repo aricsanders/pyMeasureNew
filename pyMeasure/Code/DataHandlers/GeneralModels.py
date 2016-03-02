@@ -230,17 +230,19 @@ def split_all_rows(row_list,delimiter=None,escape_character=None):
     return out_list
 def convert_row(row_list_strings,column_types=None):
     "converts a row list of strings to native python types using a column types list"
-    out_row=[]
+
     if column_types is None or len(row_list_strings) != len(column_types):
         print("Convert row could not convert {0} using {1}".format(row_list_strings,column_types))
         return row_list_strings
     else:
-        for index,column_type in column_types:
+        out_row=row_list_strings
+        for index,column_type in enumerate(column_types):
             if re.match('int',column_type,re.IGNORECASE):
                 out_row[index]=int(row_list_strings[index])
             elif re.match('float',column_type,re.IGNORECASE):
                 out_row[index]=float(row_list_strings[index])
             elif re.match('str|char',column_type,re.IGNORECASE):
+                print_comparison(row_list_strings[index],out_row[index])
                 out_row[index]=str(row_list_strings[index])
             elif re.match('com',column_type,re.IGNORECASE):
                 out_row[index]=complex(row_list_strings[index])
@@ -257,7 +259,7 @@ def convert_all_rows(list_rows,column_types=None):
     check_arg_type(list_rows,ListType)
     out_list=[]
     for index,row in enumerate(list_rows):
-        out_list[index]=convert_row(row,column_types)
+        out_list.append(convert_row(row,column_types))
     return out_list
 
 def insert_inline_comment(list_of_strings,comment="",line_number=None,string_position=None,begin_token='(*',end_token='*)'):
@@ -581,11 +583,14 @@ class AsciiDataTable():
         # Remove any defined begin and end tokens
         for index,element in enumerate(self.elements):
             if self.__dict__[element] is not None and element not in ["inline_comments"]:
+                        for index,line in enumerate(self.__dict__[element]):
+                            self.__dict__[element][index]=line+"\n"
+
                         content_list=strip_tokens(self.__dict__[element],
                                                   *[self.options['%s_begin_token'%element],
                                                     self.options['%s_end_token'%element]])
                         self.__dict__[element]=content_list
-                        #print("The result of parsing is self.{0} = {1}".format(element,content_list))
+                        print("The result of parsing is self.{0} = {1}".format(element,content_list))
         # parse the header
         if self.header is not None:
             #print("The {0} variable is {1}".format('self.header',self.header))
@@ -1457,7 +1462,7 @@ def test_save_schema():
                   "metadata_delimiter":"{metadata_delimiter}",
                   "header":["self.header[0]","self.header[1]","self.header[2]","self.header[3]","","self.header[4]"],
                   "column_names":["column_names[0]","column_names[1]","column_names[2]"],
-                  "data":[["data[0][0]","data[1][0]","data[2][0]"],["data[0][1]","data[1][1]","data[2][1]"]],
+                  "data":[["data[0][0]","data[1][0]","data[2][0]","1"],["data[0][1]","data[1][1]","data[2][1]","2"]],
                   "footer":["self.footer[0]","self.footer[1]"],
                   "inline_comments":[["inline_comments[0][0]",2,-1]],
                   "row_formatter_string":None,
@@ -1465,17 +1470,21 @@ def test_save_schema():
                   "data_table_element_separator":'\n{data_table_element_separator}\n',
                   "treat_header_as_comment":None,
                   "treat_footer_as_comment":None,
-                  "header_line_types":["block_comment","block_comment","line_comment","header","header","line_comment"]
+                  "header_line_types":["block_comment","block_comment","line_comment","header","header","line_comment"],
+                  "column_types":["str","string","STR","int"]
+
                   }
     new_table=AsciiDataTable(None,**options)
     print(" New Table is:")
-    print new_table
-    print("-"*80)
-    new_table.save()
-    new_table.save_schema()
+    new_table.__parse__()
+    print new_table.data
+    print type(new_table.data[0][3])
+    #print("-"*80)
+    #new_table.save()
+    #new_table.save_schema()
     options_2=new_table.options
-    new_table_2=AsciiDataTable(new_table.path,**options_2)
-    print_comparison(new_table.header,new_table_2.header)
+    #new_table_2=AsciiDataTable(new_table.path,**options_2)
+    #print_comparison(new_table.header,new_table_2.header)
 def test_read_schema():
     """ Tests the read_schema function
     """
@@ -1495,5 +1504,5 @@ if __name__ == '__main__':
     #test_add_row()
     #test_add_index()
     #show_structure_script()
-    #test_save_schema()
-    test_read_schema()
+    test_save_schema()
+    #test_read_schema()
