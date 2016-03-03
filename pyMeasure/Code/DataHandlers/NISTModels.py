@@ -22,7 +22,7 @@ except:
 try:
     from pyMeasure.Code.DataHandlers.GeneralModels import *
 except:
-    print("The module pyMeasure.Code.DataHandlers.General.Models was not found,"
+    print("The module pyMeasure.Code.DataHandlers.GeneralModels was not found,"
           "please put it on the python path")
     raise
 #-----------------------------------------------------------------------------
