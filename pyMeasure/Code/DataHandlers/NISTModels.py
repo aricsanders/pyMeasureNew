@@ -43,7 +43,7 @@ def calrep_to_benchmark(file_path):
     header=lines[0:last_block_comment_line+1]
     columns_line=last_block_comment_line+2
     column_names=lines[columns_line].split(' ')
-    data=lines[columns_line+1:-1]
+    data=lines[columns_line+1:None]
     return [header,column_names,data]
 #-----------------------------------------------------------------------------
 # Module Classes
@@ -68,9 +68,13 @@ class CalrepModel():
 
 class SwitchTermsFR():
     pass
+class SwitchTermsPort()
+    pass
 class NoiseCalRaw():
     pass
 class ReverbChamber():
+    pass
+class RobotData():
     pass
 
 #-----------------------------------------------------------------------------

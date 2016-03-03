@@ -23,7 +23,7 @@ if os.name=='nt':
         from win32com import storagecon     # storage constants
         
     except:
-        print 'Error in importing pythoncom, win32com'
+        print 'Error in importing pythoncom, win32com. Check that pywintypes27 snf pythoncom27 dlls are in win32/lib'
         raise
 # Try to import EXIF for Jpeg and Tiff stuff
 try:
