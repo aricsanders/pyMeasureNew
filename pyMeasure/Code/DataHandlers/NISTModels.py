@@ -31,7 +31,8 @@ except:
 #-----------------------------------------------------------------------------
 # Module Functions
 def calrep_to_benchmark(file_path):
-    """Creates a benchmark list given a calrep file"""
+    """Creates a benchmark list given a path to a calrep file, assumes column names are 2 lines after
+    the occurrence of the last /"""
     in_file=open(file_path,'r')
     lines=[]
     for line in in_file:
@@ -47,14 +48,58 @@ def calrep_to_benchmark(file_path):
     return [header,column_names,data]
 #-----------------------------------------------------------------------------
 # Module Classes
-class CalrepModel():
+class OnePortModel(AsciiDataTable):
     def __init__(self,file_path,**options):
         "Intializes the CalrepModel Class"
         if file_path is not None:
             self.path=file_path
+
         # This is a general pattern for adding a lot of options
-        defaults={'block_comment_begin':'first_line',
-            'block_comment_end':'last /', 'data_delimiter':' '}
+        defaults={"data_delimiter":None,
+                  "column_names_delimiter":None,
+                  "specific_descriptor":'Data',
+                  "general_descriptor":'Table',
+                  "directory":None,
+                  "extension":'txt',
+                  "comment_begin":None,
+                  "comment_end":None,
+                  "inline_comment_begin":None,
+                  "inline_comment_end":None,
+                  "block_comment_begin":None,
+                  "block_comment_end":None,
+                  "footer_begin_line":None,
+                  "footer_end_line":None,
+                  "header_begin_line":None,
+                  "header_end_line":None,
+                  "column_names_begin_line":None,
+                  "column_names_end_line":None,
+                  "data_begin_line":None,
+                  "data_end_line":None,
+                  "footer_begin_token":None,
+                  "footer_end_token":None,
+                  "header_begin_token":None,
+                  "header_end_token":None,
+                  "column_names_begin_token":None,
+                  "column_names_end_token":None,
+                  "data_begin_token":None,
+                  "data_end_token":None,
+                  "metadata_delimiter":None,
+                  "header_line_types":None,
+                  "column_types":None,
+                  "column_description":None,
+                  "footer_line_types":None,
+                  "header":None,
+                  "column_names":None,
+                  "data":None,
+                  "footer":None,
+                  "inline_comments":None,
+                  "row_formatter_string":None,
+                  "empty_value":None,
+                  "escape_character":None,
+                  "data_table_element_separator":'\n',
+                  "treat_header_as_comment":None,
+                  "treat_footer_as_comment":None
+                  }
         self.options={}
         for key,value in defaults.iteritems():
             self.options[key]=value
