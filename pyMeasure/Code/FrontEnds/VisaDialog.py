@@ -212,7 +212,7 @@ class VisaDialog(wx.Dialog):
 
     def OnAskButtonButton(self, event):
         input=self.TextInput.GetValue()
-        output=self.active_instrument.ask(input)
+        output=self.active_instrument.query(input)
         self.ResponseText.SetValue(output)
         event.Skip()
 
