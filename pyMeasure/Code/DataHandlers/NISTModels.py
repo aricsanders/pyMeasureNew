@@ -24,7 +24,13 @@ try:
 except:
     print("The module pyMeasure.Code.DataHandlers.GeneralModels was not found,"
           "please put it on the python path")
-    raise
+    raise ImportError
+try:
+    import numpy as np
+except:
+    print("The module numpy was not found,"
+          "please put it on the python path")
+    raise ImportError
 #-----------------------------------------------------------------------------
 # Module Constants
 
@@ -50,56 +56,26 @@ def calrep_to_benchmark(file_path):
 # Module Classes
 class OnePortModel(AsciiDataTable):
     def __init__(self,file_path,**options):
-        "Intializes the CalrepModel Class"
-        if file_path is not None:
-            self.path=file_path
-
+        "Intializes the OnePortModel Class, it is assumed that the file is of the .asc or table type"
         # This is a general pattern for adding a lot of options
-        defaults={"data_delimiter":None,
-                  "column_names_delimiter":None,
-                  "specific_descriptor":'Data',
-                  "general_descriptor":'Table',
-                  "directory":None,
+        defaults={"data_delimiter":",",
+                  "column_names_delimiter":",",
+                  "specific_descriptor":'One_Port',
+                  "general_descriptor":'Sparameter',
                   "extension":'txt',
-                  "comment_begin":None,
-                  "comment_end":None,
-                  "inline_comment_begin":None,
-                  "inline_comment_end":None,
-                  "block_comment_begin":None,
-                  "block_comment_end":None,
-                  "footer_begin_line":None,
-                  "footer_end_line":None,
-                  "header_begin_line":None,
-                  "header_end_line":None,
-                  "column_names_begin_line":None,
-                  "column_names_end_line":None,
-                  "data_begin_line":None,
-                  "data_end_line":None,
-                  "footer_begin_token":None,
-                  "footer_end_token":None,
-                  "header_begin_token":None,
-                  "header_end_token":None,
-                  "column_names_begin_token":None,
-                  "column_names_end_token":None,
-                  "data_begin_token":None,
-                  "data_end_token":None,
-                  "metadata_delimiter":None,
-                  "header_line_types":None,
-                  "column_types":None,
+                  "comment_begin":"#",
+                  "comment_end":"\n",
+                  "column_types":['float' for i in range(11)],
                   "column_description":None,
-                  "footer_line_types":None,
                   "header":None,
-                  "column_names":None,
+                  "column_names":["Frequency","|Gamma|","uGb","uGa","uGd","uGg","Phase",
+                                  "uPhb","uPha","uPhd","uPhg"],
+                  "column_names_end_token":"\n",
                   "data":None,
-                  "footer":None,
-                  "inline_comments":None,
                   "row_formatter_string":None,
-                  "empty_value":None,
-                  "escape_character":None,
-                  "data_table_element_separator":'\n',
-                  "treat_header_as_comment":None,
-                  "treat_footer_as_comment":None
+                  "data_table_element_separator":None,
                   }
+
         self.options={}
         for key,value in defaults.iteritems():
             self.options[key]=value
@@ -110,10 +86,49 @@ class OnePortModel(AsciiDataTable):
             for command in alias(self):
                 exec(command)
 
+        if file_path is not None:
+            self.path=file_path
+            self.__read_and_fix__()
+
+        if os.path.dirname(file_path) is "":
+            self.options["directory"]=os.getcwd()
+        else:
+            self.options["directory"]=os.path.dirname(file_path)
+        #build the row_formatting string, the original files have 4 decimals of precision for freq/gamma and 2 for Phase
+        row_formatter=""
+        for i in range(11):
+            if i<6:
+                row_formatter=row_formatter+"{"+str(i)+":.4f}{delimiter}"
+            else:
+                row_formatter=row_formatter+"{"+str(i)+":.2f}{delimiter}"
+        self.options["row_formatter_string"]=row_formatter
+
+        AsciiDataTable.__init__(self,None,**self.options)
+
+    def __read_and_fix__(self):
+        """Reads in a 1 port ascii file and fixes any issues with inconsistent delimiters, etc"""
+        lines=[]
+        table_type=self.path.split(".")[-1]
+        in_file=open(self.path,'r')
+        for line in in_file:
+            lines.append(line)
+        # Handle the cases in which it is the comma delimited table
+        if re.match('txt',table_type,re.IGNORECASE):
+            self.options["data"]=split_all_rows(row_list=lines[:-1],delimiter=",")
+            self.options["header"]=["Device_Id = {0}".format(self.path.split(".")[-2])]
+        elif re.match("asc",table_type,re.IGNORECASE):
+            self.lines=lines
+            data_begin_line=self.find_line(" TABLE")+2
+            data=np.loadtxt(self.path,skiprows=data_begin_line)
+            self.options["data"]=data.tolist()
+            self.options["header"]=lines[:self.find_line(" TABLE")]
+
+
+
 
 class SwitchTermsFR():
     pass
-class SwitchTermsPort()
+class SwitchTermsPort():
     pass
 class NoiseCalRaw():
     pass
@@ -124,8 +139,21 @@ class RobotData():
 
 #-----------------------------------------------------------------------------
 # Module Scripts
+def test_OnePortModel(file_path_1='700437.txt',file_path_2="700437.asc"):
+    os.chdir(TESTS_DIRECTORY)
+    print(" Import of {0} results in:".format(file_path_1))
+    new_table_1=OnePortModel(file_path=file_path_1)
+    print new_table_1
+    print("-"*80)
+    print("\n")
+
+    print(" Import of {0} results in:".format(file_path_2))
+    new_table_1=OnePortModel(file_path=file_path_2)
+    print new_table_1
+    print("{0} results in {1}:".format('new_table_1.get_column("Frequency")',new_table_1.get_column("Frequency")))
+
 
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
-    pass
+    test_OnePortModel()
