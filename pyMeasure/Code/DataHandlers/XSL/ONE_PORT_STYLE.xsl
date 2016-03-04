@@ -31,7 +31,7 @@
 <style> h3 {color:black} </style>
 
         </head>
-
+    <div>
 		<h3>Data Description:</h3>
         <button id="ToggleButtonDescription" type="button" class="btn btn-primary">Show Description</button>
     <br/><hr/>
@@ -46,6 +46,21 @@
             </xsl:if> 
             </xsl:for-each>
          </table>
+    </div>
+    <div>
+        <h3>Data Plot:</h3>
+     <button id="ToggleButtonPlot" type="button" class="btn btn-primary">Show Plots</button><br/><hr/>
+    <table>
+        <tr>
+            <td>
+        <div id="plot" style="width: 480px; height: 400px;" class="plot">
+        <!-- Plotly chart will be drawn inside this DIV --></div></td>
+        <td><div id="error-plot" style="width: 480px; height: 400px;" class="plot">
+        <!-- Plotly chart will be drawn inside this DIV --></div></td>
+        </tr>
+</table>
+    </div>
+    <div>
         <h3>Data:</h3>
         <button id="ToggleButton" type="button" class="btn btn-primary">Show Table</button><br/><hr/>
 		<table class='table table-hover table-condensed table-bordered table-responsive' id="DataTable">
@@ -67,9 +82,7 @@
             </tr>
             </xsl:for-each>
 		</table>
-        <h3>Data Plot:</h3>
-     <button id="ToggleButtonPlot" type="button" class="btn btn-primary">Show Plots</button><br/><hr/>
-    <div id="plot" style="width: 480px; height: 400px;" class="plot"><!-- Plotly chart will be drawn inside this DIV --></div>
+    </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
@@ -77,79 +90,70 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-  <!--<script>-->
-      <!--plot=document.getElementById('plot');-->
-      <!--var trace1 = {-->
-  <!--x:[<xsl:for-each select="//Data/Tuple/@Frequency">-->
-                <!--<xsl:value-of select="."/>,-->
-            <!--</xsl:for-each>],-->
-  <!--y:[<xsl:for-each select="//Data/Tuple/@Magnitude">-->
-                <!--<xsl:value-of select="."/>,-->
-            <!--</xsl:for-each>],-->
-  <!--line: {width: 0},-->
-  <!--marker: {color: "444"},-->
-  <!--mode: "lines",-->
-  <!--name: "Lower Bound",-->
-  <!--type: "scatter"-->
-<!--};-->
-<!--var trace2 = {-->
-  <!--x:  [<xsl:for-each select="//Data/Tuple/@Frequency">-->
-                <!--<xsl:value-of select="."/>,-->
-            <!--</xsl:for-each>],-->
-  <!--y:  [<xsl:for-each select="//Data/Tuple/@Magnitude">-->
-                <!--<xsl:value-of select="."/>,-->
-            <!--</xsl:for-each>],-->
-  <!--fill: "tonexty",-->
-  <!--fillcolor: "rgba(68, 68, 68, 0.3)",-->
-  <!--line: {color: "rgb(31, 119, 180)"},-->
-  <!--mode: "lines",-->
-  <!--name: "Measurement",-->
-  <!--type: "scatter"-->
-<!--};-->
-<!--var trace3 = {-->
-  <!--x:  [<xsl:for-each select="//Data/Tuple/@Frequency">-->
-                <!--<xsl:value-of select="."/>,-->
-            <!--</xsl:for-each>],-->
-  <!--y:[<xsl:for-each select="//Data/Tuple/@uMg">-->
-                <!--<xsl:value-of select="."/>,-->
-            <!--</xsl:for-each>],-->
-  <!--fill: "tonexty",-->
-  <!--fillcolor: "rgba(68, 68, 68, 0.3)",-->
-  <!--line: {width: 0},-->
-  <!--marker: {color: "444"},-->
-  <!--mode: "lines",-->
-  <!--name: "Upper Bound",-->
-  <!--type: "scatter"-->
-<!--};-->
-<!--var data = [trace1, trace2, trace3];-->
-<!--var layout = {-->
-  <!--showlegend: false,-->
-  <!--title: "Continuous, variable value error bars-->
-<!--Notice the hover text!",-->
-  <!--yaxis: {title: "Wind speed (m/s)"}-->
-<!--};-->
-
-<!--Plotly.plot(plot, data, layout);-->
-
-  <!--</script>-->
 <script>
-    plot = document.getElementById('plot');
-	TESTER = document.getElementById('tester');
-	Plotly.plot( TESTER, [{
-	x: [<xsl:for-each select="//Data/Tuple/@Frequency">
+    var magnitude = [
+  {
+    x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
+    y: [<xsl:for-each select="//Data/Tuple/@Magnitude"><xsl:value-of select="."/>,</xsl:for-each>],
+    error_y: {
+      type: 'data',
+      array: [<xsl:for-each select="//Data/Tuple/@uGg"><xsl:value-of select="."/>,</xsl:for-each>],
+      visible: true
+    },
+    type: 'scatter',
+    mode:'markers'
+  }
+];
+        var phase = [
+  {
+    x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
+    y: [<xsl:for-each select="//Data/Tuple/@Phase"><xsl:value-of select="."/>,</xsl:for-each>],
+    error_y: {
+      type: 'data',
+      array: [<xsl:for-each select="//Data/Tuple/@uPhg"><xsl:value-of select="."/>,</xsl:for-each>],
+      visible: true,
 
-<xsl:value-of select="."/>
-,
-</xsl:for-each>
-],
-	y: [
-    <xsl:for-each select="//Data/Tuple/@Frequency">
 
-<xsl:value-of select="."/>
-,
-</xsl:for-each>
-], {
-	margin: { t: 0 } } );</script>
+
+    },
+    type: 'scatter',
+       mode:'markers'
+  }
+];
+var magnitudeLayout = {
+  legend: {
+    y: 0.5,
+    yref: 'paper',
+    font: {
+      family: 'Arial, sans-serif',
+      size: 20,
+      color: 'grey',
+    }
+
+  },
+    xaxis:{
+    title:'Frequency (GHz)'},
+  title:'Magnitude'
+};
+
+    var phaseLayout = {
+  legend: {
+    y: 0.5,
+    yref: 'paper',
+    font: {
+      family: 'Arial, sans-serif',
+      size: 20,
+      color: 'grey',
+    }
+  },
+    xaxis:{
+    title:'Frequency (GHz)'},
+  title:'Phase'
+};
+
+Plotly.newPlot('plot', magnitude,magnitudeLayout);
+Plotly.newPlot('error-plot', phase,phaseLayout);
+	</script>
     <script>
 $(document).ready(function(){
     $("#ToggleButton").click(function(){

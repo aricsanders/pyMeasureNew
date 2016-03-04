@@ -134,8 +134,6 @@ class OnePortModel(AsciiDataTable):
             self.options["header"]=lines[:self.find_line(" TABLE")]
 
 
-
-
 class SwitchTermsFR():
     pass
 class SwitchTermsPort():
