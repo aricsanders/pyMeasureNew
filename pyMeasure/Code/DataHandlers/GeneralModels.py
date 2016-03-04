@@ -359,7 +359,7 @@ class AsciiDataTable():
                   "metadata_delimiter":None,
                   "header_line_types":None,
                   "column_types":None,
-                  "column_description":None,
+                  "column_descriptions":None,
                   "footer_line_types":None,
                   "header":None,
                   "column_names":None,

@@ -197,6 +197,35 @@ class XMLBase():
             XSL_transform=etree.XSLT(XSL_data)
             HTML=XSL_transform(etree.XML(self.document.toxml()))
             return HTML
+    def show(self,mode='Window'):
+        """ Displays a XML Document either as formatted text in the command line or in a
+        window (using wx)"""
+        def tag_to_tagName(tag):
+            tagName=tag.replace('<','')
+            tagName=tagName.replace('/','')
+            tagName=tagName.replace('>','')
+            return tagName
+        if mode in ['text','txt','cmd line','cmd']:
+            for node in self.document.getElementsByTagName('Entry'):
+                print 'Entry Index: %s \tDate: %s'%(node.getAttribute('Index'),
+                node.getAttribute('Date'))
+                print node.firstChild.nodeValue
+        elif re.search('xml',mode,re.IGNORECASE):
+            for node in self.document.getElementsByTagName('Entry'):
+                print node.toprettyxml()
+        elif re.search('Window|wx',mode,re.IGNORECASE):
+            try:
+                import wx
+                import wx.html
+            except:
+                print 'Cannot locate wx, please add to sys.path'
+            app = wx.App(False)
+            frame=wx.Frame(None)
+            html_window=wx.html.HtmlWindow(frame)
+            html_window.SetPage(str(self.to_HTML()))
+            frame.Show()
+            app.MainLoop()
+
     def __str__(self):
         "Controls how XMLBAse is returned when a string function is called"
         return self.document.toprettyxml()
@@ -406,7 +435,7 @@ class Log(XMLBase):
                 import wx.html
             except:
                 print 'Cannot locate wx, please add to sys.path'
-            app = wx. wx.App(False)
+            app = wx.App(False)
             frame=wx.Frame(None)
             html_window=wx.html.HtmlWindow(frame)
             html_window.SetPage(str(self.to_HTML()))
@@ -514,7 +543,7 @@ class DataTable(XMLBase):
             if len(data_dictionary)>0:
                 for key,value in data_dictionary.iteritems():
                     # This hanldes Tag:Text dictionaries
-                    if re.search('Description',key):
+                    if re.search('description',key,re.IGNORECASE):
                         new_entry=self.document.createElement(key)
                         for tag,element_text in value.iteritems():
                             new_tag=self.document.createElement(tag)
@@ -522,7 +551,7 @@ class DataTable(XMLBase):
                             new_tag.appendChild(new_text)
                             new_entry.appendChild(new_tag)
                         self.document.documentElement.appendChild(new_entry)
-                    if re.search('Data',key) and not re.search('Description',key):
+                    if re.search('data',key,re.IGNORECASE) and not re.search('Description',key,re.IGNORECASE):
                         new_entry=self.list_to_XML(value)
                         self.document.documentElement.appendChild(new_entry)
         except:pass

@@ -66,16 +66,25 @@ class OnePortModel(AsciiDataTable):
                   "comment_begin":"#",
                   "comment_end":"\n",
                   "column_types":['float' for i in range(11)],
-                  "column_description":None,
+                  "column_descriptions":None,
                   "header":None,
-                  "column_names":["Frequency","|Gamma|","uGb","uGa","uGd","uGg","Phase",
+                  "column_names":["Frequency","Magnitude","uGb","uGa","uGd","uGg","Phase",
                                   "uPhb","uPha","uPhd","uPhg"],
                   "column_names_end_token":"\n",
                   "data":None,
                   "row_formatter_string":None,
                   "data_table_element_separator":None,
                   }
-
+        defaults["column_descriptions"]={"Frequency":"Frequency in GHz","Magnitude":"Linear magnitude",
+                                         "uMb":"Uncertainty in magnitude due to standards",
+                                         "uMa":"Uncertainty in magnitude due to electronics",
+                                         "uMd":"Uncertainty in magnitude for repeated connects",
+                                         "uMg":"Total uncertainty in magnitude",
+                                         "Phase":"Phase in degrees",
+                                         "uPhb":"Uncertainty in phase due to standards",
+                                         "uPha":"Uncertainty in phase due to electronics",
+                                         "uPhd":"Uncertainty in phase for repeated connects",
+                                         "uPhg":"Total uncertainty in phase"}
         self.options={}
         for key,value in defaults.iteritems():
             self.options[key]=value
@@ -99,10 +108,11 @@ class OnePortModel(AsciiDataTable):
         for i in range(11):
             if i<6:
                 row_formatter=row_formatter+"{"+str(i)+":.4f}{delimiter}"
+            elif i==10:
+                row_formatter=row_formatter+"{"+str(i)+":.2f}"
             else:
                 row_formatter=row_formatter+"{"+str(i)+":.2f}{delimiter}"
         self.options["row_formatter_string"]=row_formatter
-
         AsciiDataTable.__init__(self,None,**self.options)
 
     def __read_and_fix__(self):
@@ -151,6 +161,7 @@ def test_OnePortModel(file_path_1='700437.txt',file_path_2="700437.asc"):
     new_table_1=OnePortModel(file_path=file_path_2)
     print new_table_1
     print("{0} results in {1}:".format('new_table_1.get_column("Frequency")',new_table_1.get_column("Frequency")))
+    print new_table_1.get_options()
 
 
 #-----------------------------------------------------------------------------
