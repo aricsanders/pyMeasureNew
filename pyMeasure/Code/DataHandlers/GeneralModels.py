@@ -72,12 +72,14 @@ def string_list_collapse(list_of_strings,string_delimiter='\n'):
             out_string=out_string+item+string_delimiter
     return out_string
 
-def list_to_string(row_list,data_delimiter=None,row_formatter_string=None,begin=None,end='\n'):
+def list_to_string(row_list,data_delimiter=None,row_formatter_string=None,begin=None,end=None):
     """Given a list of values returns a string, if row_formatter is specifed
      it uses it as a template, else uses data delimiter. Inserts data_delimiter between each list element. An optional
     begin and end wrap the resultant string. (i.e ['1','2','3']-> 'begin+'1'+','+'2'+','+'3'+'end') end defaults
-    to \n"""
+    to \n to have nothing at the end use ''
+    """
     check_arg_type(row_list,ListType)
+
     if data_delimiter is None:
         data_delimiter=','
     string_out=""
@@ -90,21 +92,28 @@ def list_to_string(row_list,data_delimiter=None,row_formatter_string=None,begin=
     else:
         string_out=row_formatter_string.format(*row_list,delimiter=data_delimiter)
     if end is None:
-        end=""
+        end="\n"
     if begin is None:
         begin=""
     return begin+string_out+end
 
-def list_list_to_string(list_lists,data_delimiter=None,row_formatter_string=None,line_begin=None,line_end='\n'):
+def list_list_to_string(list_lists,data_delimiter=None,row_formatter_string=None,line_begin=None,line_end=None):
     """Repeatedly calls list to string on each element of a list and string adds the result
-    . ie coverts a list of lists to a string"""
+    . ie coverts a list of lists to a string. If line end is None the value defaults to "\n", for no seperator use ''
+    """
+    if line_end is None:
+        line_end="\n"
     check_arg_type(list_lists,ListType)
     string_out=""
     for index,row in enumerate(list_lists):
         if index==len(list_lists)-1:
+            if line_end is "\n":
+                last_end=""
+            else:
+                last_end=re.sub("\n","",line_end,count=1)
             string_out=string_out+list_to_string(row,data_delimiter=data_delimiter,
                                              row_formatter_string=row_formatter_string,
-                                             begin=line_begin,end=None)
+                                             begin=line_begin,end=last_end)
         else:
             string_out=string_out+list_to_string(row,data_delimiter=data_delimiter,
                                              row_formatter_string=row_formatter_string,
@@ -230,10 +239,11 @@ def split_all_rows(row_list,delimiter=None,escape_character=None):
         out_list.append(split_row(row,delimiter=delimiter,escape_character=escape_character))
     return out_list
 def convert_row(row_list_strings,column_types=None):
-    "converts a row list of strings to native python types using a column types list"
+    """Converts a row list of strings to native
+    python types using a column types list"""
 
     if column_types is None or len(row_list_strings) != len(column_types):
-        print("Convert row could not convert {0} using {1}".format(row_list_strings,column_types))
+        #print("Convert row could not convert {0} using {1}".format(row_list_strings,column_types))
         return row_list_strings
     else:
         out_row=row_list_strings
@@ -366,6 +376,8 @@ class AsciiDataTable():
                   "data":None,
                   "footer":None,
                   "inline_comments":None,
+                  "row_begin_token":None,
+                  "row_end_token":None,
                   "row_formatter_string":None,
                   "empty_value":None,
                   "escape_character":None,
@@ -613,6 +625,7 @@ class AsciiDataTable():
             #print("The result of parsing is self.{0} = {1}".format('column_names',self.column_names))
         # parse the data
         if self.data is not None:
+            self.data=strip_tokens(self.data,*[self.options["row_begin_token"],self.options["row_end_token"]])
             self.data=split_all_rows(self.data,delimiter=self.options["data_delimiter"],
                                      escape_character=self.options["escape_character"])
             self.data=convert_all_rows(self.data,self.options["column_types"])
@@ -899,6 +912,7 @@ class AsciiDataTable():
 
     def get_data_string(self):
         "Returns the data as a string"
+        #Todo:refactor to cut out unused lines
         string_out=""
         if self.data is None:
             string_out= ""
@@ -920,6 +934,7 @@ class AsciiDataTable():
                                 string_out=self.options['data_begin_token']+self.data
             elif type(self.data) in [ListType,np.ndarray]:
                 try:
+                        #If the first row is a string, we should strip all the tokens and add them back in
                         if type(self.data[0]) is StringType:
                             if self.options['data_begin_token'] is None:
                                 string_out=string_list_collapse(self.data)
@@ -948,21 +963,32 @@ class AsciiDataTable():
                             if self.options['data_begin_token'] is None:
                                 if self.options['data_end_token'] is None:
                                     string_out=list_list_to_string(self.data,data_delimiter=self.options['data_delimiter'],
-                                                                   row_formatter_string=self.options['row_formatter_string'])
+                                                                   row_formatter_string=self.options['row_formatter_string'],
+                                                                   line_begin=self.options["row_begin_token"],
+                                                                   line_end=self.options["row_end_token"])
                             else:
                                 if self.options['data_end_token'] is None:
                                     string_out=self.options['data_begin_token']+\
-                                               list_list_to_string(self.data,data_delimiter=self.options['data_delimiter'],
-                                                                   row_formatter_string=self.options['row_formatter_string'])
+                                               list_list_to_string(self.data,
+                                                                   data_delimiter=self.options['data_delimiter'],
+                                                                   row_formatter_string=self.options['row_formatter_string'],
+                                                                   line_begin=self.options["row_begin_token"],
+                                                                   line_end=self.options["row_end_token"])
                                 else:
                                     string_out=self.options['data_begin_token']+\
-                                               list_list_to_string(self.data,data_delimiter=self.options['data_delimiter'],
+                                               list_list_to_string(self.data,
+                                                                   data_delimiter=self.options['data_delimiter'],
                                                                    row_formatter_string=\
-                                                                   self.options['row_formatter_string'])+\
+                                                                   self.options['row_formatter_string'],
+                                                                   line_begin=self.options["row_begin_token"],
+                                                                   line_end=self.options["row_end_token"])+\
                                                                     self.options['data_end_token']
                         else:
-                            string_out=list_to_string(self.data,data_delimiter=self.options['data_delimiter'],
-                                                                   row_formatter_string=self.options['row_formatter_string'])
+                            string_out=list_to_string(self.data,
+                                                      data_delimiter=self.options['data_delimiter'],
+                                                      row_formatter_string=self.options['row_formatter_string'],
+                                                      begin=self.options["row_begin_token"],
+                                                      end=self.options["row_end_token"])
 
                 except IndexError:
                     pass
@@ -1064,10 +1090,8 @@ class AsciiDataTable():
             for row in other.data:
                 data=[self.options['empty_value'] for i in self.column_names]
                 self.add_row(data.append(row))
-
         if self.header is not other.header:
             self.header=self.header+other.header
-
         if self.header is not other.header:
             self.header=self.header+other.header
         return self
@@ -1131,6 +1155,11 @@ class AsciiDataTable():
             data_list=[row_data[column_name] for column_name in self.column_names]
             self.data.append(data_list)
 
+    def remove_row(self,row_index):
+        """Removes the row specified by row_index and updates the model. Note index is relative to the
+        data attribute so to remove the first row use row_index=0 and the last data row is row_index=-1"""
+        self.data.pop(row_index)
+        self.update_model()
 
     def add_column(self,column_name=None,column_type=None,column_data=None):
         """Adds a column with column_name, and column_type. If column data is supplied and it's length is the
@@ -1154,6 +1183,11 @@ class AsciiDataTable():
             self.column_names=original_column_names
             print("Could not add columns")
             pass
+    def remove_column(self,column_name=None,column_index=None):
+        """Rmoves the column specified by column_name or column_index and updates the model. The column is removed from
+        column_names, data and if present column_types, column_descriptions and row formatter"""
+        pass
+        #Todo:Add remove column functionality
 
     def add_index(self):
         """Adds a column with name index and values that are 0 referenced indices, does nothing if there is
@@ -1219,6 +1253,7 @@ class AsciiDataTable():
             column_selector=self.column_names.index(column_name)
         out_list=[self.data[i][column_selector] for i in range(len(self.data))]
         return out_list
+
     def get_data_dictionary_list(self,use_row_formatter_string=True):
         """Returns a python list with a row dictionary of form {column_name:data_column}"""
         try:
@@ -1257,6 +1292,31 @@ class AsciiDataTable():
                 file_out.write("{0} : {1} \n".format(out_key,out_value))
             file_out.close()
 
+class AsciiDataTableCollection():
+    """A collection of multiple AsciiDataTables"""
+    def __init__(self,file_path=None,table_names=None,**options):
+        # The primary attritbute should be self.data_tables=dictionary
+        # the dictionary should be in the form {"table_name":AsciiDataTable}
+        # since there is no way to know how many tables or their options,
+        # you can't read them in without **options-> self.table_names
+        # which can be passed as an option. Each table is an independent entity
+        # but can have options set by global_options
+        if file_path is None:
+            pass
+        else:
+            if table_names is None and options["table_names"] is None:
+                raise
+            else:
+                file_in=open(file_path,'r')
+                # in order to parse the file we need to know line #'s, once we deduce them we use __parse__
+                self.lines=[]
+                for line in file_in:
+                    self.lines.append(line)
+                file_in.close()
+                self.path=file_path
+
+    def build_string(self,**temp_options):
+        pass
 
 #-----------------------------------------------------------------------------
 # Module Scripts
@@ -1424,8 +1484,10 @@ def show_structure_script():
                   "footer":["self.footer[0]","self.footer[1]"],
                   "inline_comments":[["inline_comments[0][0]",2,-1]],
                   "row_formatter_string":None,
+                  "row_begin_token":"{row_begin_token}",
+                  "row_end_token":"{row_end_token}\n",
                   "empty_value":None,
-                  "data_table_element_separator":'\n\n\n{data_table_element_separator}\n',
+                  "data_table_element_separator":'\n{data_table_element_separator}\n',
                   "treat_header_as_comment":None,
                   "treat_footer_as_comment":None
                   }
@@ -1453,29 +1515,29 @@ def show_structure_script():
             for line in test_lines[begin_line:end_line]:
                 print line
             print("-"*80)
-    new_table.footer=None
-    print("Printing the string representation of the table")
-    print("-"*80)
-    print new_table
-    test_string=str(new_table)
-    test_lines=test_string.splitlines()
-    print("Printing the lines representation of the table with line numbers")
-    print("-"*80)
-    for index,line in enumerate(test_lines):
-        print("{0} {1}".format(index,line))
-
-    for item in new_table.elements:
-        if item is 'inline_comments':
-            pass
-        else:
-            begin_line=new_table.options["%s_begin_line"%item]
-            end_line=new_table.options["%s_end_line"%item]
-            print("-"*80)
-            print("The result of self.lines[{0}:{1}] is :".format(begin_line,end_line))
-            for line in test_lines[begin_line:end_line]:
-                print line
-            print("-"*80)
-        #
+    # new_table.footer=None
+    # print("Printing the string representation of the table")
+    # print("-"*80)
+    # print new_table
+    # test_string=str(new_table)
+    # test_lines=test_string.splitlines()
+    # print("Printing the lines representation of the table with line numbers")
+    # print("-"*80)
+    # for index,line in enumerate(test_lines):
+    #     print("{0} {1}".format(index,line))
+    #
+    # for item in new_table.elements:
+    #     if item is 'inline_comments':
+    #         pass
+    #     else:
+    #         begin_line=new_table.options["%s_begin_line"%item]
+    #         end_line=new_table.options["%s_end_line"%item]
+    #         print("-"*80)
+    #         print("The result of self.lines[{0}:{1}] is :".format(begin_line,end_line))
+    #         for line in test_lines[begin_line:end_line]:
+    #             print line
+    #         print("-"*80)
+    #     #
     # end_line=6
     # print("-"*80)
     # print("The result of self.lines[:{0}] is :".format(end_line))
@@ -1553,6 +1615,6 @@ if __name__ == '__main__':
     #test_inline_comments()
     #test_add_row()
     #test_add_index()
-    #show_structure_script()
-    test_save_schema()
+    show_structure_script()
+    #test_save_schema()
     #test_read_schema()
