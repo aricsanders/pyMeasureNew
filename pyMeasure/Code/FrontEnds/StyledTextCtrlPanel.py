@@ -776,7 +776,8 @@ def test_StyledTextCtrlPanel():
     panel=StyledTextCtrlPanel(id=1, name=u'IV Panel',
               parent=frame, pos=wx.Point(350, 204), size=wx.Size(200, 800),
               style=wx.TAB_TRAVERSAL)
-    panel.styledTextCtrl1.SetText(demoText + open('WaferName.xml').read())
+    panel.styledTextCtrl1.SetText(demoText )
+    #+ open('WaferName.xml').read()
     panel.styledTextCtrl1.EmptyUndoBuffer()
     panel.styledTextCtrl1.Colourise(0, -1)
 
