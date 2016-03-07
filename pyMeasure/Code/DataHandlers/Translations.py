@@ -94,6 +94,14 @@ def test_AsciiDataTable_to_XMLDataTable(input_file="700437.asc"):
     print XML_one_port
     XML_one_port.save()
 
+def test_OnePortRaw_to_XMLDataTable(input_file="OnePortRawTestFile.txt"):
+    os.chdir(TESTS_DIRECTORY)
+    one_port=OnePortRawModel(input_file)
+    options={"style_sheet":"../XSL/ONE_PORT_RAW_STYLE.xsl"}
+    XML_one_port=AsciiDataTable_to_XMLDataTable(one_port,**options)
+    print XML_one_port
+    XML_one_port.save()
+
 def test_AsciiDataTable_to_DataFrame(input_file="700437.asc"):
     os.chdir(TESTS_DIRECTORY)
     one_port=OnePortModel(input_file)
@@ -107,7 +115,8 @@ def timeit_script(script='test_AsciiDataTable_to_XMLDataTable()',
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
-    test_AsciiDataTable_to_XMLDataTable()
+    #test_AsciiDataTable_to_XMLDataTable()
+    test_OnePortRaw_to_XMLDataTable()
     #test_AsciiDataTable_to_pandas()
     #timeit_script()
     #timeit_script(script="test_AsciiDataTable_to_pandas()",

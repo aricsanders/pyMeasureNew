@@ -1264,15 +1264,18 @@ class AsciiDataTable():
                                 for index,item in enumerate(self.options["row_formatter_string"].split("{delimiter}"))]
             else:
                 list_formatter=["{0}" for i in self.column_names]
-            # print self.column_names
-            # print self.data[0]
-            # print list_formatter
-            # print len(self.column_names)==len(self.data[0])
-            out_list=dictionary_list=[{self.column_names[i]:list_formatter[i].format(value)
-                                       for i,value in enumerate(line)} for line in self.data]
+            print self.column_names
+            #print self.data
+            #print list_formatter
+            print len(self.column_names)==len(self.data[0])
+            print len(list_formatter)==len(self.data[0])
+            print type(self.data[0])
+            out_list=[{self.column_names[i]:list_formatter[i].format(value) for i,value in enumerate(line)}
+                      for line in self.data]
             return out_list
         except:
             print("Could not form a data_dictionary_list")
+            #print(out_list)
             raise
 
     def save_schema(self,path=None,format=None):
