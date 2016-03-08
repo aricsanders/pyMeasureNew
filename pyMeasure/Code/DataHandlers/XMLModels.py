@@ -196,7 +196,19 @@ class XMLBase():
             XSL_data=etree.parse(XSLT)
             XSL_transform=etree.XSLT(XSL_data)
             HTML=XSL_transform(etree.XML(self.document.toxml()))
-            return HTML
+            return str(HTML)
+
+        def save_HTML(self,XSLT=None,file_path=None):
+            """Saves a HTML transformation of the XML document using XLST at file_path. Defaults to
+            an XLST in self.options["XSLT"] and file_path=self.path.replace('.xml','.html')"""
+            HTML=self.to_HTML(XSLT=XSLT)
+            #print type(HTML)
+            if file_path is None:
+                file_path=self.path.replace('.xml','.html')
+            out_file=open(file_path,'w')
+            out_file.write(HTML)
+            out_file.close()
+
     def show(self,mode='Window'):
         """ Displays a XML Document either as formatted text in the command line or in a
         window (using wx)"""

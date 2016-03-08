@@ -118,7 +118,7 @@ class OnePortModel(AsciiDataTable):
         elif re.match("asc",table_type,re.IGNORECASE):
             self.lines=lines
             data_begin_line=self.find_line(" TABLE")+2
-            data=split_all_rows(lines[data_begin_line:],delimiter="")
+            data=np.loadtxt(self.path,skiprows=data_begin_line)
             self.options["data"]=data.tolist()
             self.options["header"]=lines[:self.find_line(" TABLE")]
 
@@ -159,11 +159,10 @@ class OnePortRawModel(AsciiDataTable):
                                            "Phase_S11":"Phase in degrees for port 1",
                                            "Magnitude_S22":"Linear magnitude for port 2",
                                            "Phase_S22":"Phase in degrees for port 2"}, "header": None,
-
                    "column_names": ["Frequency","Direction","Connect", "Magnitude_S11",
                                     "Phase_S11","Magnitude_S22",  "Phase_S22"],
                    "column_names_end_token": "\n", "data": None,
-                   'row_formatter_string': "{0:.5f}{delimiter}{1}{delimiter}{2}{delimiter}{3:.4f}{delimiter}{4:.2f}{delimiter}{5:.4f}{delimiter}{5:.2f}",
+                   'row_formatter_string': "{0:.5f}{delimiter}{1}{delimiter}{2}{delimiter}{3:.4f}{delimiter}{4:.2f}{delimiter}{5:.4f}{delimiter}{6:.2f}",
                    "data_table_element_separator": None}
         self.options={}
         for key,value in defaults.iteritems():
@@ -175,15 +174,16 @@ class OnePortRawModel(AsciiDataTable):
             for command in alias(self):
                 exec(command)
         if file_path is not None:
-            self.path=file_path
-            self.__read_and_fix__()
+            self.__read_and_fix__(file_path)
+
         AsciiDataTable.__init__(self,None,**self.options)
+        self.path=file_path
         self.structure_metadata()
 
-    def __read_and_fix__(self):
+    def __read_and_fix__(self,file_path=None):
         """Inputs in the raw OnePortRaw file and fixes any problems with delimiters,etc."""
         lines=[]
-        in_file=open(self.path,'r')
+        in_file=open(file_path,'r')
         for index,line in enumerate(in_file):
             lines.append(line)
             if re.match("!!",line):
@@ -197,8 +197,9 @@ class OnePortRawModel(AsciiDataTable):
     def structure_metadata(self):
         """Returns a dictionary of key,value pairs extracted from the header"""
         keys=["System_Id","System_Letter","Connector_Type_Calibration","Connector_Type_Measurement",
-              "Measurement_Type","Measurement_Date","Measurement_Time","Progam_Used","Program_Revision","Operator",
-              "Calibration_Name","Port_Used","Number_Connects","Number_Repeats","Number_Frequencies","Start_Frequency",
+              "Measurement_Type","Measurement_Date","Measurement_Time","Program_Used","Program_Revision","Operator",
+              "Calibration_Name","calibration_date","Port_Used","Number_Connects","Number_Repeats","Nbs",
+              "Number_Frequencies","Start_Frequency",
               "Device_Description","Device_Id"]
         self.metadata={}
         for index,key in enumerate(keys):
@@ -240,6 +241,8 @@ def test_OnePortRawModel(file_path='OnePortRawTestFile.txt'):
     print("{0} results in {1}:".format('new_table_1.get_column("Frequency")',new_table_1.get_column("Frequency")))
     print new_table_1.get_options()
     print new_table_1.metadata
+    print new_table_1.column_names
+    print('index' in new_table_1.column_names )
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':

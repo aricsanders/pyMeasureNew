@@ -383,7 +383,8 @@ class AsciiDataTable():
                   "escape_character":None,
                   "data_table_element_separator":'\n',
                   "treat_header_as_comment":None,
-                  "treat_footer_as_comment":None
+                  "treat_footer_as_comment":None,
+                  "metadata":None
                   }
         #some of the options have the abiltiy to confilct with each other, so there has to be a
         #built-in way to determine the precedence of each option, for import lines first, then begin and then end
@@ -417,6 +418,7 @@ class AsciiDataTable():
             self.column_names=self.options["column_names"]
             self.data=self.options["data"]
             self.footer=self.options["footer"]
+            self.metadata=self.options["metadata"]
             self.inline_comments=self.options["inline_comments"]
             self.initial_state=[self.options["header"],self.options["column_names"],
                                 self.options["data"],self.options["footer"],
@@ -1264,17 +1266,17 @@ class AsciiDataTable():
                                 for index,item in enumerate(self.options["row_formatter_string"].split("{delimiter}"))]
             else:
                 list_formatter=["{0}" for i in self.column_names]
-            print self.column_names
+            #print self.column_names
             #print self.data
             #print list_formatter
-            print len(self.column_names)==len(self.data[0])
-            print len(list_formatter)==len(self.data[0])
-            print type(self.data[0])
+            #print len(self.column_names)==len(self.data[0])
+            #print len(list_formatter)==len(self.data[0])
+            #print type(self.data[0])
             out_list=[{self.column_names[i]:list_formatter[i].format(value) for i,value in enumerate(line)}
                       for line in self.data]
             return out_list
         except:
-            print("Could not form a data_dictionary_list")
+            print("Could not form a data_dictionary_list, check that row_formatter_string is properly defined")
             #print(out_list)
             raise
 

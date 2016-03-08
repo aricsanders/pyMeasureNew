@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <xsl:output method='html' version='1.0' encoding='UTF-8' indent='yes'/>
-<!--Written by Aric Sanders 03/03/2016 Style sheet that maps one port xml sheets to html-->
+<!--Written by Aric Sanders 03/07/2016 Style sheet that maps one port raw xml sheets to html-->
 
 
 
@@ -15,7 +15,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>One port measurement</title>
+    <title>One port raw measurement</title>
 
     <!-- Bootstrap -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
@@ -95,7 +95,6 @@
   {
     x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
     y: [<xsl:for-each select="//Data/Tuple/@Magnitude_S11"><xsl:value-of select="."/>,</xsl:for-each>],
-
     type: 'scatter',
     mode:'markers'
   }
@@ -104,14 +103,8 @@
   {
     x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
     y: [<xsl:for-each select="//Data/Tuple/@Phase_S11"><xsl:value-of select="."/>,</xsl:for-each>],
-
-      visible: true,
-
-
-
-    },
     type: 'scatter',
-       mode:'markers'
+    mode:'markers'
   }
 ];
 var magnitudeLayout = {

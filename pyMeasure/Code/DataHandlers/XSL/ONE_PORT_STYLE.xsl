@@ -97,7 +97,7 @@
     y: [<xsl:for-each select="//Data/Tuple/@Magnitude"><xsl:value-of select="."/>,</xsl:for-each>],
     error_y: {
       type: 'data',
-      array: [<xsl:for-each select="//Data/Tuple/@uGg"><xsl:value-of select="."/>,</xsl:for-each>],
+      array: [<xsl:for-each select="//Data/Tuple/@uMg"><xsl:value-of select="."/>,</xsl:for-each>],
       visible: true
     },
     type: 'scatter',
