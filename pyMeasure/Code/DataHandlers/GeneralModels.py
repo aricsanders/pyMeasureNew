@@ -367,6 +367,7 @@ class AsciiDataTable():
                   "data_begin_token":None,
                   "data_end_token":None,
                   "metadata_delimiter":None,
+                  "metadata_key_value_delimiter":None,
                   "header_line_types":None,
                   "column_types":None,
                   "column_descriptions":None,
@@ -1243,7 +1244,12 @@ class AsciiDataTable():
         "Prints the option list"
         for key,value in self.options.iteritems():
             print("{0} = {1}".format(key,value))
-
+    def get_row(self,row_index=None):
+        """Returns the row as a list specified by row_index"""
+        if row_index is None:
+            return
+        else:
+            return self.data[row_index]
     def get_column(self,column_name=None,column_index=None):
         """Returns a column as a list given a column name or column index"""
         if column_name is None:
@@ -1281,10 +1287,10 @@ class AsciiDataTable():
             raise
 
     def save_schema(self,path=None,format=None):
-        """Saves the tables options as a text file. If no name is supplied, autonames it and saves"""
+        """Saves the tables options as a text file or pickled dictionary (default).
+        If no name is supplied, autonames it and saves"""
         if path is None:
             path=auto_name(self.name.replace('.'+self.options["extension"],""),'Schema',self.options["directory"],'txt')
-
         if format in [None,'python','pickle']:
             pickle.dump(self.options,open(path,'wb'))
         elif format in ['txt','text','.txt']:
@@ -1300,10 +1306,10 @@ class AsciiDataTable():
 class AsciiDataTableCollection():
     """A collection of multiple AsciiDataTables"""
     def __init__(self,file_path=None,table_names=None,**options):
-        # The primary attritbute should be self.data_tables=dictionary
+        # The primary attritbute should be self.data_tables=list of tables
         # the dictionary should be in the form {"table_name":AsciiDataTable}
         # since there is no way to know how many tables or their options,
-        # you can't read them in without **options-> self.table_names
+        # you can't read them in without **options-> self.tables
         # which can be passed as an option. Each table is an independent entity
         # but can have options set by global_options
         if file_path is None:
@@ -1321,7 +1327,11 @@ class AsciiDataTableCollection():
                 self.path=file_path
 
     def build_string(self,**temp_options):
-        pass
+        """Builds the string for the table collection using the temp_options"""
+        out_string=""
+        for table in self.tables:
+            out_string=out_string+table.build_string()
+        return out_string
 
 #-----------------------------------------------------------------------------
 # Module Scripts
