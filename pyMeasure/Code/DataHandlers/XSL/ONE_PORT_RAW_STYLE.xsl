@@ -2,9 +2,6 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <xsl:output method='html' version='1.0' encoding='UTF-8' indent='yes'/>
 <!--Written by Aric Sanders 03/07/2016 Style sheet that maps one port raw xml sheets to html-->
-
-
-
 <!-- Template for entries-->
 
 <xsl:template match='/'>
@@ -53,12 +50,12 @@
     <table>
         <tr>
             <td>
-        <div id="plot" style="width: 480px; height: 400px;" class="plot">
+        <div id="magnitude-plot" style="width: 480px; height: 400px;" class="plot">
         <!-- Plotly chart will be drawn inside this DIV --></div></td>
-        <td><div id="error-plot" style="width: 480px; height: 400px;" class="plot">
+        <td><div id="phase-plot" style="width: 480px; height: 400px;" class="plot">
         <!-- Plotly chart will be drawn inside this DIV --></div></td>
         </tr>
-</table>
+    </table>
     </div>
     <div>
         <h3>Data:</h3>
@@ -96,7 +93,7 @@
     x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
     y: [<xsl:for-each select="//Data/Tuple/@Magnitude_S11"><xsl:value-of select="."/>,</xsl:for-each>],
     type: 'scatter',
-    mode:'markers'
+    mode:'markers+lines'
   }
 ];
         var phase = [
@@ -104,7 +101,7 @@
     x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
     y: [<xsl:for-each select="//Data/Tuple/@Phase_S11"><xsl:value-of select="."/>,</xsl:for-each>],
     type: 'scatter',
-    mode:'markers'
+    mode:'markers+lines'
   }
 ];
 var magnitudeLayout = {
@@ -138,8 +135,8 @@ var magnitudeLayout = {
   title:'Phase'
 };
 
-Plotly.newPlot('plot', magnitude,magnitudeLayout);
-Plotly.newPlot('error-plot', phase,phaseLayout);
+Plotly.newPlot('magnitude-plot', magnitude,magnitudeLayout);
+Plotly.newPlot('phase-plot', phase,phaseLayout);
 	</script>
     <script>
 $(document).ready(function(){

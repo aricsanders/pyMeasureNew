@@ -48,7 +48,9 @@ class s2pv1(AsciiDataTable):
     def __init__(self,file_path=None,**options):
         """Initialization of the s2p class for version 1 files,
         if a file path is specified opens the file. If the file path is not
-        specified then data can be added through the s2pv1.data. It automatically changes whitespace to a single space."""
+        specified then data can be added through the s2pv1.data. It automatically changes whitespace to a single space
+        for consistency.
+        """
         defaults={"data_delimiter":" ",
                   "column_names_delimiter":None,
                   "specific_descriptor":'Data',
