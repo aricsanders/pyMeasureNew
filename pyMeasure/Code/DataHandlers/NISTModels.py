@@ -205,6 +205,45 @@ class OnePortRawModel(AsciiDataTable):
         for index,key in enumerate(keys):
             self.metadata[key]=self.header[index]
 
+class JBSparameter(AsciiDataTable):
+    """JBSparameter is a class that holds data taken and stored using Jim Booth's format.
+     """
+    def __init__(self,file_path=None,**options):
+        """Initializes the JBSparameter class. JB Sparameter data is very close to s2p, but has # as a comment
+         begin token, and space as a data delimiter. The first line has structured metadata that usually includes
+         date and IFBW"""
+        defaults= {"data_delimiter": ",", "column_names_delimiter": ",", "specific_descriptor": 'JB',
+                   "general_descriptor": 'Sparameter', "extension": 'txt', "comment_begin": "#", "comment_end": "\n",
+                   "column_types": ['float' for i in range(9)],
+                   "column_descriptions": {"Frequency": "Frequency in Hz", "Re_S11": "Linear magnitude",
+                                           "Im_S11": "Uncertainty in magnitude due to standards",
+                                           "Re_S21": "Uncertainty in magnitude due to electronics",
+                                           "Im_S21": "Uncertainty in magnitude for repeated connects",
+                                           "Re_S12": "Total uncertainty in magnitude",
+                                           "Im_S12": "Phase in degrees",
+                                           "Re_S22": "Uncertainty in phase due to standards",
+                                           "Im_S22": "Uncertainty in phase due to electronics"},
+                   "header": None,
+                   "column_names": ["Frequency", "Re_S11", "Im_S11", "Re_S21", "Im_S21", "Re_S12", "Im_S12",
+                                    "Re_S22","Im_S22"], "column_names_end_token": "\n", "data": None,
+                   "row_formatter_string": None, "data_table_element_separator": None}
+        self.options={}
+        for key,value in defaults.iteritems():
+            self.options[key]=value
+        for key,value in options.iteritems():
+            self.options[key]=value
+        # Define Method Aliases if they are available
+        if METHOD_ALIASES:
+            for command in alias(self):
+                exec(command)
+
+        if file_path is not None:
+            self.path=file_path
+            self.__read_and_fix__()
+
+    def __read_and_fix__(self):
+        """Reads and corrects issues in the JB data format"""
+
 
 class SwitchTermsFR():
     pass
