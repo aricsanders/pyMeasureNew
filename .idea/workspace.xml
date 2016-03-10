@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4139f2fc-c578-4782-b083-7284792a834c" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/Tests/One_Port_Sparameter_20160309_001.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/Tests/One_Port_Sparameter_20160309_001.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/TouchstoneModels.py" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/TouchstoneModels.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/XMLModels.py" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/XMLModels.py" />
     </list>
     <ignored path="pyMeasureNew.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -47,21 +44,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TouchstoneModels.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="TouchstoneModels.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/TouchstoneModels.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="100" column="0" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.5251397">
+              <caret line="107" column="48" selection-start-line="107" selection-start-column="48" selection-end-line="107" selection-end-column="48" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="XMLModels.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="XMLModels.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/XMLModels.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-33.902233">
-              <caret line="568" column="46" selection-start-line="568" selection-start-column="46" selection-end-line="568" selection-end-column="46" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="1277" column="16" selection-start-line="1277" selection-start-column="16" selection-end-line="1277" selection-end-column="16" />
               <folding />
             </state>
           </provider>
@@ -150,8 +147,8 @@
         <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/XSL/ONE_PORT_STYLE.xsl" />
         <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py" />
         <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/Translations.py" />
-        <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/TouchstoneModels.py" />
         <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/XMLModels.py" />
+        <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/TouchstoneModels.py" />
       </list>
     </option>
   </component>
@@ -297,7 +294,7 @@
       <recent name="C:\Users\sandersa\PyCharm Projects\html-examples" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.XMLModels">
+  <component name="RunManager" selected="Python.TouchstoneModels">
     <configuration default="false" name="Translations" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -311,23 +308,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="pyMeasureNew" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/Translations.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="StyledTextCtrlPanel" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/pyMeasure/Code/FrontEnds" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="pyMeasureNew" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pyMeasure/Code/FrontEnds/StyledTextCtrlPanel.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -379,6 +359,23 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="pyMeasureNew" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/XMLModels.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="TouchstoneModels" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="pyMeasureNew" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/TouchstoneModels.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -507,18 +504,18 @@
     </configuration>
     <list size="5">
       <item index="0" class="java.lang.String" itemvalue="Python.Translations" />
-      <item index="1" class="java.lang.String" itemvalue="Python.StyledTextCtrlPanel" />
-      <item index="2" class="java.lang.String" itemvalue="Python.XMLEditPanel" />
-      <item index="3" class="java.lang.String" itemvalue="Python.NISTModels" />
-      <item index="4" class="java.lang.String" itemvalue="Python.XMLModels" />
+      <item index="1" class="java.lang.String" itemvalue="Python.XMLEditPanel" />
+      <item index="2" class="java.lang.String" itemvalue="Python.NISTModels" />
+      <item index="3" class="java.lang.String" itemvalue="Python.XMLModels" />
+      <item index="4" class="java.lang.String" itemvalue="Python.TouchstoneModels" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.XMLModels" />
-        <item index="1" class="java.lang.String" itemvalue="Python.Translations" />
-        <item index="2" class="java.lang.String" itemvalue="Python.NISTModels" />
-        <item index="3" class="java.lang.String" itemvalue="Python.XMLEditPanel" />
-        <item index="4" class="java.lang.String" itemvalue="Python.StyledTextCtrlPanel" />
+        <item index="0" class="java.lang.String" itemvalue="Python.TouchstoneModels" />
+        <item index="1" class="java.lang.String" itemvalue="Python.XMLModels" />
+        <item index="2" class="java.lang.String" itemvalue="Python.Translations" />
+        <item index="3" class="java.lang.String" itemvalue="Python.NISTModels" />
+        <item index="4" class="java.lang.String" itemvalue="Python.XMLEditPanel" />
       </list>
     </recent_temporary>
   </component>
@@ -689,7 +686,13 @@
       <option name="project" value="LOCAL" />
       <updated>1457590597592</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="Added ability to handle context in Data_Description of XMLDataTable">
+      <created>1457593705484</created>
+      <option name="number" value="00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1457593705484</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -735,7 +738,8 @@
     <MESSAGE value="Added row_begin and row_end token functionaility" />
     <MESSAGE value="Data Files in Tests Folder" />
     <MESSAGE value="One Port Raw and One Port files, plus added save_HTML() to XMLBase" />
-    <option name="LAST_COMMIT_MESSAGE" value="One Port Raw and One Port files, plus added save_HTML() to XMLBase" />
+    <MESSAGE value="Added ability to handle context in Data_Description of XMLDataTable" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added ability to handle context in Data_Description of XMLDataTable" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1109,18 +1113,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/TouchstoneModels.py">
+    <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/XMLModels.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="100" column="0" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
+          <caret line="1277" column="16" selection-start-line="1277" selection-start-column="16" selection-end-line="1277" selection-end-column="16" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/XMLModels.py">
+    <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/TouchstoneModels.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-33.902233">
-          <caret line="568" column="46" selection-start-line="568" selection-start-column="46" selection-end-line="568" selection-end-column="46" />
+        <state vertical-scroll-proportion="0.5251397">
+          <caret line="107" column="48" selection-start-line="107" selection-start-column="48" selection-end-line="107" selection-end-column="48" />
           <folding />
         </state>
       </provider>

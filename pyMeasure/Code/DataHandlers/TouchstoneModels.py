@@ -101,6 +101,12 @@ class S2PV1(AsciiDataTable):
 
 #-----------------------------------------------------------------------------
 # Module Scripts
+def test_option_string():
+    """Tests the regex for extracting option string values"""
+    match=re.search(OPTION_LINE_PATTERN,"# GHz S RI R 50")
+    print match.groupdict()
+    print match.groupdict()["Format"] in FORMATS
+
 def test_s2pv1(file_path="thru.s2p"):
     """Tests the s2pv1 class"""
     os.chdir(TESTS_DIRECTORY)
@@ -108,4 +114,4 @@ def test_s2pv1(file_path="thru.s2p"):
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
-    pass
+    test_option_string()
