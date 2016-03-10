@@ -241,6 +241,7 @@ class XMLBase():
     def __str__(self):
         "Controls how XMLBAse is returned when a string function is called"
         return self.document.toprettyxml()
+
 class Log(XMLBase):
     """ Data container for a general Log"""
     def __init__(self,file_path=None,**options):

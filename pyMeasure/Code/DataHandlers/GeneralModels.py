@@ -1413,6 +1413,7 @@ def test_open_existing_AsciiDataTable():
              "directory":TESTS_DIRECTORY,'header_begin_token':'BEGIN HEADER\n',
                   'header_end_token':'END HEADER','data_begin_token':'BEGIN DATA\n','data_end_token':"END DATA"}
     new_table.save('new_test_table.txt',**temp_options)
+
 def test_AsciiDataTable_equality():
     options={"column_names":["a","b","c"],"data":[[0,1,2],[2,3,4]],"data_delimiter":'\t',
              "header":['Hello There\n',"My Darling"],"column_names_begin_token":'!',"comment_begin":'#',
@@ -1432,6 +1433,7 @@ def test_AsciiDataTable_equality():
     print new_table==new_table_2
     print new_table_2
     print new_table
+
 def test_inline_comments():
     options={"column_names":["a","b","c"],"data":[[0,1,2],[2,3,4]],"data_delimiter":'\t',
              "header":['Hello There\n',"My Darling"],"column_names_begin_token":'!',"comment_begin":'#',
@@ -1449,6 +1451,7 @@ def test_add_row():
     print "Add the row 0,1,3"
     new_table.add_row([0,1,3])
     print new_table
+
 def test_add_index():
     options={"column_names":["a","b","c"],"data":[[0,1,2],[2,3,4]],"data_delimiter":'\t',
              "header":['Hello There\n',"My Darling"],"column_names_begin_token":'!',"comment_begin":'#',
@@ -1467,6 +1470,7 @@ def test_add_index():
     print new_table
     print "Now Get the index column"
     print new_table.get_column(column_name='index')
+
 def show_structure_script():
     """ Shows a table elements by substituting the names Explicitly
     :return: None
@@ -1559,6 +1563,7 @@ def show_structure_script():
     # for line in test_lines[:end_line]:
     #     print line
     #print new_table.get_options()
+
 def test_save_schema():
     "tests the save schema method of the Ascii Data Table"
     os.chdir(TESTS_DIRECTORY)
@@ -1612,6 +1617,7 @@ def test_save_schema():
     options_2=new_table.options
     #new_table_2=AsciiDataTable(new_table.path,**options_2)
     #print_comparison(new_table.header,new_table_2.header)
+
 def test_read_schema():
     """ Tests the read_schema function
     """
