@@ -556,12 +556,23 @@ class DataTable(XMLBase):
                 for key,value in data_dictionary.iteritems():
                     # This hanldes Tag:Text dictionaries
                     if re.search('description',key,re.IGNORECASE):
+                        #This is the flat dictionary handling code {"Data_Description:{key:value}}
+                        #Need one that is {"Data_Description":{"Context":{key:value}}}
                         new_entry=self.document.createElement(key)
                         for tag,element_text in value.iteritems():
-                            new_tag=self.document.createElement(tag)
-                            new_text=self.document.createTextNode(element_text)
-                            new_tag.appendChild(new_text)
-                            new_entry.appendChild(new_tag)
+                            if type(element_text) is DictionaryType:
+                                new_tag=self.document.createElement(tag)
+                                new_entry.appendChild(new_tag)
+                                for inner_tag,inner_element_text in element_text.iteritems():
+                                    new_inner_tag=self.document.createElement(inner_tag)
+                                    new_inner_text=self.document.createTextNode(inner_element_text)
+                                    new_inner_tag.appendChild(new_inner_text)
+                                    new_tag.appendChild(new_inner_tag)
+                            else:
+                                new_tag=self.document.createElement(tag)
+                                new_text=self.document.createTextNode(element_text)
+                                new_tag.appendChild(new_text)
+                                new_entry.appendChild(new_tag)
                         self.document.documentElement.appendChild(new_entry)
                     if re.search('data',key,re.IGNORECASE) and not re.search('Description',key,re.IGNORECASE):
                         new_entry=self.list_to_XML(value)
@@ -1207,16 +1218,21 @@ def test_DataTable():
     'y':'y Distance in microns.','Notes':'This data is fake'},'Data':[[1,2],[2,3]]}
     test_dictionary_2={'Data_Description':{'x':'x Distance in microns.',
     'y':'y Distance in microns.'},'Data':[{'x':1,'y':2},{'x':2,'y':3}]}
+    test_dictionary_3={'Data_Description':{'Column_Descriptions':{'x':'x Distance in microns.',
+    'y':'y Distance in microns.'}},'Data':[{'x':1,'y':2},{'x':2,'y':3}]}
     test_options_2={'data_dictionary':test_dictionary}
     test_options_3={'data_dictionary':test_dictionary_2}
+    test_options_4={'data_dictionary':test_dictionary_3}
     new_table_2=DataTable(**test_options_2)
     new_table_3=DataTable(**test_options_3)
+    new_table_4=DataTable(**test_options_4)
     print new_table_2
     print new_table_3
     print new_table_3.to_list('x')
     print new_table_3.to_tuple_list(['x','y'])
     print new_table_3.path
     new_table_3.get_header()
+    print new_table_4
 
 def test_get_header():
     """ Test of the get header function of the DataTable Class """
@@ -1274,9 +1290,9 @@ if __name__=='__main__':
     #test_EndOfDayLog()
     #test_show()
     #test_to_HTML()
-    #test_DataTable()
+    test_DataTable()
     #test_get_header()
     #test_open_measurement()
     #test_get_attribute_names()
     #test_FileRegister()
-    test_Metadata()
+    #test_Metadata()

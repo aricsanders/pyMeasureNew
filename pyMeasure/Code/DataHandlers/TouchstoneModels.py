@@ -84,13 +84,21 @@ class S2PV1(AsciiDataTable):
         lines=[]
         for line in in_file:
             lines.append(line)
+
     def change_frequency_units(self,new_frequency_units=None):
-        """Changes the frequency units from the current to new_frequency_units"""
+        """Changes the frequency units from the current to new_frequency_units. Frequency Units must be one
+        of the following: 'Hz','kHz','MHz', or 'GHz'. """
         pass
 
     def change_data_format(self,new_format=None):
-        """Changes the data format to new_format. Format must be one of the following: 'DB','MA','RI'"""
+        """Changes the data format to new_format. Format must be one of the following: 'DB','MA','RI'
+        standing for Decibel-Angle, Magnitude-Angle or Real-Imaginary"""
         pass
+
+    def show(self):
+        """Shows the touchstone file"""
+        pass
+
 #-----------------------------------------------------------------------------
 # Module Scripts
 def test_s2pv1(file_path="thru.s2p"):
