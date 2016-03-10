@@ -36,6 +36,12 @@ except:
     print("The module pandas was not found,"
           "please put it on the python path")
     raise ImportError
+try:
+    import odo
+except:
+    print("The module odo was not found,"
+          "please put it on the python path")
+    raise ImportError
 #-----------------------------------------------------------------------------
 # Module Constants
 

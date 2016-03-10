@@ -37,13 +37,17 @@ except:
 TOUCHSTONE_KEYWORDS=["Version","Number of Ports","Two-Port Order","Number of Frequencies",
                      "Number of Noise Frequencies","Reference","Matrix Format","Mixed-Mode Order",
                      "Network Data","Noise Data","End"]
+OPTION_LINE_PATTERN='# (?P<Frequency_Units>\w+) (?P<Parameter>\w+) (?P<Format>\w+) R (?P<Reference_Resistance>\w+)'
+FREQUENCY_UNITS=["Hz","kHz","MHz","GHz"]
+PARAMETERS=["S","Y","Z","G","H"]
+FORMATS=["RI","DB","MA"]
 
 #-----------------------------------------------------------------------------
 # Module Functions
 
 #-----------------------------------------------------------------------------
 # Module Classes
-class s2pv1(AsciiDataTable):
+class S2PV1(AsciiDataTable):
     """A container for s2p files"""
     def __init__(self,file_path=None,**options):
         """Initialization of the s2p class for version 1 files,
@@ -72,9 +76,27 @@ class s2pv1(AsciiDataTable):
             self.options[key]=value
         self.elements=['header','column_names','data','footer','inline_comments']
         AsciiDataTable.__init__(self,file_path,**options)
+
+    def __read_and_fix__(self):
+        """Reads a s2pv1 file and fixes any problems with delimiters"""
+        default_option_line="# GHz S RI R50"
+        in_file=open(self.path,'r')
+        lines=[]
+        for line in in_file:
+            lines.append(line)
+    def change_frequency_units(self,new_frequency_units=None):
+        """Changes the frequency units from the current to new_frequency_units"""
+        pass
+
+    def change_data_format(self,new_format=None):
+        """Changes the data format to new_format. Format must be one of the following: 'DB','MA','RI'"""
+        pass
 #-----------------------------------------------------------------------------
 # Module Scripts
-
+def test_s2pv1(file_path="thru.s2p"):
+    """Tests the s2pv1 class"""
+    os.chdir(TESTS_DIRECTORY)
+    new_table=S2PV1(file_path)
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
