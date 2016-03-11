@@ -79,7 +79,6 @@ def list_to_string(row_list,data_delimiter=None,row_formatter_string=None,begin=
     to \n to have nothing at the end use ''
     """
     check_arg_type(row_list,ListType)
-
     if data_delimiter is None:
         data_delimiter=','
     string_out=""
@@ -173,23 +172,28 @@ def strip_tokens(string_list,*remove_tokens):
     """Strips all tokens in the list remove_tokens from a list of strings
     Returns the list with less elements if the tokens contained "\n". Now newline characters are returned in the list
     elements. Meant to reverse the action of adding tokens to a list of strings"""
-    check_arg_type(string_list,ListType)
     temp_string=string_list_collapse(string_list,string_delimiter="")
     remove_list=[]
     for token in remove_tokens:
         if token:
+            # we can't strip endlines f
             if token=="\n":
                 print("Warning \\n is in the remove tokens")
+                break
             remove_list.append(token)
+            # print remove_list
     try:
         for item in remove_list:
-            temp_string=re.sub(item,"",temp_string)
-            print temp_string
+            temp_string=temp_string.replace(item,"")
+            #print temp_string
     except:
         print("Strip Tokens Did not work")
         pass
     # spliting using "\n" seems to give an extra empty element at the end always
     new_string_list=temp_string.splitlines()
+    # now we add endlines back in for consistency
+    for index,line in enumerate(new_string_list):
+        new_string_list[index]=line+'\n'
     return new_string_list
 
 def strip_begin_end_tokens(string_list,begin_token=None,end_token=None):
@@ -205,7 +209,7 @@ def strip_begin_end_tokens(string_list,begin_token=None,end_token=None):
     else:
         #print("The {0} var is {1}".format('string_list',string_list))
         #print("The {0} var is {1}".format('string_list[0]',string_list[0]))
-        print_comparison(string_list[0],begin_token)
+        #print_comparison(string_list[0],begin_token)
         if string_list[0]==begin_token:
             out_list.pop(0)
         else:
@@ -214,12 +218,12 @@ def strip_begin_end_tokens(string_list,begin_token=None,end_token=None):
     if end_token is None or end_token is "":
         pass
     else:
-        print_comparison(string_list[-1],end_token)
+        #print_comparison(string_list[-1],end_token)
         if out_list[-1]==end_token:
             out_list.pop(-1)
         else:
             out_list[-1]=out_list[-1].replace(end_token,"")
-    print("The {0} var is {1}".format('out_list',out_list))
+    # print("The {0} var is {1}".format('out_list',out_list))
     return out_list
 
 
@@ -274,6 +278,7 @@ def split_all_rows(row_list,delimiter=None,escape_character=None):
     for row in row_list:
         out_list.append(split_row(row,delimiter=delimiter,escape_character=escape_character))
     return out_list
+
 def convert_row(row_list_strings,column_types=None):
     """Converts a row list of strings to native
     python types using a column types list"""
@@ -289,7 +294,7 @@ def convert_row(row_list_strings,column_types=None):
             elif re.match('float',column_type,re.IGNORECASE):
                 out_row[index]=float(row_list_strings[index])
             elif re.match('str|char',column_type,re.IGNORECASE):
-                print_comparison(row_list_strings[index],out_row[index])
+                #print_comparison(row_list_strings[index],out_row[index])
                 out_row[index]=str(row_list_strings[index])
             elif re.match('com',column_type,re.IGNORECASE):
                 out_row[index]=complex(row_list_strings[index])
@@ -461,13 +466,18 @@ class AsciiDataTable():
             self.initial_state=[self.options["header"],self.options["column_names"],
                                 self.options["data"],self.options["footer"],
                                 self.options["inline_comments"]]
-            print "I got here {0}".format(self.path)
+            #print "I got here {0}".format(self.path)
             [self.options["header"],self.options["column_names"],
                                 self.options["data"],self.options["footer"],
                                 self.options["inline_comments"]]=[None for i in self.elements]
 
-
-            self.update_model()
+            #if you are validating the model, you have to skip the updating until it hsa been parsed
+            try:
+                if self.options["validate"]:
+                    del self.options["validate"]
+                    pass
+            except KeyError:
+                self.update_model()
 
 
         else:
@@ -631,7 +641,7 @@ class AsciiDataTable():
                         content_list=self.lines[
                                             self.options['%s_begin_line'%element]:self.options['%s_end_line'%element]]
                         self.__dict__[element]=content_list
-                        #print("The result of parsing is self.{0} = {1}".format(element,content_list))
+                        # print("The result of parsing is self.{0} = {1}".format(element,content_list))
                 except:
                     raise
         # Remove any defined begin and end tokens
@@ -640,39 +650,49 @@ class AsciiDataTable():
                         for index,line in enumerate(self.__dict__[element]):
                             self.__dict__[element][index]=line
 
-                        content_list=strip_begin_end_tokens(self.__dict__[element],
-                                                  begin_token=self.options['%s_begin_token'%element],
-                                                    end_token=self.options['%s_end_token'%element])
+                        content_list=strip_tokens(self.__dict__[element],
+                                                  *[self.options['%s_begin_token'%element],
+                                                    self.options['%s_end_token'%element]])
                         self.__dict__[element]=content_list
-                        #print("The result of parsing is self.{0} = {1}".format(element,content_list))
+                        # print("The result of parsing is self.{0} = {1}".format(element,content_list))
         # parse the header
         if self.header is not None:
             #print("The {0} variable is {1}".format('self.header',self.header))
             remove_tokens=[self.options['block_comment_begin'],self.options['block_comment_end']]
             temp_header=self.header
             if self.options["treat_header_as_comment"] is None or self.options["treat_header_as_comment"]:
-                temp_header=strip_begin_end_tokens(temp_header,
-                                                   self.options["block_comment_begin"],
-                                                   self.options["block_comment_end"])
+                remove_tokens=[self.options["block_comment_begin"],
+                                                    self.options["block_comment_end"]]
+                if self.options["data_table_element_separator"] is not None and self.options['comment_end'] != None:
+                    remove_tokens.append(self.options['comment_end']+self.options["data_table_element_separator"])
+                temp_header=strip_tokens(temp_header,
+                                                   *remove_tokens)
                 temp_header=strip_all_line_tokens(temp_header,
                                                   self.options['comment_begin'],self.options['comment_end'])
             else:
                 pass
 
-            print("The {0} variable is {1}".format('temp_header',temp_header))
-            #temp_header=strip_tokens(temp_header,*remove_tokens)
             #print("The {0} variable is {1}".format('temp_header',temp_header))
+            #temp_header=strip_tokens(temp_header,*remove_tokens)
+            # print("The {0} variable is {1}".format('temp_header',temp_header))
+            for index,line in enumerate(temp_header):
+                temp_header[index]=line.replace('\n',"")
+
             self.header=temp_header
-            #print("The {0} variable is {1}".format('self.header',self.header))
+            # print("The {0} variable is {1}".format('self.header',self.header))
         # parse the column_names
         if self.column_names is not None:
+            #print("The result of parsing is self.{0} = {1}".format('column_names',self.column_names))
             self.column_names=strip_all_line_tokens(self.column_names,begin_token=self.options['column_names_begin_token'],
                                               end_token=self.options['column_names_end_token'])
-            #print("The result of parsing is self.{0} = {1}".format('column_names',self.column_names))
+            # print("The result of parsing is self.{0} = {1}".format('column_names',self.column_names))
             self.column_names=split_all_rows(self.column_names,delimiter=self.options["column_names_delimiter"],
                                         escape_character=self.options["escape_character"])
+            # print("The result of parsing is self.{0} = {1}".format('column_names',self.column_names))
             self.column_names=self.column_names[0]
-            #print("The result of parsing is self.{0} = {1}".format('column_names',self.column_names))
+            for index,line in enumerate(self.column_names):
+                self.column_names[index]=line.replace('\n',"")
+            # print("The result of parsing is self.{0} = {1}".format('column_names',self.column_names))
         # parse the data
         if self.data is not None:
             self.data=strip_all_line_tokens(self.data,begin_token=self.options["row_begin_token"],
@@ -682,16 +702,29 @@ class AsciiDataTable():
                                      escape_character=self.options["escape_character"])
             #print("The result of parsing is self.{0} = {1}".format('data',self.data))
             self.data=convert_all_rows(self.data,self.options["column_types"])
-            print("The result of parsing is self.{0} = {1}".format('data',self.data))
+            #print("The result of parsing is self.{0} = {1}".format('data',self.data))
         # parse the footer
         if self.footer is not None:
             #print("The {0} variable is {1}".format('self.footer',self.footer))
-            remove_tokens=[self.options['comment_begin'],self.options['comment_end'],
-                           self.options['block_comment_begin'],self.options['block_comment_end']]
-            temp_footer=[item+"\n" for item in self.footer]
-            temp_footer=strip_tokens(temp_footer,*remove_tokens)
-            #print("The {0} variable is {1}".format('temp_header',temp_header))
+            remove_tokens=[self.options['block_comment_begin'],self.options['block_comment_end']]
+            temp_footer=self.footer
+            if self.options["treat_footer_as_comment"] is None or self.options["treat_footer_as_comment"]:
+                temp_footer=strip_tokens(temp_footer,
+                                                   *[self.options["block_comment_begin"],
+                                                   self.options["block_comment_end"]])
+                temp_footer=strip_all_line_tokens(temp_footer,
+                                                  self.options['comment_begin'],self.options['comment_end'])
+            else:
+                pass
+
+            #print("The {0} variable is {1}".format('temp_footer',temp_footer))
+            #temp_footer=strip_tokens(temp_footer,*remove_tokens)
+            #print("The {0} variable is {1}".format('temp_footer',temp_footer))
+            for index,line in enumerate(temp_footer):
+                temp_footer[index]=line.replace('\n',"")
+
             self.footer=temp_footer
+            # print("The {0} variable is {1}".format('self.footer',self.footer))
 
 
     def get_options_by_element(self,element_name):
@@ -761,7 +794,8 @@ class AsciiDataTable():
 
     def save(self,path=None,**temp_options):
         """" Saves the file, to save in another ascii format specify elements in temp_options, the options
-        specified do not permanently change the object's options. If path is supplied it saves the file to that path. """
+        specified do not permanently change the object's options. If path is supplied it saves the file to that path
+        otherwise uses the object's attribute path to define the saving location """
         original_options=self.options
         for key,value in temp_options.iteritems():
             self.options[key]=value
@@ -800,9 +834,11 @@ class AsciiDataTable():
                 self.options["header_end_line"]=None
             else:
                 string_out=self.get_header_string()+between_section
+
                 last_header_line=self.get_header_string().count('\n')+1
                 self.options["header_end_line"]=last_header_line
                 next_section_begin=last_header_line+inner_element_spacing
+
         if self.column_names is None:
             self.options['column_names_begin_line']=self.options['column_names_end_line']=None
             pass
@@ -915,6 +951,7 @@ class AsciiDataTable():
                 string_out=line_comment_string(self.header,
                                                comment_begin=self.options["comment_begin"],
                                                comment_end=self.options["comment_end"])
+                #string_out=re.sub('\n','',string_out,count=1)
             elif type(self.header) is ListType:
                 if self.options['block_comment_begin'] is None:
                     if self.options['comment_begin'] is None:
@@ -923,6 +960,10 @@ class AsciiDataTable():
                     else:
                         string_out=line_list_comment_string(self.header,comment_begin=self.options['comment_begin'],
                                                         comment_end=self.options['comment_end'])
+                        lines_out=string_out.splitlines()
+
+                        # if re.search('\n',self.options['comment_end']):
+                        #     string_out=re.sub('\n','',string_out,count=1)
                         #self.options["header_line_types"]=["line_comment" for line in self.header]
                 else:
                     string_out=line_list_comment_string(self.header,comment_begin=self.options['block_comment_begin'],
@@ -1171,27 +1212,40 @@ class AsciiDataTable():
         return self
 
     def is_valid(self):
-        """Returns True if ascii table conforms to its specification given by options"""
-        self.update_model()
+        """Returns True if ascii table conforms to its specification given by its own options"""
         options={}
         for key,value in self.options.iteritems():
             options[key]=value
-        options["header"]=[]
-        options["column_names"]=[]
-        options["data"]=[]
-        options["footer"]=[]
+            # print("self.options[{0}] is {1} ".format(key,value))
+        for element in self.elements:
+            if self.__dict__[element] is None:
+                options[element]=None
+            else:
+                options[element]=[]
+        options["validate"]=True
         newtable=AsciiDataTable(None,**options)
-        newtable.lines=self.build_string().splitlines()
+        lines=self.build_string().splitlines()
+        for index,line in enumerate(lines):
+            lines[index]=line+"\n"
+        newtable.lines=lines
         newtable.__parse__()
-        #newtable.update_model()
+        # print newtable.data
+        # print newtable.column_names
+        # print newtable
+        #print_comparison(newtable.footer,None)
+        newtable.update_model()
         # The new table rows are not being coerced into the right format
-        print newtable
+        #print newtable
         #newtable.update_model()
         #print newtable.options
         #print self.options
         #print newtable.data
-        #print newtable.options==self.options
-        #print self
+        # print newtable.options==self.options
+        # for option_key,option_value in newtable.options.iteritems():
+        #     print("New Table Option {0} is {1} ".format(option_key,option_value))
+        #     print("self.options[{0}] is {1} ".format(option_key,self.options[option_key]))
+        #     print_comparison(option_value,self.options[option_key])
+        # #print self
         return self==newtable
         # create a clone and then parse the clone and compare it to the
         # original. If they are equal then it is valid
@@ -1531,24 +1585,39 @@ def test_open_existing_AsciiDataTable():
                   }
     os.chdir(TESTS_DIRECTORY)
     new_table=AsciiDataTable(None,**options)
-    print new_table
+    table_string_1=str(new_table)
+    print("Printing the lines representation of the table with line numbers")
+    print("-"*80+"\n")
+    for index,line in enumerate(table_string_1.splitlines()):
+        print("{0} {1}".format(index,line))
     new_table.save()
     file_path=new_table.path
     new_options={}
     for key,value in new_table.options.iteritems():
         new_options[key]=value
     new_table_1=AsciiDataTable(file_path=file_path,**new_options)
-    new_table.get_options_by_element('columns')
-    print new_table.lines
-    print new_table.header
-    print new_table.get_header_string()
-    print new_table.column_names
-    print new_table.get_column_names_string()
-    print new_table.data
-    print new_table.get_data_string()
-    print new_table.footer
-    print new_table.get_footer_string()
-    print new_table_1
+    table_string_2=str(new_table_1)
+    print("Printing the lines representation of the opened table with line numbers")
+    print("-"*80+"\n")
+    for index,line in enumerate(table_string_2.splitlines()):
+        print("{0} {1}".format(index,line))
+    #print new_table_1
+    print("Printing the line by line equality of the table strings")
+    print("-"*80)
+    for index,line in enumerate(table_string_2.splitlines()):
+        print("{0} {1}".format(index,line==table_string_1.splitlines()[index]))
+    print("The assertion that the built table is equal to the opened table is {0}".format(new_table==new_table_1))
+    # new_table.get_options_by_element('columns')
+    # print new_table.lines
+    # print new_table.header
+    # print new_table.get_header_string()
+    # print new_table.column_names
+    # print new_table.get_column_names_string()
+    # print new_table.data
+    # print new_table.get_data_string()
+    # print new_table.footer
+    # print new_table.get_footer_string()
+    # print new_table_1
     # temp_options={"data_delimiter":',','column_names_delimiter':',',
     #          "column_names_begin_token":'#',"comment_begin":'#',"comment_end":'\n',
     #          "directory":TESTS_DIRECTORY,'header_begin_token':'BEGIN HEADER\n',
@@ -1557,8 +1626,8 @@ def test_open_existing_AsciiDataTable():
 
 def test_AsciiDataTable_equality():
     options={"column_names":["a","b","c"],"data":[[0,1,2],[2,3,4]],"data_delimiter":'\t',
-             "header":['Hello There\n',"My Darling"],"column_names_begin_token":'!',"comment_begin":'#',
-             "directory":TESTS_DIRECTORY}
+             "header":['Hello There',"My Darling"],"column_names_begin_token":'!',"comment_begin":'#',
+             "directory":TESTS_DIRECTORY,"treat_header_as_comment":False}
     new_table=AsciiDataTable(file_path=None,**options)
     print new_table.data
     new_table_2=AsciiDataTable()
@@ -1770,14 +1839,15 @@ def test_read_schema():
 def test_change_unit_prefix():
     """Tests the change_unit_prefix method of the AsciiDataTable Class
     """
-    options={"column_names":["Frequency","b","c"],"data":[[0.1*10**10,1,2],[2*10**10,3,4]],"data_delimiter":'\t',
-             "header":['Hello There',"My Darling"],"column_names_begin_token":'!',"comment_begin":'#',
+    options={"column_names":["Frequency","b","c"],"column_names_delimiter":",","data":[[0.1*10**10,1,2],[2*10**10,3,4]],"data_delimiter":'\t',
+             "header":['Hello There',"My Darling"],"column_names_begin_token":'#',"comment_begin":'!',
              "comment_end":"\n",
              "directory":TESTS_DIRECTORY,
              "column_units":["Hz",None,None],
              "column_descriptions":["Frequency in Hz",None,None],
              "column_types":['float','float','float'],
-             "row_formatter_string":"{0:.2e}{delimiter}{1}{delimiter}{2}"}
+             "row_formatter_string":"{0:.2e}{delimiter}{1}{delimiter}{2}",
+             "treat_header_as_comment":True}
     new_table=AsciiDataTable(None,**options)
     print(" After creation the table looks like")
     print("*"*80)
@@ -1791,14 +1861,14 @@ def test_change_unit_prefix():
     print("The options column_units and column_descriptions are:")
     print new_table.options["column_units"]
     print new_table.options["column_descriptions"]
-    #print new_table.is_valid()
+    print new_table.is_valid()
 
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
     #test_AsciiDataTable()
-    test_open_existing_AsciiDataTable()
-    #test_AsciiDataTable_equality()
+    #test_open_existing_AsciiDataTable()
+    test_AsciiDataTable_equality()
     #test_inline_comments()
     #test_add_row()
     #test_add_index()
