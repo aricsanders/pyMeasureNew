@@ -6,7 +6,7 @@
 # License:     MIT License
 #-----------------------------------------------------------------------------
 """ A module dedicated to the manipulation and storage of touchstone files, such as
- .s2p or .ts files"""
+ .s2p or .ts files. Touchstone files are normally s-parameter data for multiport VNA's"""
 
 #-----------------------------------------------------------------------------
 # Standard Imports
@@ -55,7 +55,7 @@ class S2PV1(AsciiDataTable):
         specified then data can be added through the s2pv1.data. It automatically changes whitespace to a single space
         for consistency.
         """
-        defaults={"data_delimiter":" ",
+        defaults={"data_delimiter":"\t",
                   "column_names_delimiter":None,
                   "specific_descriptor":'Data',
                   "general_descriptor":'Table',
@@ -79,16 +79,26 @@ class S2PV1(AsciiDataTable):
 
     def __read_and_fix__(self):
         """Reads a s2pv1 file and fixes any problems with delimiters"""
-        default_option_line="# GHz S RI R50"
+        default_option_line="# GHz S RI R 50"
         in_file=open(self.path,'r')
         lines=[]
         for line in in_file:
             lines.append(line)
+            if re.match(OPTION_LINE_PATTERN,line):
+                match=re.match(OPTION_LINE_PATTERN,line)
+                for key,value in match.groupdict():
+                    self.__dict__[key.lower()]=value
+
 
     def change_frequency_units(self,new_frequency_units=None):
         """Changes the frequency units from the current to new_frequency_units. Frequency Units must be one
         of the following: 'Hz','kHz','MHz', or 'GHz'. """
-        pass
+        old_units=self.frequency_units
+        old_prefix=old_units.replace('Hz','')
+        new_prefix=new_frequency_units.replace('Hz','')
+        self.change_unit_prefix('Frequency',old_prefix=old_prefix,new_prefix=new_prefix)
+        self.frequency_units=new_frequency_units
+
 
     def change_data_format(self,new_format=None):
         """Changes the data format to new_format. Format must be one of the following: 'DB','MA','RI'

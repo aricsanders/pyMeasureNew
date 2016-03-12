@@ -1361,12 +1361,11 @@ class AsciiDataTable():
           self.header=ensure_string(self.header)+ensure_string(self.footer)
         self.footer=None
 
-    # This actually operated on self.lines before parsing and not directly on self.header
-    def add_comment(self,comment):
-        "Adds a line comment to the header"
-        new_comment=line_comment_string(comment,comment_begin=self.options["comment_begin"],
-                                               comment_end=self.options["comment_end"])
-        self.header=self.header.append(new_comment)
+    # # This actually operated on self.lines before parsing and not directly on self.header
+    # def add_comment(self,comment):
+    #     "Adds a line comment to the header"
+    #     self.header.append(comment)
+    #     self.options["header_line_types"].insert('line_comment',len(self.header)-1)
 
     def add_inline_comment(self,comment="",line_number=None,string_position=None):
         "Adds an inline in the specified location"
@@ -1374,9 +1373,9 @@ class AsciiDataTable():
             self.inline_comments.append([comment,line_number,string_position])
         except:pass
 
-    def add_block_comment(self,comment,element=None,location=None):
-        "Adds a block comment in the specified location"
-        pass
+    # def add_block_comment(self,comment,element=None,location=None):
+    #     "Adds a block comment in the specified location"
+    #     pass
 
     def get_options(self):
         "Prints the option list"
