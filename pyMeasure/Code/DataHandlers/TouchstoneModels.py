@@ -123,6 +123,7 @@ class S2PV1():
                 match=re.match(OPTION_LINE_PATTERN,line)
                 for key,value in match.groupdict().iteritems():
                     self.__dict__[key.lower()]=value
+        # parse line by line and put anything that matches regex in the right place
 
 
 
