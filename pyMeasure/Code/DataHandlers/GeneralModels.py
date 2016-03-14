@@ -6,8 +6,6 @@
 # License:     MIT License
 #-----------------------------------------------------------------------------
 """ Module that contains general data models and functions for handling them """
-#Todo: add a handler for when self.data contains a string with the data_delimiter in it
-
 #-----------------------------------------------------------------------------
 # Standard Imports
 from types import *
@@ -39,6 +37,7 @@ except:
 #-----------------------------------------------------------------------------
 # Module Constants
 TESTS_DIRECTORY=os.path.join(os.path.dirname(os.path.realpath(__file__)),'Tests')
+NUMBER_MATCH_STRING=r'[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?'
 #-----------------------------------------------------------------------------
 # Module Functions
 def print_comparison(var_1,var_2):
@@ -1489,17 +1488,20 @@ class AsciiDataTable():
             raise
 
 class AsciiDataTableCollection():
-    """A collection of multiple AsciiDataTables"""
+    """A collection of multiple AsciiDataTables. The class can be created from a file path with options or can
+    be created without a file path as a empty container. """
     def __init__(self,file_path=None,table_names=None,**options):
-        # The primary attritbute should be self.data_tables=list of tables
-        # the dictionary should be in the form {"table_name":AsciiDataTable}
+        # The primary attritbute should be self.tables=list of tables
         # since there is no way to know how many tables or their options,
         # you can't read them in without **options-> self.tables
         # which can be passed as an option. Each table is an independent entity
         # but can have options set by global_options
+        defaults={"table_delimiter":'\n',"tables":None,"table_names":None}
+
         if file_path is None:
             pass
         else:
+            # it is impossible to read a file without a known number of tables
             if table_names is None and options["table_names"] is None:
                 raise
             else:
@@ -1514,8 +1516,10 @@ class AsciiDataTableCollection():
     def build_string(self,**temp_options):
         """Builds the string for the table collection using the temp_options"""
         out_string=""
-        for table in self.tables:
-            out_string=out_string+table.build_string()
+        out_string_list=[]
+        for index,table in enumerate(self.tables):
+            out_string_list.append(table.build_string())
+        out_string=string_list_collapse(out_string_list,self.options["table_delimiter"])
         return out_string
 
 #-----------------------------------------------------------------------------
