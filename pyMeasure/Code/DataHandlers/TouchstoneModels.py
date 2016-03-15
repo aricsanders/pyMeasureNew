@@ -54,7 +54,7 @@ def make_row_match_string(column_names,delimiter_pattern='[\s]+'):
     """Returns a regex string for matching a row given a set of column names assuming the row delimiter
     is a set of white spaces (default) or a specified delimiter pattern.
     Designed to create a regex for the input of numbers"""
-    row_regex_string=""
+    row_regex_string="[\s|.]+"
     for index,name in enumerate(column_names):
         if index == len(column_names)-1:
             row_regex_string=row_regex_string+'(?P<%s>{0})'%name
@@ -94,6 +94,11 @@ class S2PV1():
         for key,value in options.iteritems():
             self.options[key]=value
         self.elements=['header','column_names','data','footer','inline_comments']
+        self.noiseparameter_row_pattern=make_row_match_string(S2P_NOISE_PARAMETER_COLUMN_NAMES)
+        self.noiseparameter_column_names=S2P_NOISE_PARAMETER_COLUMN_NAMES
+        if file_path is not None:
+            self.path=file_path
+        self.__read_and_fix__()
 
 
     def __read_and_fix__(self):
@@ -112,18 +117,86 @@ class S2PV1():
         # There should be two types ones that have char position EOL, -1 or 0
         self.comments=collect_inline_comments(self.lines,begin_token="!",end_token="\n")
         # change all of them to be 0 or -1
-        for index,comment in enumerate(self.comments):
-            if comment[2]>1:
-                self.comments[index][2]=-1
-            else:
-                self.comments[index][2]=0
+        if self.comments is None:
+            pass
+        else:
+            for index,comment in enumerate(self.comments):
+                if comment[2]>1:
+                    self.comments[index][2]=-1
+                else:
+                    self.comments[index][2]=0
         # Match the option line and set the attribute associated with them
+        match=re.match(OPTION_LINE_PATTERN,default_option_line)
+        self.option_line=default_option_line
         for line in self.lines:
             if re.match(OPTION_LINE_PATTERN,line):
+                self.option_line=line
                 match=re.match(OPTION_LINE_PATTERN,line)
-                for key,value in match.groupdict().iteritems():
+        for key,value in match.groupdict().iteritems():
                     self.__dict__[key.lower()]=value
+        if re.match('db',self.format,re.IGNORECASE):
+            self.column_names=S2P_DB_COLUMN_NAMES
+            self.row_pattern=make_row_match_string(S2P_DB_COLUMN_NAMES)
+        elif re.match('ma',self.format,re.IGNORECASE):
+            self.column_names=S2P_MA_COLUMN_NAMES
+            self.row_pattern=make_row_match_string(S2P_MA_COLUMN_NAMES)
+        elif re.match('ri',self.format,re.IGNORECASE):
+            self.column_names=S2P_RI_COLUMN_NAMES
+            self.row_pattern=make_row_match_string(S2P_RI_COLUMN_NAMES)
+        # remove the comments
+        stripped_lines=strip_inline_comments(self.lines,begin_token="!",end_token="\n")
+        #print stripped_lines
+        self.sparameter_data=[]
+        self.noiseparameter_data=[]
+        for line in stripped_lines:
+            if re.search(self.row_pattern,line):
+                #print re.search(self.row_pattern,line).groupdict()
+                row_data=re.search(self.row_pattern,line).groupdict()
+                self.add_sparameter_row(row_data=row_data)
+            elif re.match(self.noiseparameter_row_pattern,line):
+                row_data=re.match(self.noiseparameter_row_pattern,line).groupdict()
+                self.add_noiseparameter_row(row_data=row_data)
+        #print self.sparameter_data
+        #print self.noiseparameter_data
+
+
+
         # parse line by line and put anything that matches regex in the right place
+
+    def add_sparameter_row(self,row_data):
+        """Adds data to the sparameter attribute, which is a list of s-parameters. The
+        data can be a list of 9 real numbers, 1 real number and 4 complex number
+         or dictionary with appropriate column names, note column names are not case sensitive"""
+        if type(row_data) is ListType:
+            if len(row_data) == 9:
+                    self.sparameter_data.append(row_data)
+            else:
+                print("Could not add row, the data was a list of the wrong dimension, if you desire to add multiple"
+                      "rows use add_sparameter_rows")
+                return
+        if type(row_data) is DictionaryType:
+            new_row=[]
+            for column_name in self.column_names:
+                #print row_data
+                new_row.append(float(row_data[column_name]))
+            self.sparameter_data.append(new_row)
+
+    def add_noiseparameter_row(self,row_data):
+        """Adds data to the noiseparameter_data attribute, which is a list of noise parameters. The
+        data can be a list of 5 real numbers dictionary with appropriate column names,
+        note column names are not case sensitive"""
+        if type(row_data) is ListType:
+            if len(row_data) == 5:
+                    self.noiseparameter_data.append(row_data)
+            else:
+                print("Could not add row, the data was a list of the wrong dimension, if you desire to add multiple"
+                      "rows use add_sparameter_rows")
+                return
+        if type(row_data) is DictionaryType:
+            new_row=[]
+            for column_name in self.noiseparameter_column_names:
+                new_row.append(float(row_data[column_name]))
+            self.noiseparameter_data.append(new_row)
 
 
 
@@ -159,7 +232,24 @@ def test_s2pv1(file_path="thru.s2p"):
     """Tests the s2pv1 class"""
     os.chdir(TESTS_DIRECTORY)
     new_table=S2PV1(file_path)
+    print("The Table as read in with line numbers is")
+    for index,line in enumerate(new_table.lines):
+        print("{0} {1}".format(index,line))
+    print("-"*80)
+    print("The attribute {0} is {1}".format('sparameter_data',str(new_table.sparameter_data)))
+    print("-"*80)
+    print("The attribute {0} is {1}".format('noiseparameter_data',str(new_table.noiseparameter_data)))
+    print("-"*80)
+    print("The attribute {0} is {1}".format('comments',str(new_table.comments)))
+    print("-"*80)
+    print("The attribute {0} is {1}".format('option_line',str(new_table.option_line)))
+    print("-"*80)
+    print("The attribute {0} is {1}".format('format',str(new_table.format)))
+    print("-"*80)
+    print("The attribute {0} is {1}".format('frequncy_units',str(new_table.frequency_units)))
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
-    test_option_string()
+    #test_option_string()
+    #test_s2pv1()
+    test_s2pv1('TwoPortTouchstoneTestFile.s2p')

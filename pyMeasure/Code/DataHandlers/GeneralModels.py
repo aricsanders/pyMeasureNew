@@ -347,7 +347,7 @@ def collect_inline_comments(list_of_strings,begin_token=None,end_token=None):
         return None
 
 def strip_inline_comments(list_of_strings,begin_token='(*',end_token='*)'):
-    "Removes inline coments from a list of strings"
+    "Removes inline comments from a list of strings and returns the list of strings"
     if begin_token in [None] and end_token in [None]:
         return list_of_strings
     match=re.compile('{0}(?P<inline_comments>.+){1}'.format(re.escape(begin_token),re.escape(end_token)))
