@@ -11,6 +11,8 @@
 #-----------------------------------------------------------------------------
 # Standard Imports
 import os
+import cmath
+import math
 #-----------------------------------------------------------------------------
 # Third Party Imports
 try:
@@ -46,10 +48,33 @@ FORMATS=["RI","DB","MA"]
 S2P_MA_COLUMN_NAMES=["Frequency","magS11","argS11","magS21","argS21","magS12","argS12","magS22","argS22"]
 S2P_DB_COLUMN_NAMES=["Frequency","dbS11","argS11","dbS21","argS21","dbS12","argS12","dbS22","argS22"]
 S2P_RI_COLUMN_NAMES=["Frequency","reS11","imS11","reS21","imS21","reS12","imS12","reS22","imS22"]
+S2P_COMPLEX_COLUMN_NAMES=["Frequency","S11","S21","S12","S22"]
 S2P_NOISE_PARAMETER_COLUMN_NAMES=["Frequency","NFMin","mag","arg","Rn"]
 
 #-----------------------------------------------------------------------------
 # Module Functions
+def print_s2p_attributes(new_table):
+    """prints some important attributes of s2p table"""
+    print("The attributes for the table as read in are")
+    print("-"*80)
+    print("The attribute {0} is {1}".format('sparameter_data',str(new_table.sparameter_data)))
+    print("-"*80)
+    print("The attribute {0} is {1}".format('sparameter_complex',str(new_table.sparameter_complex)))
+    print("-"*80)
+    print("The attribute {0} is {1}".format('noiseparameter_data',str(new_table.noiseparameter_data)))
+    print("-"*80)
+    print("The attribute {0} is {1}".format('comments',str(new_table.comments)))
+    print("-"*80)
+    print("The attribute {0} is {1}".format('option_line',str(new_table.option_line)))
+    print("-"*80)
+    print("The attribute {0} is {1}".format('format',str(new_table.format)))
+    print("-"*80)
+    print("The attribute {0} is {1}".format('frequncy_units',str(new_table.frequency_units)))
+    print("-"*80)
+    print("The attribute {0} is {1}".format('column_names',str(new_table.column_names)))
+    print("-"*80)
+    print("The attribute {0} is {1}".format('noiseparameter_column_names',str(new_table.noiseparameter_column_names)))
+
 def make_row_match_string(column_names,delimiter_pattern='[\s]+'):
     """Returns a regex string for matching a row given a set of column names assuming the row delimiter
     is a set of white spaces (default) or a specified delimiter pattern.
@@ -76,8 +101,8 @@ class S2PV1():
         """
         defaults={"data_delimiter":"\t",
                   "column_names_delimiter":None,
-                  "specific_descriptor":'Data',
-                  "general_descriptor":'Table',
+                  "specific_descriptor":'Two_Port',
+                  "general_descriptor":'Sparameter',
                   "directory":None,
                   "extension":'s2p',
                   "comment_begin":"!",
@@ -147,21 +172,19 @@ class S2PV1():
         stripped_lines=strip_inline_comments(self.lines,begin_token="!",end_token="\n")
         #print stripped_lines
         self.sparameter_data=[]
+        self.sparameter_complex=[]
         self.noiseparameter_data=[]
-        for line in stripped_lines:
+        for index,line in enumerate(stripped_lines):
             if re.search(self.row_pattern,line):
                 #print re.search(self.row_pattern,line).groupdict()
                 row_data=re.search(self.row_pattern,line).groupdict()
                 self.add_sparameter_row(row_data=row_data)
+                self.add_sparameter_complex_row(row_data=row_data)
             elif re.match(self.noiseparameter_row_pattern,line):
                 row_data=re.match(self.noiseparameter_row_pattern,line).groupdict()
                 self.add_noiseparameter_row(row_data=row_data)
         #print self.sparameter_data
         #print self.noiseparameter_data
-
-
-
-        # parse line by line and put anything that matches regex in the right place
 
     def add_sparameter_row(self,row_data):
         """Adds data to the sparameter attribute, which is a list of s-parameters. The
@@ -180,6 +203,62 @@ class S2PV1():
                 #print row_data
                 new_row.append(float(row_data[column_name]))
             self.sparameter_data.append(new_row)
+
+    def add_sparameter_complex_row(self,row_data):
+        """Adds a row to the sparameter_complex attribute. This attribute stores the values of the sparameter table in
+        complex form for easy conversion and manipulation. Row_data is assumed to be of the same form that would be
+        given to add_sparameter_row"""
+
+        if type(row_data) is ListType and len(row_data)==5 and type(row_data[1]) is ComplexType:
+            self.sparameter_complex.append(row_data)
+        else:
+            row_data=self.sparameter_row_to_complex(row_data=row_data)
+            self.sparameter_complex.append(row_data)
+
+
+    def sparameter_row_to_complex(self,row_data=None,row_index=None):
+        """Given a row_data string, row_data list, or row_data dictionary it converts the values of the sparameter to
+         complex notation (complex types) and returns a single list with 5 elements [Frequency,S11,S21,S12,S22]"""
+        if row_index is not None:
+            row_data=self.sparameter_data[row_index]
+        if row_data is None:
+            print("Could not convert row to complex, need a valid row_data string, list or dictionary or a row_index in "
+                  "sparameter_data")
+        out_row=[]
+        try:
+            if type(row_data) is StringType:
+                row_data=re.search(self.row_pattern,row_data).groupdict()
+            elif type(row_data) is ListType:
+                row_data={self.column_names[index]:row_data[index] for index in range(9)}
+            if type(row_data) is not DictionaryType:
+                raise
+            row_data={key:float(value) for key,value in row_data.iteritems()}
+            # now row data is in dictionary form with known keys, the tranformation is only based on self.format
+            if re.match('db',self.format,re.IGNORECASE):
+                S11=cmath.rect(10.**(row_data["dbS11"]/20.),(math.pi/180.)*row_data["argS11"])
+                S21=cmath.rect(10.**(row_data["dbS21"]/20.),(math.pi/180.)*row_data["argS21"])
+                S12=cmath.rect(10.**(row_data["dbS12"]/20.),(math.pi/180.)*row_data["argS12"])
+                S22=cmath.rect(10.**(row_data["dbS22"]/20.),(math.pi/180.)*row_data["argS22"])
+                out_row=[row_data["Frequency"],S11,S21,S12,S22]
+            elif re.match('ma',self.format,re.IGNORECASE):
+                S11=cmath.rect(row_data["magS11"],(math.pi/180.)*row_data["argS11"])
+                S21=cmath.rect(row_data["magS21"],(math.pi/180.)*row_data["argS21"])
+                S12=cmath.rect(row_data["magS12"],(math.pi/180.)*row_data["argS12"])
+                S22=cmath.rect(row_data["magS22"],(math.pi/180.)*row_data["argS22"])
+                out_row=[row_data["Frequency"],S11,S21,S12,S22]
+            elif re.match('ri',self.format,re.IGNORECASE):
+                S11=complex(row_data["reS11"],row_data["imS11"])
+                S21=complex(row_data["reS21"],row_data["imS21"])
+                S12=complex(row_data["reS12"],row_data["imS12"])
+                S22=complex(row_data["reS22"],row_data["imS22"])
+                out_row=[row_data["Frequency"],S11,S21,S12,S22]
+            return out_row
+        except:
+            print("Could not convert row to a complex row")
+            raise
+
+
+
 
     def add_noiseparameter_row(self,row_data):
         """Adds data to the noiseparameter_data attribute, which is a list of noise parameters. The
@@ -206,7 +285,7 @@ class S2PV1():
         old_units=self.frequency_units
         old_prefix=old_units.replace('Hz','')
         new_prefix=new_frequency_units.replace('Hz','')
-        self.change_unit_prefix('Frequency',old_prefix=old_prefix,new_prefix=new_prefix)
+        #self.change_unit_prefix('Frequency',old_prefix=old_prefix,new_prefix=new_prefix)
         self.frequency_units=new_frequency_units
 
 
@@ -214,7 +293,62 @@ class S2PV1():
         """Changes the data format to new_format. Format must be one of the following: 'DB','MA','RI'
         standing for Decibel-Angle, Magnitude-Angle or Real-Imaginary as per the touchstone specification
         all angles are in degrees."""
-        pass
+        old_format=self.format
+
+        if re.match('db',new_format,re.IGNORECASE):
+            self.format="DB"
+            self.option_line=self.option_line.replace(old_format,"DB")
+            self.column_names=S2P_DB_COLUMN_NAMES
+            self.row_pattern=make_row_match_string(S2P_DB_COLUMN_NAMES)
+            for row_index,row in enumerate(self.sparameter_data):
+                frequency=self.sparameter_complex[row_index][0]
+                dbS11=20.*math.log(abs(self.sparameter_complex[row_index][1]),10.)
+                argS11=(180./math.pi)*cmath.phase(self.sparameter_complex[row_index][1])
+                dbS21=20.*math.log(abs(self.sparameter_complex[row_index][2]),10.)
+                argS21=(180./math.pi)*cmath.phase(self.sparameter_complex[row_index][2])
+                dbS12=20.*math.log(abs(self.sparameter_complex[row_index][3]),10.)
+                argS12=(180./math.pi)*cmath.phase(self.sparameter_complex[row_index][3])
+                dbS22=20.*math.log(abs(self.sparameter_complex[row_index][4]),10.)
+                argS22=(180./math.pi)*cmath.phase(self.sparameter_complex[row_index][4])
+                self.sparameter_data[row_index]=[frequency,dbS11,argS11,dbS21,argS21,dbS12,argS12,dbS22,argS22]
+
+        elif re.match('ma',new_format,re.IGNORECASE):
+            self.format="MA"
+            self.option_line=self.option_line.replace(old_format,"MA")
+            self.column_names=S2P_MA_COLUMN_NAMES
+            self.row_pattern=make_row_match_string(S2P_MA_COLUMN_NAMES)
+            for row_index,row in enumerate(self.sparameter_data):
+                frequency=self.sparameter_complex[row_index][0]
+                magS11=abs(self.sparameter_complex[row_index][1])
+                argS11=(180./math.pi)*cmath.phase(self.sparameter_complex[row_index][1])
+                magS21=abs(self.sparameter_complex[row_index][2])
+                argS21=(180./math.pi)*cmath.phase(self.sparameter_complex[row_index][2])
+                magS12=abs(self.sparameter_complex[row_index][3])
+                argS12=(180./math.pi)*cmath.phase(self.sparameter_complex[row_index][3])
+                magS22=abs(self.sparameter_complex[row_index][4])
+                argS22=(180./math.pi)*cmath.phase(self.sparameter_complex[row_index][4])
+                self.sparameter_data[row_index]=[frequency,magS11,argS11,magS21,argS21,magS12,argS12,magS22,argS22]
+
+        elif re.match('ri',new_format,re.IGNORECASE):
+            self.format="RI"
+            self.option_line=self.option_line.replace(old_format,"RI")
+            self.column_names=S2P_RI_COLUMN_NAMES
+            self.row_pattern=make_row_match_string(S2P_RI_COLUMN_NAMES)
+            for row_index,row in enumerate(self.sparameter_data):
+                frequency=self.sparameter_complex[row_index][0]
+                reS11=self.sparameter_complex[row_index][1].real
+                imS11=self.sparameter_complex[row_index][1].imag
+                reS21=self.sparameter_complex[row_index][2].real
+                imS21=self.sparameter_complex[row_index][2].imag
+                reS12=self.sparameter_complex[row_index][3].real
+                imS12=self.sparameter_complex[row_index][3].imag
+                reS22=self.sparameter_complex[row_index][4].real
+                imS22=self.sparameter_complex[row_index][4].imag
+                self.sparameter_data[row_index]=[frequency,reS11,imS11,reS21,imS21,reS12,imS12,reS22,imS22]
+        else:
+            print("Could not change data format the specified format was not DB, MA, or RI")
+            return
+
 
     def show(self):
         """Shows the touchstone file"""
@@ -238,6 +372,8 @@ def test_s2pv1(file_path="thru.s2p"):
     print("-"*80)
     print("The attribute {0} is {1}".format('sparameter_data',str(new_table.sparameter_data)))
     print("-"*80)
+    print("The attribute {0} is {1}".format('sparameter_complex',str(new_table.sparameter_complex)))
+    print("-"*80)
     print("The attribute {0} is {1}".format('noiseparameter_data',str(new_table.noiseparameter_data)))
     print("-"*80)
     print("The attribute {0} is {1}".format('comments',str(new_table.comments)))
@@ -247,9 +383,25 @@ def test_s2pv1(file_path="thru.s2p"):
     print("The attribute {0} is {1}".format('format',str(new_table.format)))
     print("-"*80)
     print("The attribute {0} is {1}".format('frequncy_units',str(new_table.frequency_units)))
+    print("-"*80)
+    print("The attribute {0} is {1}".format('column_names',str(new_table.column_names)))
+    print("-"*80)
+    print("The attribute {0} is {1}".format('noiseparameter_column_names',str(new_table.noiseparameter_column_names)))
+def test_change_format(file_path="thru.s2p"):
+    """Tests the s2pv1 class"""
+    os.chdir(TESTS_DIRECTORY)
+    new_table=S2PV1(file_path)
+    print_s2p_attributes(new_table=new_table)
+    new_table.change_data_format(new_format='DB')
+    print_s2p_attributes(new_table=new_table)
+    new_table.change_data_format(new_format='MA')
+    print_s2p_attributes(new_table=new_table)
+    new_table.change_data_format(new_format='RI')
+    print_s2p_attributes(new_table=new_table)
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
     #test_option_string()
     #test_s2pv1()
-    test_s2pv1('TwoPortTouchstoneTestFile.s2p')
+    #test_s2pv1('TwoPortTouchstoneTestFile.s2p')
+    test_change_format('TwoPortTouchstoneTestFile.s2p')

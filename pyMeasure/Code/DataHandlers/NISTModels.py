@@ -206,7 +206,7 @@ class OnePortRawModel(AsciiDataTable):
             self.metadata[key]=self.header[index]
 
 class JBSparameter(AsciiDataTable):
-    """JBSparameter is a class that holds data taken and stored using Jim Booth's format.
+    """JBSparameter is a class that holds data taken and stored using Jim Booth's two port format.
      """
     def __init__(self,file_path=None,**options):
         """Initializes the JBSparameter class. JB Sparameter data is very close to s2p, but has # as a comment
