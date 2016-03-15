@@ -224,8 +224,8 @@ class JBSparameter(AsciiDataTable):
                                            "Re_S22": "Uncertainty in phase due to standards",
                                            "Im_S22": "Uncertainty in phase due to electronics"},
                    "header": None,
-                   "column_names": ["Frequency", "Re_S11", "Im_S11", "Re_S21", "Im_S21", "Re_S12", "Im_S12",
-                                    "Re_S22","Im_S22"], "column_names_end_token": "\n", "data": None,
+                   "column_names": ["Frequency", "reS11", "imS11", "reS21", "imS21", "reS12", "imS12",
+                                    "reS22","imS22"], "column_names_end_token": "\n", "data": None,
                    "row_formatter_string": None, "data_table_element_separator": None}
         self.options={}
         for key,value in defaults.iteritems():

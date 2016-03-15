@@ -153,9 +153,10 @@ class S2PV1():
         # Match the option line and set the attribute associated with them
         match=re.match(OPTION_LINE_PATTERN,default_option_line)
         self.option_line=default_option_line
-        for line in self.lines:
+        for index,line in enumerate(self.lines):
             if re.match(OPTION_LINE_PATTERN,line):
                 self.option_line=line
+                self.options["option_line_line"]=index
                 match=re.match(OPTION_LINE_PATTERN,line)
         for key,value in match.groupdict().iteritems():
                     self.__dict__[key.lower()]=value
@@ -185,6 +186,19 @@ class S2PV1():
                 self.add_noiseparameter_row(row_data=row_data)
         #print self.sparameter_data
         #print self.noiseparameter_data
+    def build_string(self):
+        """Creates the output string"""
+        #number of lines = option line + comments that start at zero + rows in sparameter data + rows in noise data
+        number_line_comments=[str(comment[2]) for comment in self.comments].count('0')
+        number_lines=1+number_line_comments+len(self.sparameter_data)+len(self.noiseparameter_data)
+        out_lines=["" for i in range(number_lines)]
+        out_lines[self.options["option_line_line"]]=self.option_line
+        # populate the line comments
+        for comment in self.comments:
+            if comment[2] == 0:
+                out_lines[comment[1]]="!"+comment[0]+"\n"
+        # now start writting data at first empty line after the option line
+
 
     def add_sparameter_row(self,row_data):
         """Adds data to the sparameter attribute, which is a list of s-parameters. The
@@ -348,6 +362,10 @@ class S2PV1():
         else:
             print("Could not change data format the specified format was not DB, MA, or RI")
             return
+    def
+    def __str__(self):
+        """Controls the behavior of the s2p file when a string function such as print is called"""
+        out_string=""
 
 
     def show(self):
