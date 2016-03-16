@@ -31,6 +31,12 @@ except:
           "please put it on the python path")
     raise ImportError
 try:
+    from pyMeasure.Code.DataHandlers.TouchstoneModels import *
+except:
+    print("The module pyMeasure.Code.DataHandlers.TouchstoneModels was not found,"
+          "please put it on the python path")
+    raise ImportError
+try:
     import pandas
 except:
     print("The module pandas was not found,"
@@ -90,6 +96,35 @@ def AsciiDataTable_to_Excel(ascii_data_table,file_path=None):
     """Converts an AsciiDataTable to an excel spreadsheet using pandas"""
     if ascii_data_table.header:
         data_frame=pandas.DataFrame(data=ascii_data_table.data,columns=ascii_data_table.column_names)
+def S2PV1_to_XMLDataTable(s2p,**options):
+    """Transforms a s2p's sparameters to a XMLDataTable. Converts the format to RI first"""
+    defaults={"specific_descriptor":s2p.options["specific_descriptor"],
+                     "general_descriptor":s2p.options["general_descriptor"],
+                      "directory":s2p.options["directory"],
+              "style_sheet":"../XSL/S2P_STYLE.xsl"
+                     }
+    XML_options={}
+    for key,value in defaults.iteritems():
+        XML_options[key]=value
+    for key,value in options.iteritems():
+        XML_options[key]=value
+    data_description={}
+    if s2p.options["column_descriptions"] is not None:
+        for key,value in s2p.options["column_descriptions"].iteritems():
+            data_description[key]=value
+    if s2p.metadata is not None:
+        for key,value in s2p.metadata.iteritems():
+            data_description[key]=value
+    else:
+        if s2p.comments is not None:
+            for index,line in enumerate(s2p.comments):
+                key="Comments_{0:0>3}".format(index)
+                data_description[key]=line[0]
+    s2p.change_data_format(new_format='RI')
+    data_dictionary={"Data_Description":data_description,"Data":s2p.get_data_dictionary_list()}
+    XML_options["data_dictionary"]=data_dictionary
+    new_xml_data_table=DataTable(None,**XML_options)
+    return new_xml_data_table
 
 
 #-----------------------------------------------------------------------------
@@ -127,15 +162,23 @@ def test_AsciiDataTable_to_DataFrame(input_file="700437.asc"):
     data_frame.to_excel('one_port.xlsx', sheet_name='Sheet1')
     #print data_frame
 
+def test_S2P_to_XMLDataTable(file_path="thru.s2p"):
+    os.chdir(TESTS_DIRECTORY)
+    s2p_file=S2PV1(file_path)
+    XML_s2p=S2PV1_to_XMLDataTable(s2p_file)
+    XML_s2p.save()
+    #print XML_s2p
+
 def timeit_script(script='test_AsciiDataTable_to_XMLDataTable()',
                   setup="from __main__ import test_AsciiDataTable_to_XMLDataTable",n_loops=10):
     """Returns the mean time from running script n_loops time. To import a script, put a string
     import statement in setup"""
     print timeit.timeit(script,setup=setup,number=n_loops)/n_loops
+
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
-    test_AsciiDataTable_to_XMLDataTable()
+    #test_AsciiDataTable_to_XMLDataTable()
     #test_OnePortRaw_to_XMLDataTable()
     #test_AsciiDataTable_to_pandas()
     #timeit_script()
@@ -143,3 +186,4 @@ if __name__ == '__main__':
      #             setup="from __main__ import test_AsciiDataTable_to_pandas",n_loops=10)
     # timeit_script(script="test_OnePortRaw_to_XMLDataTable()",
     #               setup="from __main__ import test_OnePortRaw_to_XMLDataTable",n_loops=10)
+    test_S2P_to_XMLDataTable()

@@ -46,7 +46,11 @@ PARAMETERS=["S","Y","Z","G","H"]
 FORMATS=["RI","DB","MA"]
 S2P_MA_COLUMN_NAMES=["Frequency","magS11","argS11","magS21","argS21","magS12","argS12","magS22","argS22"]
 S2P_DB_COLUMN_NAMES=["Frequency","dbS11","argS11","dbS21","argS21","dbS12","argS12","dbS22","argS22"]
-S2P_RI_COLUMN_NAMES=["Frequency","reS11","imS11","reS21","imS21","reS12","imS12","reS22","imS22"]
+S2P_RI_COLUMN_NAMES=["Frequency","reS11","imS11","reS21","imS21","reS12","imS12","reS22","imS22"] T
+# Todo: Make the descriptions dictionaries and cycle throught them in the model
+S2P_MA_COLUMN_DESCRIPTION=["Frequency","magS11","argS11","magS21","argS21","magS12","argS12","magS22","argS22"]
+S2P_DB_COLUMN_DESCRIPTION=["Frequency","dbS11","argS11","dbS21","argS21","dbS12","argS12","dbS22","argS22"]
+S2P_RI_COLUMN_DESCRIPTION=["Frequency","reS11","imS11","reS21","imS21","reS12","imS12","reS22","imS22"]
 S2P_COMPLEX_COLUMN_NAMES=["Frequency","S11","S21","S12","S22"]
 S2P_NOISE_PARAMETER_COLUMN_NAMES=["Frequency","NFMin","mag","arg","Rn"]
 
@@ -115,6 +119,8 @@ class S2PV1():
                   "option_line_line":0,
                   "directory":None,
                   "extension":'s2p',
+                  "metadata":None,
+                  "column_descriptions":None,
                   "sparameter_row_formatter_string":build_row_formatter(None,9),
                   "nosieparameter_row_formatter_string":build_row_formatter(None,5)
                   }
@@ -124,6 +130,7 @@ class S2PV1():
         for key,value in options.iteritems():
             self.options[key]=value
         self.elements=['header','column_names','data','footer','inline_comments']
+        self.metadata=self.options["metadata"]
         self.noiseparameter_row_pattern=make_row_match_string(S2P_NOISE_PARAMETER_COLUMN_NAMES)+"\n"
         self.noiseparameter_column_names=S2P_NOISE_PARAMETER_COLUMN_NAMES
         if file_path is not None:
@@ -413,6 +420,21 @@ class S2PV1():
             print("Could not change data format the specified format was not DB, MA, or RI")
             return
 
+    def get_data_dictionary_list(self,use_row_formatter_string=True):
+        """Returns a python list with a row dictionary of form {column_name:data_column} for sparameters only"""
+        try:
+            if self.options["sparameter_row_formatter_string"] is None:
+                use_row_formatter_string=False
+            if use_row_formatter_string:
+                list_formatter=[item.replace(str(index),"0")
+                                for index,item in enumerate(self.options["sparameter_row_formatter_string"].split("{delimiter}"))]
+            else:
+                list_formatter=["{0}" for i in self.column_names]
+            out_list=[{self.column_names[i]:list_formatter[i].format(value) for i,value in enumerate(line)}
+                      for line in self.sparameter_data]
+            return out_list
+        except:raise
+
     def show(self):
         """Shows the touchstone file"""
         pass
@@ -469,4 +491,4 @@ if __name__ == '__main__':
     #test_s2pv1()
     #test_s2pv1('TwoPortTouchstoneTestFile.s2p')
     #test_change_format()
-    #test_change_format('TwoPortTouchstoneTestFile.s2p')
+    test_change_format('TwoPortTouchstoneTestFile.s2p')
