@@ -46,7 +46,7 @@ PARAMETERS=["S","Y","Z","G","H"]
 FORMATS=["RI","DB","MA"]
 S2P_MA_COLUMN_NAMES=["Frequency","magS11","argS11","magS21","argS21","magS12","argS12","magS22","argS22"]
 S2P_DB_COLUMN_NAMES=["Frequency","dbS11","argS11","dbS21","argS21","dbS12","argS12","dbS22","argS22"]
-S2P_RI_COLUMN_NAMES=["Frequency","reS11","imS11","reS21","imS21","reS12","imS12","reS22","imS22"] T
+S2P_RI_COLUMN_NAMES=["Frequency","reS11","imS11","reS21","imS21","reS12","imS12","reS22","imS22"]
 # Todo: Make the descriptions dictionaries and cycle throught them in the model
 S2P_MA_COLUMN_DESCRIPTION=["Frequency","magS11","argS11","magS21","argS21","magS12","argS12","magS22","argS22"]
 S2P_DB_COLUMN_DESCRIPTION=["Frequency","dbS11","argS11","dbS21","argS21","dbS12","argS12","dbS22","argS22"]
