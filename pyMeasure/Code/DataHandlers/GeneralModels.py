@@ -1496,7 +1496,7 @@ class AsciiDataTableCollection():
         # you can't read them in without **options-> self.tables
         # which can be passed as an option. Each table is an independent entity
         # but can have options set by global_options
-        defaults={"table_delimiter":'\n',"tables":None,"table_names":None}
+        global_defaults={"table_delimiter":'\n',"tables":None,"table_names":None}
 
         if file_path is None:
             pass
