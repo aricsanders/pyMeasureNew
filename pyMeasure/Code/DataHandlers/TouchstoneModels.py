@@ -34,6 +34,8 @@ except:
     print("The module numpy was not found,"
           "please put it on the python path")
     raise ImportError
+import matplotlib.pyplot as plt
+import smithplot
 #-----------------------------------------------------------------------------
 # Module Constants
 TOUCHSTONE_KEYWORDS=["Version","Number of Ports","Two-Port Order","Number of Frequencies",
@@ -435,9 +437,37 @@ class S2PV1():
             return out_list
         except:raise
 
+    def correct_switch_terms(self,switch_terms=None,switch_terms_format=None):
+        """Corrects sparameter data for switch terms. Switch terms must be a list with a row of format
+        [Frequency,SWF,SWR] where SWF is the complex foward switch term (SWport2),
+        SWR is the complex reverse switch term (SWport1)"""
+        self.corrected_sparameter_data=[]
+        for index,row in enumerate(self.sparameter_complex):
+            SWF=switch_terms[index][1]
+            SWR=switch_terms[index][2]
+            [S11,S21,S12,S22]=row[1:]
+            D=1-S21*S12*SWR*SWF
+            S11_corrected=(S11-S12*S21*SWF)/D
+            S21_corrected=(S21-S22*S21*SWF)/D
+            S12_corrected=(S12-S11*S12*SWR)/D
+            S22_corrected=(S22-S12*S21*SWR)/D
+            self.corrected_sparameter_data.append([row[0],S11_corrected,S21_corrected,S12_corrected,S22_corrected])
+
+
     def show(self):
         """Shows the touchstone file"""
-        pass
+        # plot data
+        plt.figure(figsize=(8, 8))
+        val1=[row[1] for row in self.sparameter_complex]
+        val2=[row[4] for row in self.sparameter_complex]
+        ax = plt.subplot(1, 1, 1, projection='smith', axes_norm=50)
+        plt.plot(val1, markevery=1, label="S11")
+        plt.plot(val2, markevery=1, label="S22")
+        #ax.plot_vswr_circle(0.3 - 0.7j, real=1, solution2=True, label="Re(Z)->1")
+        plt.legend(loc="lower right")
+        plt.title("Matplotlib Smith Chart Projection")
+
+        plt.show()
 
 #-----------------------------------------------------------------------------
 # Module Scripts
@@ -484,11 +514,13 @@ def test_change_format(file_path="thru.s2p"):
     new_table.change_data_format(new_format='RI')
     print_s2p_attributes(new_table=new_table)
     print new_table
+    new_table.show()
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
     #test_option_string()
     #test_s2pv1()
     #test_s2pv1('TwoPortTouchstoneTestFile.s2p')
-    #test_change_format()
-    test_change_format('TwoPortTouchstoneTestFile.s2p')
+    test_change_format()
+    #test_change_format('TwoPortTouchstoneTestFile.s2p')
+    #test_change_format('20160301_30ft_cable_0.s2p')

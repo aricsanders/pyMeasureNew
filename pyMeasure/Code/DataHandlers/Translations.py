@@ -186,4 +186,6 @@ if __name__ == '__main__':
      #             setup="from __main__ import test_AsciiDataTable_to_pandas",n_loops=10)
     # timeit_script(script="test_OnePortRaw_to_XMLDataTable()",
     #               setup="from __main__ import test_OnePortRaw_to_XMLDataTable",n_loops=10)
-    test_S2P_to_XMLDataTable()
+    #test_S2P_to_XMLDataTable()
+    #test_S2P_to_XMLDataTable('TwoPortTouchstoneTestFile.s2p')
+    test_S2P_to_XMLDataTable('20160301_30ft_cable_0.s2p')
