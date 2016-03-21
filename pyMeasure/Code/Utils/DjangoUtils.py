@@ -15,9 +15,25 @@ import os
 
 #-----------------------------------------------------------------------------
 # Module Constants
-
+TEMPLATE_BEGIN_STRING="{% extends 'index.html' %}\n{% load i18n %}\n"
 #-----------------------------------------------------------------------------
 # Module Functions
+def build_index():
+    """Builds index.html given a set of inputs"""
+    pass
+
+def write_home_templates():
+    """Writes several basic templates to the current directory includes index.html
+    and a series of templates required for registrations"""
+    # the index.html requires enough information
+    template_names=["index.html","activate.html","login.html",
+                    "logout.html","password_change_done.html","password_change_form.html",
+                    "password_reset_complete.html","password_reset_confirm.html",
+                    "password_reset_done.html","password_reset_email.html",
+                    "password_reset_form.html","registration_complete.html",
+                    "registration_form.html"]
+    pass
+
 def write_project_urls(app_names):
     """Writes a basic urls.py for a django-project
     given the app names"""
