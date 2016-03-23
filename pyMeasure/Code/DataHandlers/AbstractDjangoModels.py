@@ -15,7 +15,7 @@ import datetime
 from django.db import models
 from django.conf import settings
 from django.contrib import admin
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User,Group
 from django.contrib.auth import get_user_model
 #-----------------------------------------------------------------------------
 # Module Constants
@@ -41,8 +41,22 @@ class UserFile(models.Model):
     owner=models.ForeignKey(settings.AUTH_USER_MODEL)
     location=models.CharField('Location on Disk', max_length=200) # Could use URL Field, but it is essentially just this
     url=models.CharField('URL of the file', max_length=200)
+    name=models.CharField('Name of the resource', max_length=200)
     class Meta:
         abstract=True
+    def __str__(self):
+        return self.name
+
+
+class Project(models.Model):
+    """Container for Projects that provides structure to a collection
+    of data files"""
+    name=models.CharField('Name of the Project', max_length=200)
+    groups=models.ManytoMany(Group)
+    type=models.ForeignKey(ProjectTypes)
+    description=models.TextField("A description of the project")
+    wall=models.TextField("A log of comments and such for the project")
+
 #-----------------------------------------------------------------------------
 # Module Scripts
 
