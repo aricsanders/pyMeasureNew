@@ -6,12 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="4139f2fc-c578-4782-b083-7284792a834c" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../test_site/Test_Site/db.sqlite3" afterPath="$PROJECT_DIR$/../test_site/Test_Site/db.sqlite3" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/.ipynb_checkpoints/String_Bijective_Network_Example_20160317_001-checkpoint.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/.ipynb_checkpoints/String_Bijective_Network_Example_20160317_001-checkpoint.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/String_Bijective_Network_Example_20160317_001.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/String_Bijective_Network_Example_20160317_001.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/pyMeasureNew.iml" afterPath="$PROJECT_DIR$/.idea/pyMeasureNew.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/AbstractDjangoModels.py" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/AbstractDjangoModels.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../test_site/.idea/test_site.iml" afterPath="$PROJECT_DIR$/../test_site/.idea/test_site.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../test_site/Test_Site/Test_App/views.py" afterPath="$PROJECT_DIR$/../test_site/Test_Site/Test_App/views.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../test_site/Test_Site/Test_Site/settings.py" afterPath="$PROJECT_DIR$/../test_site/Test_Site/Test_Site/settings.py" />
@@ -485,18 +480,6 @@
       <option name="number" value="Default" />
       <updated>1456039207125</updated>
     </task>
-    <task id="LOCAL-00001" summary="Added Ascii Data table">
-      <created>1456380264282</created>
-      <option name="number" value="00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1456380264282</updated>
-    </task>
-    <task id="LOCAL-00002" summary="Added Ascii Data table">
-      <created>1456391285720</created>
-      <option name="number" value="00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1456391285720</updated>
-    </task>
     <task id="LOCAL-00003" summary="Added Ascii Data table">
       <created>1456391842133</created>
       <option name="number" value="00003" />
@@ -779,7 +762,19 @@
       <option name="project" value="LOCAL" />
       <updated>1458544825987</updated>
     </task>
-    <option name="localTasksCounter" value="50" />
+    <task id="LOCAL-00050" summary="AbstractDjangoModel work">
+      <created>1458717631301</created>
+      <option name="number" value="00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1458717631301</updated>
+    </task>
+    <task id="LOCAL-00051" summary="Bijective Network addition">
+      <created>1458720193280</created>
+      <option name="number" value="00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1458720193280</updated>
+    </task>
+    <option name="localTasksCounter" value="52" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -788,6 +783,7 @@
     <layout>
       <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.42" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34087238" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -797,7 +793,6 @@
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -834,7 +829,9 @@
     <MESSAGE value="New Network example" />
     <MESSAGE value="Examples of svg formation" />
     <MESSAGE value="more building functions" />
-    <option name="LAST_COMMIT_MESSAGE" value="more building functions" />
+    <MESSAGE value="AbstractDjangoModel work" />
+    <MESSAGE value="Bijective Network addition" />
+    <option name="LAST_COMMIT_MESSAGE" value="Bijective Network addition" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
