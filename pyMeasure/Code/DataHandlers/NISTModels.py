@@ -212,20 +212,19 @@ class JBSparameter(AsciiDataTable):
         """Initializes the JBSparameter class. JB Sparameter data is very close to s2p, but has # as a comment
          begin token, and space as a data delimiter. The first line has structured metadata that usually includes
          date and IFBW"""
-        defaults={"header_begin_line":0,"header_end_line":2,"column_names_begin_line":2,
-                 "column_names_end_line":3,"data_begin_line":4,"data_end_line":None,"column_names_delimiter":' ',
+        defaults={"header_begin_line":0,"data_end_line":None,"column_names_delimiter":' ',
                 "column_names_begin_token":'#',"column_names_end_token":'\n',"data_table_element_separator":None,
                  "data_delimiter":' ',"comment_begin":"#",
                  "comment_end":"\n","row_end_token":'\n',"column_types":['float' for i in range(9)],
-                 "column_descriptions":{"freq(Hz)":"Frequency in Hz",
-                                        "real{s11}":"Real part of S11",
-                                        "imag{s11}":"Imaginary part of S11",
-                                        "real{s21}":"Real part of S21",
-                                        "imag{s21}":"Imaginary part of S21",
-                                        "real{s12}":"Real part of S12",
-                                        "imag{s12}":"Imaginary part of S12",
-                                        "real{s22}":"Real part of S22",
-                                        "imag{s22}":"Imaginary part of S22"}}
+                 "column_descriptions":["Frequency in Hz",
+                                        "Real part of S11",
+                                        "Imaginary part of S11",
+                                        "Real part of S21",
+                                        "Imaginary part of S21",
+                                        "Real part of S12",
+                                        "Imaginary part of S12",
+                                        "Real part of S22",
+                                        "Imaginary part of S22"]}
         rfs=""
         for i in range(9):
             if i==8:
@@ -304,7 +303,9 @@ def test_JBSparameter(file_path="ftest6_L1_g5_HF_air"):
     os.chdir(TESTS_DIRECTORY)
     # open an existing file
     new_table=JBSparameter(file_path=file_path)
-    print new_table
+    print new_table.column_names
+    new_table.change_unit_prefix(column_selector=0,old_prefix='',new_prefix='G',unit='Hz')
+    print new_table.column_names
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
