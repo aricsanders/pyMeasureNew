@@ -212,22 +212,27 @@ class JBSparameter(AsciiDataTable):
         """Initializes the JBSparameter class. JB Sparameter data is very close to s2p, but has # as a comment
          begin token, and space as a data delimiter. The first line has structured metadata that usually includes
          date and IFBW"""
-        defaults= {"data_delimiter": ",", "column_names_delimiter": ",", "specific_descriptor": 'JB',
-                   "general_descriptor": 'Sparameter', "extension": 'txt', "comment_begin": "#", "comment_end": "\n",
-                   "column_types": ['float' for i in range(9)],
-                   "column_descriptions": {'Frequency':'Frequency in HZ',
-                                            'Re_S11':'Real part of S11.',
-                                            'imS11':'Imaginary part of S11.',
-                                            'reS21':'Real part of S21.',
-                                            'imS21':'Imaginary part of S21.',
-                                            'reS12':'Real part of S11.',
-                                            'imS12':'Imaginary part of S12.',
-                                            'reS22':'Real part of S22.',
-                                            'imS22':'Imaginary part of S22.'},
-                   "header": None,
-                   "column_names": ["Frequency", "reS11", "imS11", "reS21", "imS21", "reS12", "imS12",
-                                    "reS22","imS22"], "column_names_end_token": "\n", "data": None,
-                   "row_formatter_string": None, "data_table_element_separator": None}
+        defaults={"header_begin_line":0,"header_end_line":2,"column_names_begin_line":2,
+                 "column_names_end_line":3,"data_begin_line":4,"data_end_line":None,"column_names_delimiter":' ',
+                "column_names_begin_token":'#',"column_names_end_token":'\n',"data_table_element_separator":None,
+                 "data_delimiter":' ',"comment_begin":"#",
+                 "comment_end":"\n","row_end_token":'\n',"column_types":['float' for i in range(9)],
+                 "column_descriptions":{"freq(Hz)":"Frequency in Hz",
+                                        "real{s11}":"Real part of S11",
+                                        "imag{s11}":"Imaginary part of S11",
+                                        "real{s21}":"Real part of S21",
+                                        "imag{s21}":"Imaginary part of S21",
+                                        "real{s12}":"Real part of S12",
+                                        "imag{s12}":"Imaginary part of S12",
+                                        "real{s22}":"Real part of S22",
+                                        "imag{s22}":"Imaginary part of S22"}}
+        rfs=""
+        for i in range(9):
+            if i==8:
+                rfs=rfs+"{%s:.6g}"%(str(i))
+            else:
+                rfs=rfs+"{%s:.6g}{delimiter}"%(str(i))
+        options["row_formatter_string"]=rfs
         self.options={}
         for key,value in defaults.iteritems():
             self.options[key]=value
@@ -239,11 +244,21 @@ class JBSparameter(AsciiDataTable):
                 exec(command)
 
         if file_path is not None:
+            column_name_line=0
+            in_file=open(file_path)
+            for line in in_file:
+                if line[0] is '#':
+                    column_name_line+=1
+            self.options["header_end_line"]=column_name_line-1
+            self.options["column_names_begin_line"]=column_name_line-1
+            self.options["column_names_end_line"]=column_name_line
+            self.options["data_begin_line"]=column_name_line
             self.path=file_path
-            self.__read_and_fix__()
+            AsciiDataTable.__init__(self,file_path,**self.options)
+        else:
+            AsciiDataTable.__init__(self,file_path,**self.options)
 
-    def __read_and_fix__(self):
-        """Reads and corrects issues in the JB data format"""
+
 
 
 class SwitchTermsFR():
@@ -283,8 +298,16 @@ def test_OnePortRawModel(file_path='OnePortRawTestFile.txt'):
     print new_table_1.metadata
     print new_table_1.column_names
     print('index' in new_table_1.column_names )
+
+def test_JBSparameter(file_path="ftest6_L1_g5_HF_air"):
+    """Tests the JBSparameter class"""
+    os.chdir(TESTS_DIRECTORY)
+    # open an existing file
+    new_table=JBSparameter(file_path=file_path)
+    print new_table
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
     #test_OnePortModel()
-    test_OnePortRawModel()
+    #test_OnePortRawModel()
+    test_JBSparameter()

@@ -35,7 +35,14 @@ except:
           "please put it on the python path")
     raise ImportError
 import matplotlib.pyplot as plt
-import smithplot
+try:
+    import smithplot
+    SMITHPLOT=1
+
+except:
+    print("The module smithplot was not found,"
+          "please put it on the python path")
+    SMITHPLOT=0
 #-----------------------------------------------------------------------------
 # Module Constants
 TOUCHSTONE_KEYWORDS=["Version","Number of Ports","Two-Port Order","Number of Frequencies",
@@ -92,16 +99,18 @@ def make_row_match_string(column_names,delimiter_pattern='[\s]+'):
             row_regex_string=row_regex_string+'(?P<%s>{0})'%name+delimiter_pattern
     row_regex_string=row_regex_string.format(NUMBER_MATCH_STRING)
     return row_regex_string
+
 def build_row_formatter(precision=None,number_columns=None):
-        row_formatter=""
-        if precision is None:
-            precision=4
-        for i in range(number_columns):
-            if i==number_columns-1:
-                row_formatter=row_formatter+"{"+str(i)+":.%sf}"%precision
-            else:
-                row_formatter=row_formatter+"{"+str(i)+":.%sf}{delimiter}"%precision
-        return row_formatter
+    """Builds a uniform row_formatter_string given a precision and a number of columns"""
+    row_formatter=""
+    if precision is None:
+        precision=4
+    for i in range(number_columns):
+        if i==number_columns-1:
+            row_formatter=row_formatter+"{"+str(i)+":.%sf}"%precision
+        else:
+            row_formatter=row_formatter+"{"+str(i)+":.%sf}{delimiter}"%precision
+    return row_formatter
 #-----------------------------------------------------------------------------
 # Module Classes
 class S2PV1():
@@ -119,32 +128,57 @@ class S2PV1():
                   "specific_descriptor":'Two_Port',
                   "general_descriptor":'Sparameter',
                   "option_line_line":0,
+                  "option_line":'# GHz S RI R 50',
                   "directory":None,
                   "extension":'s2p',
                   "metadata":None,
                   "column_descriptions":None,
                   "sparameter_row_formatter_string":build_row_formatter(None,9),
-                  "nosieparameter_row_formatter_string":build_row_formatter(None,5)
+                  "nosieparameter_row_formatter_string":build_row_formatter(None,5),
+                  "noiseparameter_data":[],
+                  "sparameter_data":[],
+                  "sparameter_complex":[],
+                  "comments":[],
+                  "path":None
                   }
         self.options={}
         for key,value in defaults.iteritems():
             self.options[key]=value
         for key,value in options.iteritems():
             self.options[key]=value
-        self.elements=['header','column_names','data','footer','inline_comments']
+        self.elements=['sparameter_data','noiseparameter_data','comments','option_line']
         self.metadata=self.options["metadata"]
         self.noiseparameter_row_pattern=make_row_match_string(S2P_NOISE_PARAMETER_COLUMN_NAMES)+"\n"
         self.noiseparameter_column_names=S2P_NOISE_PARAMETER_COLUMN_NAMES
         if file_path is not None:
             self.path=file_path
-        self.__read_and_fix__()
+            self.__read_and_fix__()
+        else:
+            for element in self.elements:
+                self.__dict__[element]=self.options[element]
+            match=re.match(OPTION_LINE_PATTERN,self.option_line)
+            # set the values associated with the option line
+            for key,value in match.groupdict().iteritems():
+                self.__dict__[key.lower()]=value
+            # now we handle the cases if sparameter_data or sparameter_complex is specified
+            if self.sparameter_data is [] and self.sparameter_complex is[]:
+                pass
+            elif self.sparameter_complex is []:
+                for row in self.sparameter_data:
+                    self.add_sparameter_complex_row(row)
+            elif self.sparameter_data is []:
+                self.change_data_format(new_format=self.format)
+
+            if self.options["path"] is None:
+                self.path=auto_name(self.options["specific_descriptor"],self.options["general_descriptor"],
+                                    self.options['directory'],self.options["extension"])
 
     def __read_and_fix__(self):
         """Reads a s2pv1 file and fixes any problems with delimiters. Since s2p files may use
         any white space or combination of white space as data delimiters it reads the data and creates
         a uniform delimter. This means a file saved with save() will not be the same as the original if the
         whitespace is not uniform. """
-        default_option_line="# GHz S RI R 50"
+        default_option_line=self.options["option_line"]
         in_file=open(self.path,'r')
         # to keep the logic clean we will repeatedly cycle through self.lines
         # but in theory we could do it all on the line input stage
@@ -263,7 +297,7 @@ class S2PV1():
 
     def add_sparameter_row(self,row_data):
         """Adds data to the sparameter attribute, which is a list of s-parameters. The
-        data can be a list of 9 real numbers, 1 real number and 4 complex number
+        data can be a list of 9 real numbers
          or dictionary with appropriate column names, note column names are not case sensitive"""
         if type(row_data) is ListType:
             if len(row_data) == 9:
@@ -355,12 +389,62 @@ class S2PV1():
     def change_frequency_units(self,new_frequency_units=None):
         """Changes the frequency units from the current to new_frequency_units. Frequency Units must be one
         of the following: 'Hz','kHz','MHz', or 'GHz'. """
-        old_units=self.frequency_units
-        old_prefix=old_units.replace('Hz','')
+        multipliers={"yotta":10.**24,"Y":10.**24,"zetta":10.**21,"Z":10.**21,"exa":10.**18,"E":10.**18,"peta":10.**15,
+                     "P":10.**15,"tera":10.**12,"T":10.**12,"giga":10.**9,"G":10.**9,"mega":10.**6,"M":10.**6,
+                     "kilo":10.**3,"k":10.**3,"hecto":10.**2,"h":10.**2,"deka":10.,"da":10.,None:1.,"":1.,
+                     "deci":10.**-1,"d":10.**-1,"centi":10.**-2,"c":10.**-2,"milli":10.**-3,"m":10.**-3,
+                     "micro":10.**-6,"mu":10.**-6,u"\u00B5":10.**-6,"nano":10.**-9,
+                     "n":10.**-9,"pico":10.**-12,"p":10.**-12,"femto":10.**-15,
+                     "f":10.**-15,"atto":10.**-18,"a":10.**-18,"zepto":10.**-21,"z":10.**-21,
+                     "yocto":10.**-24,"y":10.**-24}
+        # change column name into column index
+        old_prefix=self.frequency_units.replace('Hz','')
         new_prefix=new_frequency_units.replace('Hz','')
-        #self.change_unit_prefix('Frequency',old_prefix=old_prefix,new_prefix=new_prefix)
-        self.frequency_units=new_frequency_units
-
+        unit='Hz'
+        column_selector=0
+        try:
+            if old_prefix is None:
+                old_prefix=""
+            if new_prefix is None:
+                new_prefix=""
+            old_unit=old_prefix+unit
+            new_unit=new_prefix+unit
+            if column_selector in self.column_names:
+                column_selector=self.column_names.index(column_selector)
+            for index,row in enumerate(self.sparameter_data):
+                if type(self.sparameter_data[index][column_selector]) in [FloatType,LongType]:
+                    #print "{0:e}".format(multipliers[old_prefix]/multipliers[new_prefix])
+                    self.sparameter_data[index][column_selector]=\
+                    (multipliers[old_prefix]/multipliers[new_prefix])*self.sparameter_data[index][column_selector]
+                elif type(self.sparameter_data[index][column_selector]) in [StringType,IntType]:
+                    self.sparameter_data[index][column_selector]=\
+                    str((multipliers[old_prefix]/multipliers[new_prefix])*float(self.sparameter_data[index][column_selector]))
+                else:
+                    print type(self.sparameter_data[index][column_selector])
+                    raise
+            for index,row in enumerate(self.noiseparameter_data):
+                if type(self.noiseparameter_data[index][column_selector]) in [FloatType,LongType]:
+                    #print "{0:e}".format(multipliers[old_prefix]/multipliers[new_prefix])
+                    self.noiseparameter_data[index][column_selector]=\
+                    (multipliers[old_prefix]/multipliers[new_prefix])*self.noiseparameter_data[index][column_selector]
+                elif type(self.noiseparameter_data[index][column_selector]) in [StringType,IntType]:
+                    self.noiseparameter_data[index][column_selector]=\
+                    str((multipliers[old_prefix]/multipliers[new_prefix])*float(self.noiseparameter_data[index][column_selector]))
+                else:
+                    print type(self.noiseparameter_data[index][column_selector])
+                    raise
+            if self.options["column_descriptions"] is not None:
+                old=self.options["column_descriptions"][column_selector]
+                self.options["column_descriptions"][column_selector]=old.replace(old_unit,new_unit)
+            if self.options["column_units"] is not None:
+                old=self.options["column_units"][column_selector]
+                self.options["column_units"][column_selector]=old.replace(old_unit,new_unit)
+            if re.search(old_unit,self.column_names[column_selector]):
+                old=self.column_names[column_selector]
+                self.column_names[column_selector]=old.replace(old_unit,new_unit)
+        except:
+            print("Could not change the unit prefix of column {0}".format(column_selector))
+            raise
 
     def change_data_format(self,new_format=None):
         """Changes the data format to new_format. Format must be one of the following: 'DB','MA','RI'
@@ -457,17 +541,19 @@ class S2PV1():
     def show(self):
         """Shows the touchstone file"""
         # plot data
-        plt.figure(figsize=(8, 8))
-        val1=[row[1] for row in self.sparameter_complex]
-        val2=[row[4] for row in self.sparameter_complex]
-        ax = plt.subplot(1, 1, 1, projection='smith', axes_norm=50)
-        plt.plot(val1, markevery=1, label="S11")
-        plt.plot(val2, markevery=1, label="S22")
-        #ax.plot_vswr_circle(0.3 - 0.7j, real=1, solution2=True, label="Re(Z)->1")
-        plt.legend(loc="lower right")
-        plt.title("Matplotlib Smith Chart Projection")
-
-        plt.show()
+        if SMITHPLOT:
+            plt.figure(figsize=(8, 8))
+            val1=[row[1] for row in self.sparameter_complex]
+            val2=[row[4] for row in self.sparameter_complex]
+            ax = plt.subplot(1, 1, 1, projection='smith', axes_norm=50)
+            plt.plot(val1, markevery=1, label="S11")
+            plt.plot(val2, markevery=1, label="S22")
+           #ax.plot_vswr_circle(0.3 - 0.7j, real=1, solution2=True, label="Re(Z)->1")
+            plt.legend(loc="lower right")
+            plt.title("Matplotlib Smith Chart Projection")
+            plt.show()
+        else:
+            pass
 
 #-----------------------------------------------------------------------------
 # Module Scripts
@@ -502,6 +588,7 @@ def test_s2pv1(file_path="thru.s2p"):
     print("The attribute {0} is {1}".format('column_names',str(new_table.column_names)))
     print("-"*80)
     print("The attribute {0} is {1}".format('noiseparameter_column_names',str(new_table.noiseparameter_column_names)))
+
 def test_change_format(file_path="thru.s2p"):
     """Tests the s2pv1 class"""
     os.chdir(TESTS_DIRECTORY)

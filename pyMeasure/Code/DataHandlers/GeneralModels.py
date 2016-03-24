@@ -1870,8 +1870,8 @@ def test_change_unit_prefix():
 # Module Runner
 if __name__ == '__main__':
     #test_AsciiDataTable()
-    #test_open_existing_AsciiDataTable()
-    test_AsciiDataTable_equality()
+    test_open_existing_AsciiDataTable()
+    #test_AsciiDataTable_equality()
     #test_inline_comments()
     #test_add_row()
     #test_add_index()
