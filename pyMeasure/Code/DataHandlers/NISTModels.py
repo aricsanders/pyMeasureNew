@@ -256,6 +256,11 @@ class JBSparameter(AsciiDataTable):
             AsciiDataTable.__init__(self,file_path,**self.options)
         else:
             AsciiDataTable.__init__(self,file_path,**self.options)
+    def get_frequency_units(self):
+        """Returns the frequency units by looking at the 0 index element of column names"""
+        pattern='freq\((?P<Frequency_Units>\w+)\)'
+        match=re.match(pattern,self.column_names[0])
+        return match.groupdict()['Frequency_Units']
 
 
 
@@ -304,11 +309,18 @@ def test_JBSparameter(file_path="ftest6_L1_g5_HF_air"):
     # open an existing file
     new_table=JBSparameter(file_path=file_path)
     print new_table.column_names
-    new_table.change_unit_prefix(column_selector=0,old_prefix='',new_prefix='G',unit='Hz')
+    print new_table.get_frequency_units()
+    old_prefix=new_table.get_frequency_units().replace('Hz','')
+    #new_table.change_unit_prefix(column_selector=0,old_prefix='',new_prefix='G',unit='Hz')
+    new_table.change_unit_prefix(column_selector=0,old_prefix=old_prefix,new_prefix='G',unit='Hz')
     print new_table.column_names
+    print new_table.get_column(None,0)
+    print new_table.get_frequency_units()
+    print new_table.get_header_string()
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
     #test_OnePortModel()
     #test_OnePortRawModel()
-    test_JBSparameter()
+    #test_JBSparameter()
+    test_JBSparameter('QuartzRefExample_L1_g10_HF')

@@ -941,9 +941,6 @@ class Metadata(XMLBase):
             self.FileRegister=FileRegistry
         elif type(FileRegistry) in StringTypes:
             self.FileRegister=FileRegister(FileRegistry)
-
-
-
         # Process or create the Metadata File
         if Metadata_File is None:
             # Make the metadata file based on the file register
@@ -970,7 +967,6 @@ class Metadata(XMLBase):
             'xml-FileRegistry',\
             'href=\"%s\"'%(self.FileRegister.path))
             self.document.insertBefore(new_node,self.document.documentElement)
-
         else:
             # The metadata file exists as a saved file or an instance
             if type(Metadata_File) is InstanceType:
@@ -978,7 +974,6 @@ class Metadata(XMLBase):
                 self.path=Metadata_File.path
             elif type(Metadata_File) in StringTypes:
                 XMLBase.__init__(self,file_path,**self.options)
-
 
         # TODO: This dictionary of nodes worries me-- it may not scale well
         self.node_dictionary=dict([(str(node.getAttribute('URL')),
@@ -1005,10 +1000,8 @@ class Metadata(XMLBase):
                 urls=filter(lambda x: re.search(name,x,flags=re_flags),
                 self.URL_dictionary.values())
                 return urls
-
         except:
             raise
-
 
     if XSLT_CAPABLE:
         def to_HTML(self,XSLT=None):
@@ -1030,6 +1023,7 @@ class Metadata(XMLBase):
         elif not Id is None:
             self.current_node=self.node_dictionary[self.URL_dictionary[Id]]
             return self.current_node
+
     def set_current_node(self,URL=None,Id=None):
         """ Sets the current file node to the one specified by URL or Id"""
         if not URL is None:
@@ -1047,15 +1041,14 @@ class Metadata(XMLBase):
         if not value is None:
             new_text=self.document.createTextNode(str(value))
             new_element.appendChild(new_text)
-
         attributes=[key for key in Atributes.keys()]
         new_attributes=dict([(attribute,
         self.document.createAttribute(attribute)) for attribute in \
         attributes])
-
         for (key,value) in Atributes.iteritems():
             new_element.setAttribute(key,str(value))
         self.current_node.appendChild(new_element)
+
     def remove_element_in_current_node(self,element_name):
         """Removes all metadata elements with the same tagname
          in the current file node"""
