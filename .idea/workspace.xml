@@ -5,22 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4139f2fc-c578-4782-b083-7284792a834c" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/Tests/QuartzRefExample_L1_g10_HF" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/Tests/onechks_pandas.csv" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pyMeasure/Code/Utils/Tests/Development_Stack_Installation_Example_20160130_01.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pyMeasure/Code/Utils/Tests/Development_Stack_Installation_Example_20160130_01.ipynb" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pyMeasure/Code/Utils/Tests/pyMeasure_Code_DataHandlers_GeneralModels_Help_20160324_001.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pyMeasure/Code/Utils/Tests/pyMeasure_Code_DataHandlers_NISTModels_Help_20160324_001.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pyMeasure/Code/Utils/Tests/pyMeasure_Code_DataHandlers_XMLModels_Help_20160324_001.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pyMeasure/Code/Utils/Tests/pyMeasure_Help_20160324_001.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../test_site/Test_Site/db.sqlite3" afterPath="$PROJECT_DIR$/../test_site/Test_Site/db.sqlite3" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/.ipynb_checkpoints/Import_JBSparameter_Format_Example_201603232016-checkpoint.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/.ipynb_checkpoints/Import_JBSparameter_Format_Example_201603232016-checkpoint.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/Import_JBSparameter_Format_Example_201603232016.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/Import_JBSparameter_Format_Example_201603232016.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/Untitled.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/Untitled.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/XMLModels.py" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/XMLModels.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pyMeasure/Code/Utils/HelpUtils.py" afterPath="$PROJECT_DIR$/pyMeasure/Code/Utils/HelpUtils.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../test_site/.idea/test_site.iml" afterPath="$PROJECT_DIR$/../test_site/.idea/test_site.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../test_site/Test_Site/Test_App/views.py" afterPath="$PROJECT_DIR$/../test_site/Test_Site/Test_App/views.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../test_site/Test_Site/Test_Site/settings.py" afterPath="$PROJECT_DIR$/../test_site/Test_Site/Test_Site/settings.py" />
@@ -593,12 +582,6 @@
       <option name="number" value="Default" />
       <updated>1456039207125</updated>
     </task>
-    <task id="LOCAL-00007" summary="Added Ascii Data table">
-      <created>1456560190408</created>
-      <option name="number" value="00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1456560190408</updated>
-    </task>
     <task id="LOCAL-00008" summary="Added Ascii Data table">
       <created>1456698966092</created>
       <option name="number" value="00008" />
@@ -887,7 +870,13 @@
       <option name="project" value="LOCAL" />
       <updated>1458803311566</updated>
     </task>
-    <option name="localTasksCounter" value="56" />
+    <task id="LOCAL-00056" summary="New Examples">
+      <created>1458885345031</created>
+      <option name="number" value="00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1458885345032</updated>
+    </task>
+    <option name="localTasksCounter" value="57" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -896,6 +885,7 @@
     <layout>
       <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.35555556" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34087238" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -905,7 +895,6 @@
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -946,7 +935,8 @@
     <MESSAGE value="Bijective Network addition" />
     <MESSAGE value="AbstractDjangoModels" />
     <MESSAGE value="JBSparameter" />
-    <option name="LAST_COMMIT_MESSAGE" value="JBSparameter" />
+    <MESSAGE value="New Examples" />
+    <option name="LAST_COMMIT_MESSAGE" value="New Examples" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
