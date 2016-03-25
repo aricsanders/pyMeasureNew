@@ -435,7 +435,7 @@ class AsciiDataTable():
             self.options[key]=value
         for key,value in options.iteritems():
             self.options[key]=value
-        self.elements=['header','column_names','data','footer','inline_comments']
+        self.elements=['header','column_names','data','footer','inline_comments','metadata']
         #Define Method Aliases if they are available
         #unqualified exec is not allowed in function '__init__' because it contains a nested function with free variables
         # This is because __init__ has nested functions

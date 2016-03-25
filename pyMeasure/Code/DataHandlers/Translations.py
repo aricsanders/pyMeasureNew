@@ -67,8 +67,14 @@ def AsciiDataTable_to_XMLDataTable(ascii_data_table,**options):
         XML_options[key]=value
     data_description={}
     if ascii_data_table.options["column_descriptions"] is not None:
-        for key,value in ascii_data_table.options["column_descriptions"].iteritems():
-            data_description[key]=value
+        if type(ascii_data_table.options["column_descriptions"]) is DictionaryType:
+            for key,value in ascii_data_table.options["column_descriptions"].iteritems():
+                data_description[key]=value
+        elif type(ascii_data_table.options["column_descriptions"]) is ListType:
+            for index,value in enumerate(ascii_data_table.options["column_descriptions"]):
+                key=ascii_data_table.column_names[index]
+                data_description[key]=value
+
     if ascii_data_table.metadata is not None:
         for key,value in ascii_data_table.metadata.iteritems():
             data_description[key]=value
