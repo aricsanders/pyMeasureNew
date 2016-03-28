@@ -101,7 +101,7 @@ def AsciiDataTable_to_DataFrame(ascii_data_table):
 def AsciiDataTable_to_Excel(ascii_data_table,file_path=None):
     """Converts an AsciiDataTable to an excel spreadsheet using pandas"""
     if ascii_data_table.header:
-        data_frame=pandas.DataFrame(data=ascii_data_table.data,columns=ascii_data_table.column_names)
+        data_frame=pandas.DataFrame(data=ascii_data_table.data,columns=ascii_data_table.column_names,index=False)
 
 def S2PV1_to_XMLDataTable(s2p,**options):
     """Transforms a s2p's sparameters to a XMLDataTable. Converts the format to RI first"""
