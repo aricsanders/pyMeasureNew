@@ -60,7 +60,7 @@ def auto_name(specific_descriptor=None,general_descriptor=None,directory=None,ex
 
 def split_filename(filename):
     """Returns a list of file name pieces. The list will contain any CamelCase, snake_case or
-    common delimiter seperated words (last element is nominally the file extension"""
+    common delimiter seperated words (last element is nominally the file extension)"""
     out_string=re.sub("([\a-z])([\A-Z])",r'\1 \2',filename)
     out_list=re.split("[\W|\.|_]+",out_string)
     return out_list

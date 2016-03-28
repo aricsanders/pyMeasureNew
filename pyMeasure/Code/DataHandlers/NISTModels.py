@@ -205,9 +205,22 @@ class OnePortRawModel(AsciiDataTable):
         for index,key in enumerate(keys):
             self.metadata[key]=self.header[index]
 
+class TwoPortCalrep():
+    """TwoPortCalrep is a model that holds data output by analyzing several datafiles using the HPBasic program
+    Calrep. The data is stored in 3 tables: a S11 table, a S21 table and a S22 table. The data is in linear
+    magnitude and angle in degrees. There are 2 types of files, one is a single file with .asc extension
+    and 3 files with .txt extension"""
+
+    def __init__(self,file_path=None,**options):
+        """Intializes the TwoPortCalrep class, if a file path is specified it opens and reads the file"""
+        if file_path is None:
+            pass
+
+
 class JBSparameter(AsciiDataTable):
     """JBSparameter is a class that holds data taken and stored using Jim Booth's two port format.
      """
+
     def __init__(self,file_path=None,**options):
         """Initializes the JBSparameter class. JB Sparameter data is very close to s2p, but has # as a comment
          begin token, and space as a data delimiter. The first line has structured metadata that usually includes
