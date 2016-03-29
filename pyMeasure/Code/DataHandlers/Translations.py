@@ -128,12 +128,42 @@ def S2PV1_to_XMLDataTable(s2p,**options):
                 key="Comments_{0:0>3}".format(index)
                 data_description[key]=line[0]
     s2p.change_data_format(new_format='RI')
+    s2p.change_frequency_units('GHz')
     data_dictionary={"Data_Description":data_description,"Data":s2p.get_data_dictionary_list()}
     XML_options["data_dictionary"]=data_dictionary
     new_xml_data_table=DataTable(None,**XML_options)
     return new_xml_data_table
 
-
+def S1PV1_to_XMLDataTable(s1p,**options):
+    """Transforms a s1p's sparameters to a XMLDataTable. Converts the format to RI first"""
+    defaults={"specific_descriptor":s1p.options["specific_descriptor"],
+                     "general_descriptor":s1p.options["general_descriptor"],
+                      "directory":s1p.options["directory"],
+              "style_sheet":"../XSL/S1P_STYLE.xsl"
+                     }
+    XML_options={}
+    for key,value in defaults.iteritems():
+        XML_options[key]=value
+    for key,value in options.iteritems():
+        XML_options[key]=value
+    data_description={}
+    if s1p.options["column_descriptions"] is not None:
+        for key,value in s1p.options["column_descriptions"].iteritems():
+            data_description[key]=value
+    if s1p.metadata is not None:
+        for key,value in s1p.metadata.iteritems():
+            data_description[key]=value
+    else:
+        if s1p.comments is not None:
+            for index,line in enumerate(s1p.comments):
+                key="Comments_{0:0>3}".format(index)
+                data_description[key]=line[0]
+    s1p.change_data_format(new_format='RI')
+    s1p.change_frequency_units('GHz')
+    data_dictionary={"Data_Description":data_description,"Data":s1p.get_data_dictionary_list()}
+    XML_options["data_dictionary"]=data_dictionary
+    new_xml_data_table=DataTable(None,**XML_options)
+    return new_xml_data_table
 #-----------------------------------------------------------------------------
 # Module Classes
 
@@ -182,6 +212,12 @@ def timeit_script(script='test_AsciiDataTable_to_XMLDataTable()',
     import statement in setup"""
     print timeit.timeit(script,setup=setup,number=n_loops)/n_loops
 
+def test_S2P_to_XMLDataTable_02(file_path="thru.s2p",**options):
+    os.chdir(TESTS_DIRECTORY)
+    s2p_file=S2PV1(file_path)
+    XML_s2p=S2PV1_to_XMLDataTable(s2p_file,**options)
+    #XML_s2p.save()
+
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
@@ -195,4 +231,5 @@ if __name__ == '__main__':
     #               setup="from __main__ import test_OnePortRaw_to_XMLDataTable",n_loops=10)
     #test_S2P_to_XMLDataTable()
     #test_S2P_to_XMLDataTable('TwoPortTouchstoneTestFile.s2p')
-    test_S2P_to_XMLDataTable('20160301_30ft_cable_0.s2p')
+    #test_S2P_to_XMLDataTable('20160301_30ft_cable_0.s2p')
+    test_S2P_to_XMLDataTable_02('20160301_30ft_cable_0.s2p',**{"style_sheet":"../XSL/S2P_STYLE_02.xsl"})

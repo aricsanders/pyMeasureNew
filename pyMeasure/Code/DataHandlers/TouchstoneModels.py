@@ -109,7 +109,7 @@ def print_s2p_attributes(new_table):
     print("-"*80)
     print("The attribute {0} is {1}".format('noiseparameter_column_names',str(new_table.noiseparameter_column_names)))
 
-def make_row_match_string(column_names,delimiter_pattern='[\s,-]+'):
+def make_row_match_string(column_names,delimiter_pattern='[\s,]+'):
     """Returns a regex string for matching a row given a set of column names assuming the row delimiter
     is a set of white spaces (default) or a specified delimiter pattern.
     Designed to create a regex for the input of numbers"""
@@ -129,9 +129,9 @@ def build_row_formatter(precision=None,number_columns=None):
         precision=4
     for i in range(number_columns):
         if i==number_columns-1:
-            row_formatter=row_formatter+"{"+str(i)+":.%sf}"%precision
+            row_formatter=row_formatter+"{"+str(i)+":.%sg}"%precision
         else:
-            row_formatter=row_formatter+"{"+str(i)+":.%sf}{delimiter}"%precision
+            row_formatter=row_formatter+"{"+str(i)+":.%sg}{delimiter}"%precision
     return row_formatter
 #-----------------------------------------------------------------------------
 # Module Classes
@@ -160,7 +160,8 @@ class S1PV1():
                   "sparameter_data":[],
                   "sparameter_complex":[],
                   "comments":[],
-                  "path":None
+                  "path":None,
+                  "column_units":None
                   }
         self.options={}
         for key,value in defaults.iteritems():
@@ -371,8 +372,8 @@ class S1PV1():
                      "f":10.**-15,"atto":10.**-18,"a":10.**-18,"zepto":10.**-21,"z":10.**-21,
                      "yocto":10.**-24,"y":10.**-24}
         # change column name into column index
-        old_prefix=self.frequency_units.replace('Hz','')
-        new_prefix=new_frequency_units.replace('Hz','')
+        old_prefix=re.sub('Hz','',self.frequency_units,flags=re.IGNORECASE)
+        new_prefix=re.sub('Hz','',new_frequency_units,flags=re.IGNORECASE)
         unit='Hz'
         column_selector=0
         try:
@@ -457,7 +458,7 @@ class S1PV1():
             if self.options["sparameter_row_formatter_string"] is None:
                 use_row_formatter_string=False
             if use_row_formatter_string:
-                list_formatter=[item.replace(str(index),"0")
+                list_formatter=[item.replace("{"+str(index),"{0")
                                 for index,item in enumerate(self.options["sparameter_row_formatter_string"].split("{delimiter}"))]
             else:
                 list_formatter=["{0}" for i in self.column_names]
@@ -507,7 +508,8 @@ class S2PV1():
                   "sparameter_data":[],
                   "sparameter_complex":[],
                   "comments":[],
-                  "path":None
+                  "path":None,
+                  "column_units":None
                   }
         self.options={}
         for key,value in defaults.iteritems():
@@ -766,8 +768,8 @@ class S2PV1():
                      "f":10.**-15,"atto":10.**-18,"a":10.**-18,"zepto":10.**-21,"z":10.**-21,
                      "yocto":10.**-24,"y":10.**-24}
         # change column name into column index
-        old_prefix=self.frequency_units.replace('Hz','')
-        new_prefix=new_frequency_units.replace('Hz','')
+        old_prefix=re.sub('Hz','',self.frequency_units,flags=re.IGNORECASE)
+        new_prefix=re.sub('Hz','',new_frequency_units,flags=re.IGNORECASE)
         unit='Hz'
         column_selector=0
         try:
@@ -880,7 +882,7 @@ class S2PV1():
             if self.options["sparameter_row_formatter_string"] is None:
                 use_row_formatter_string=False
             if use_row_formatter_string:
-                list_formatter=[item.replace(str(index),"0")
+                list_formatter=[item.replace("{"+str(index),"{0")
                                 for index,item in enumerate(self.options["sparameter_row_formatter_string"].split("{delimiter}"))]
             else:
                 list_formatter=["{0}" for i in self.column_names]
@@ -988,10 +990,10 @@ def test_change_format(file_path="thru.s2p"):
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
-    test_S1PV1()
+    #test_S1PV1()
     #test_option_string()
     #test_s2pv1()
     #test_s2pv1('TwoPortTouchstoneTestFile.s2p')
     #test_change_format()
     #test_change_format('TwoPortTouchstoneTestFile.s2p')
-    #test_change_format('20160301_30ft_cable_0.s2p')
+    test_change_format('20160301_30ft_cable_0.s2p')

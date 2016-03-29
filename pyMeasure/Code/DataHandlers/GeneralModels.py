@@ -456,19 +456,15 @@ class AsciiDataTable():
             #Now we see if the table has been defined in the options
             # We should reset the self.options versions to None after this so as to not recreate or we
             # can use it as a cache and add a method reset_table which either redoes the below or reloads the saved file
-            self.header=self.options["header"]
-            self.column_names=self.options["column_names"]
-            self.data=self.options["data"]
-            self.footer=self.options["footer"]
-            self.metadata=self.options["metadata"]
-            self.inline_comments=self.options["inline_comments"]
+            for element in self.elements:
+                self.__dict__[element]=self.options[element]
+
             self.initial_state=[self.options["header"],self.options["column_names"],
                                 self.options["data"],self.options["footer"],
                                 self.options["inline_comments"]]
             #print "I got here {0}".format(self.path)
-            [self.options["header"],self.options["column_names"],
-                                self.options["data"],self.options["footer"],
-                                self.options["inline_comments"]]=[None for i in self.elements]
+            for element in self.elements:
+                self.options[element]=None
 
             #if you are validating the model, you have to skip the updating until it hsa been parsed
             try:
@@ -1405,7 +1401,7 @@ class AsciiDataTable():
             if self.options["row_formatter_string"] is None:
                 use_row_formatter_string=False
             if use_row_formatter_string:
-                list_formatter=[item.replace(str(index),"0")
+                list_formatter=[item.replace("{"+str(index),"{0")
                                 for index,item in enumerate(self.options["row_formatter_string"].split("{delimiter}"))]
             else:
                 list_formatter=["{0}" for i in self.column_names]

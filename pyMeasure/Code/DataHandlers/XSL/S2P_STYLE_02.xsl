@@ -76,21 +76,64 @@
         <button id="ToggleButton" type="button" class="btn btn-primary">Show Table</button><br/><hr/>
 		<table class='table table-hover table-condensed table-bordered table-responsive' id="DataTable">
 		    <tr>
-
-            <xsl:for-each select="//Data/Tuple[1]/@*">
-            
-            <th ><b><xsl:value-of select="name()"/></b></th>
-            
-            </xsl:for-each>
+            <th >
+                <b>Frequency</b>
+            </th>
+            <th >
+                <b>reS11</b>
+            </th>                
+            <th >
+                <b>imS11</b>
+            </th>
+            <th >
+                <b>reS21</b>
+            </th>
+            <th >
+                <b>imS21</b>
+            </th>
+            <th >
+                <b>reS12</b>
+            </th>
+            <th >
+                <b>imS12</b>
+            </th>
+            <th >
+                <b>reS22</b>
+            </th>
+            <th >
+                <b>imS22</b>
+            </th>                
             </tr>
             <xsl:for-each select="//Data/Tuple">
             <tr>
-		    
-            <xsl:for-each select="./@*">
-         
-                <td><xsl:value-of select="."/></td>
-            
+            <xsl:for-each select="./@Frequency">
+            <td><xsl:value-of select="."/></td>
 		    </xsl:for-each>
+            <xsl:for-each select="./@reS11">
+            <td><xsl:value-of select="."/></td>
+		    </xsl:for-each>
+            <xsl:for-each select="./@imS11">
+            <td><xsl:value-of select="."/></td>
+		    </xsl:for-each>
+            <xsl:for-each select="./@reS21">
+            <td><xsl:value-of select="."/></td>
+		    </xsl:for-each>    
+            <xsl:for-each select="./@imS21">
+            <td><xsl:value-of select="."/></td>
+		    </xsl:for-each>    
+            <xsl:for-each select="./@reS12">
+            <td><xsl:value-of select="."/></td>
+		    </xsl:for-each>    
+            <xsl:for-each select="./@imS12">
+            <td><xsl:value-of select="."/></td>
+		    </xsl:for-each>    
+            <xsl:for-each select="./@reS22">
+            <td><xsl:value-of select="."/></td>
+		    </xsl:for-each>    
+            <xsl:for-each select="./@imS22">
+            <td><xsl:value-of select="."/></td>
+		    </xsl:for-each>                    
+                
             </tr>
             </xsl:for-each>
 		</table>

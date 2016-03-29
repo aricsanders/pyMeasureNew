@@ -13,7 +13,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Two port measurement</title>
+    <title>One port measurement</title>
 
     <!-- Bootstrap -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
@@ -55,20 +55,7 @@
         <td><div id="imS11" style="width: 480px; height: 400px;" class="plot">
         <!-- Plotly chart will be drawn inside this DIV --></div></td>
         </tr>
-        <tr>
-            <td>
-        <div id="reS21" style="width: 480px; height: 400px;" class="plot">
-        <!-- Plotly chart will be drawn inside this DIV --></div></td>
-        <td><div id="imS21" style="width: 480px; height: 400px;" class="plot">
-        <!-- Plotly chart will be drawn inside this DIV --></div></td>
-        </tr>
-        <tr>
-            <td>
-        <div id="reS22" style="width: 480px; height: 400px;" class="plot">
-        <!-- Plotly chart will be drawn inside this DIV --></div></td>
-        <td><div id="imS22" style="width: 480px; height: 400px;" class="plot">
-        <!-- Plotly chart will be drawn inside this DIV --></div></td>
-        </tr>
+
 </table>
     </div>
     <div>
@@ -76,21 +63,29 @@
         <button id="ToggleButton" type="button" class="btn btn-primary">Show Table</button><br/><hr/>
 		<table class='table table-hover table-condensed table-bordered table-responsive' id="DataTable">
 		    <tr>
+            <th >
+                <b>Frequency</b>
+            </th>
+            <th >
+                <b>reS11</b>
+            </th>                
+            <th >
+                <b>imS11</b>
+            </th>
 
-            <xsl:for-each select="//Data/Tuple[1]/@*">
-            
-            <th ><b><xsl:value-of select="name()"/></b></th>
-            
-            </xsl:for-each>
             </tr>
             <xsl:for-each select="//Data/Tuple">
             <tr>
-		    
-            <xsl:for-each select="./@*">
-         
-                <td><xsl:value-of select="."/></td>
-            
+            <xsl:for-each select="./@Frequency">
+            <td><xsl:value-of select="."/></td>
 		    </xsl:for-each>
+            <xsl:for-each select="./@reS11">
+            <td><xsl:value-of select="."/></td>
+		    </xsl:for-each>
+            <xsl:for-each select="./@imS11">
+            <td><xsl:value-of select="."/></td>
+            </xsl:for-each>
+                
             </tr>
             </xsl:for-each>
 		</table>
@@ -150,125 +145,10 @@ var reS11Layout = {
     title:'Frequency (GHz)'},
   title:'imS11'
 };
-    var reS22 = [
-  {
-    x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
-    y: [<xsl:for-each select="//Data/Tuple/@reS22"><xsl:value-of select="."/>,</xsl:for-each>],
-    type: 'scatter',
-    mode:'markers'
-  }
-];
-        var imS22 = [
-  {
-    x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
-    y: [<xsl:for-each select="//Data/Tuple/@imS22"><xsl:value-of select="."/>,</xsl:for-each>],
 
-    type: 'scatter',
-       mode:'markers'
-  }
-];
-var reS22Layout = {
-  legend: {
-    y: 0.5,
-    yref: 'paper',
-    font: {
-      family: 'Arial, sans-serif',
-      size: 20,
-      color: 'grey',
-    }
-
-  },
-    xaxis:{
-    title:'Frequency (GHz)'},
-  title:'reS22'
-};
-
-    var imS22Layout = {
-  legend: {
-    y: 0.5,
-    yref: 'paper',
-    font: {
-      family: 'Arial, sans-serif',
-      size: 20,
-      color: 'grey',
-    }
-  },
-    xaxis:{
-    title:'Frequency (GHz)'},
-  title:'imS22'
-};
-    var reS21 =
-  {
-    x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
-    y: [<xsl:for-each select="//Data/Tuple/@reS21"><xsl:value-of select="."/>,</xsl:for-each>],
-    type: 'scatter',
-    mode:'markers',
-    name:'S21'
-  };
-        var imS21 =
-  {
-    x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
-    y: [<xsl:for-each select="//Data/Tuple/@imS21"><xsl:value-of select="."/>,</xsl:for-each>],
-
-    type: 'scatter',
-    mode:'markers',
-    name:'S21'
-  };
-
-    var reS12 =
-  {
-    x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
-    y: [<xsl:for-each select="//Data/Tuple/@reS21"><xsl:value-of select="."/>,</xsl:for-each>],
-    type: 'scatter',
-    mode:'markers',
-    name:'S12'
-  };
-        var imS12 =
-  {
-    x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
-    y: [<xsl:for-each select="//Data/Tuple/@imS21"><xsl:value-of select="."/>,</xsl:for-each>],
-
-    type: 'scatter',
-    mode:'markers',
-    name:'S12'
-  };
-
-var reS21Layout = {
-  legend: {
-    y: 0.5,
-    yref: 'paper',
-    font: {
-      family: 'Arial, sans-serif',
-      size: 20,
-      color: 'grey',
-    }
-
-  },
-    xaxis:{
-    title:'Frequency (GHz)'},
-  title:'reS21'
-};
-
-    var imS21Layout = {
-  legend: {
-    y: 0.5,
-    yref: 'paper',
-    font: {
-      family: 'Arial, sans-serif',
-      size: 20,
-      color: 'grey',
-    }
-  },
-    xaxis:{
-    title:'Frequency (GHz)'},
-  title:'imS21'
-};
 Plotly.newPlot('reS11', reS11,reS11Layout);
 Plotly.newPlot('imS11', imS11,imS11Layout);
-Plotly.newPlot('reS21', [reS21,reS12],reS21Layout);
-Plotly.newPlot('imS21', [imS21,imS12],imS21Layout);
-Plotly.newPlot('reS22', reS22,reS22Layout);
-Plotly.newPlot('imS22', imS22,imS22Layout);
+
 	</script>
 <script>
 $(document).ready(function(){
