@@ -29,7 +29,7 @@ class IEPanel(wx.Panel):
         sizer = wx.BoxSizer(wx.VERTICAL)
         btnSizer = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.ie = iewin.IEHtmlWindow()
+        self.ie = iewin.IEHtmlWindow(self)
         self.ie.LoadString(overview)
 
         btn = wx.Button(self, -1, "Open", style=wx.BU_EXACTFIT)
