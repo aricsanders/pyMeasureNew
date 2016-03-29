@@ -109,7 +109,7 @@ def print_s2p_attributes(new_table):
     print("-"*80)
     print("The attribute {0} is {1}".format('noiseparameter_column_names',str(new_table.noiseparameter_column_names)))
 
-def make_row_match_string(column_names,delimiter_pattern='[\s]+'):
+def make_row_match_string(column_names,delimiter_pattern='[\s,-]+'):
     """Returns a regex string for matching a row given a set of column names assuming the row delimiter
     is a set of white spaces (default) or a specified delimiter pattern.
     Designed to create a regex for the input of numbers"""
