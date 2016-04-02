@@ -233,11 +233,16 @@ def strip_line_tokens(string,begin_token=None,end_token=None):
     check_arg_type(string,StringType)
     string_out=string
     try:
+        match_string=""
         if begin_token is not None:
-            string_out=string_out.replace(begin_token,'')
+            match_string=begin_token
+        match_string=match_string+"(?P<data>.+)"
         if end_token is not None:
-            string_out=string_out.replace(end_token,'')
+            match_string=match_string+end_token
+        match=re.match(match_string,string)
+        string_out=match.groupdict()['data']
     except:
+        print("strip_line_tokens failed to strip {0},{1} from {2}".format(begin_token,end_token,string))
         pass
     return string_out
 
@@ -283,7 +288,7 @@ def convert_row(row_list_strings,column_types=None):
     python types using a column types list"""
 
     if column_types is None or len(row_list_strings) != len(column_types):
-        #print("Convert row could not convert {0} using {1}".format(row_list_strings,column_types))
+        print("Convert row could not convert {0} using {1}".format(row_list_strings,column_types))
         return row_list_strings
     else:
         out_row=row_list_strings
@@ -488,7 +493,7 @@ class AsciiDataTable():
                 if len(filter(lambda x: None!=x,self.get_options_by_element(item).values()))==0:
                     self.__dict__[item]=None
                     #elements.remove(item)
-                elif item not in ['inline_comments']:
+                elif item not in ['inline_comments','row','metadata','comment']:
                     self.__dict__[item]=[]
                     import_row=[self.options['%s_begin_line'%item],
                                 self.options['%s_end_line'%item],
@@ -577,13 +582,16 @@ class AsciiDataTable():
     def find_line(self,begin_token):
         """Finds the first line that has begin token in it"""
         for index,line in enumerate(self.lines):
-            if re.match(begin_token,line):
+            if re.search(begin_token,line):
                 return index
 
     def update_import_options(self,import_table):
         """Updates the options in the import table"""
-        for index,element in enumerate(self.elements):
+        for index,element in enumerate(['header','column_names','data','footer']):
             if self.__dict__[element] is not None:
+                print("The {0} variable is {1}".format('index',index))
+                print("The {0} variable is {1}".format('element',element))
+                print("The {0} variable is {1}".format('import_table',import_table))
                 [self.options['%s_begin_line'%element],
                                 self.options['%s_end_line'%element],
                                 self.options['%s_begin_token'%element],
@@ -596,7 +604,7 @@ class AsciiDataTable():
         last_element=""
         output=False
         for index,element in enumerate(self.elements):
-            if element not in ['inline_comments'] and self.__dict__[element] is not None:
+            if element not in ['inline_comments','metadata'] and self.__dict__[element] is not None:
                 try:
                     last_element=element
                     if not None in [self.options['%s_begin_line'%element],self.options['%s_end_line'%element]]:
@@ -630,7 +638,7 @@ class AsciiDataTable():
                                              end_token=self.options['inline_comment_end'])
         # Define each major element that are not inline comments by their line numbers
         for index,element in enumerate(self.elements):
-            if self.__dict__[element] is not None and element not in ['inline_comments']:
+            if element not in ['inline_comments','metadata'] and self.__dict__[element] is not None :
                 try:
                     if not None in [self.options['%s_begin_line'%element]]:
                         content_list=self.lines[
@@ -641,7 +649,7 @@ class AsciiDataTable():
                     raise
         # Remove any defined begin and end tokens
         for index,element in enumerate(self.elements):
-            if self.__dict__[element] is not None and element not in ["inline_comments"]:
+            if element not in ["inline_comments","metadata"] and self.__dict__[element] is not None:
                         for index,line in enumerate(self.__dict__[element]):
                             self.__dict__[element][index]=line
 
@@ -1865,8 +1873,8 @@ def test_change_unit_prefix():
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
-    #test_AsciiDataTable()
-    test_open_existing_AsciiDataTable()
+    test_AsciiDataTable()
+    #test_open_existing_AsciiDataTable()
     #test_AsciiDataTable_equality()
     #test_inline_comments()
     #test_add_row()

@@ -73,7 +73,9 @@ class OnePortModel(AsciiDataTable):
                                            "uPhg": "Total uncertainty in phase"}, "header": None,
                    "column_names": ["Frequency", "Magnitude", "uMb", "uMa", "uMd", "uMg", "Phase",
                                     "uPhb", "uPha", "uPhd", "uPhg"], "column_names_end_token": "\n", "data": None,
-                   "row_formatter_string": None, "data_table_element_separator": None}
+                   "row_formatter_string": None, "data_table_element_separator": None,"row_begin_token":None,
+                   "row_end_token":None,"escape_character":None,
+                   "data_begin_token":None,"data_end_token":None}
         self.options={}
         for key,value in defaults.iteritems():
             self.options[key]=value
@@ -83,15 +85,10 @@ class OnePortModel(AsciiDataTable):
         if METHOD_ALIASES:
             for command in alias(self):
                 exec(command)
-
         if file_path is not None:
             self.path=file_path
             self.__read_and_fix__()
 
-        if os.path.dirname(file_path) is "":
-            self.options["directory"]=os.getcwd()
-        else:
-            self.options["directory"]=os.path.dirname(file_path)
         #build the row_formatting string, the original files have 4 decimals of precision for freq/gamma and 2 for Phase
         row_formatter=""
         for i in range(11):
@@ -103,6 +100,10 @@ class OnePortModel(AsciiDataTable):
                 row_formatter=row_formatter+"{"+str(i)+":.2f}{delimiter}"
         self.options["row_formatter_string"]=row_formatter
         AsciiDataTable.__init__(self,None,**self.options)
+        if file_path is not None:
+            self.path=file_path
+
+
 
     def __read_and_fix__(self):
         """Reads in a 1 port ascii file and fixes any issues with inconsistent delimiters, etc"""
@@ -110,10 +111,19 @@ class OnePortModel(AsciiDataTable):
         table_type=self.path.split(".")[-1]
         in_file=open(self.path,'r')
         for line in in_file:
-            lines.append(line)
+            if not re.match('[\s]+(?!\w+)',line):
+                #print line
+                lines.append(line)
         # Handle the cases in which it is the comma delimited table
         if re.match('txt',table_type,re.IGNORECASE):
-            self.options["data"]=split_all_rows(row_list=lines[:-1],delimiter=",")
+            lines=strip_tokens(lines,*[self.options['data_begin_token'],
+                                                    self.options['data_end_token']])
+            self.options["data"]=strip_all_line_tokens(lines,begin_token=self.options["row_begin_token"],
+                                            end_token=self.options["row_end_token"])
+            self.options["data"]=split_all_rows(self.options["data"],delimiter=self.options["data_delimiter"],
+                                     escape_character=self.options["escape_character"])
+            self.options["data"]=convert_all_rows(self.options["data"],self.options["column_types"])
+            #print self.options["data"]
             self.options["header"]=["Device_Id = {0}".format(self.path.split(".")[-2])]
         elif re.match("asc",table_type,re.IGNORECASE):
             self.lines=lines
@@ -121,6 +131,7 @@ class OnePortModel(AsciiDataTable):
             data=np.loadtxt(self.path,skiprows=data_begin_line)
             self.options["data"]=data.tolist()
             self.options["header"]=lines[:self.find_line(" TABLE")]
+            #print("The {0} variable is {1}".format('data.tolist()',data.tolist()))
 
 class OnePortRawModel(AsciiDataTable):
     """ Class that deals with the OnePort Raw Files after conversion to Ascii using Ron Ginley's converter.
@@ -304,6 +315,16 @@ def test_OnePortModel(file_path_1='700437.txt',file_path_2="700437.asc"):
     print("{0} results in {1}:".format('new_table_1.get_column("Frequency")',new_table_1.get_column("Frequency")))
     print new_table_1.get_options()
 
+def test_OnePortModel_Ctable(file_path_1='700437.txt'):
+    """Tests the OnePortModel on ctables from 2 port """
+    os.chdir(TESTS_DIRECTORY)
+    print(" Import of {0} results in:".format(file_path_1))
+    new_table_1=OnePortModel(file_path=file_path_1,**{"row_end_token":",\n"})
+    print new_table_1
+    print("-"*80)
+    print("\n")
+
+
 def test_OnePortRawModel(file_path='OnePortRawTestFile.txt'):
     os.chdir(TESTS_DIRECTORY)
     print(" Import of {0} results in:".format(file_path))
@@ -334,6 +355,7 @@ def test_JBSparameter(file_path="ftest6_L1_g5_HF_air"):
 # Module Runner
 if __name__ == '__main__':
     #test_OnePortModel()
+    test_OnePortModel_Ctable(file_path_1='922729c.txt')
     #test_OnePortRawModel()
     #test_JBSparameter()
-    test_JBSparameter('QuartzRefExample_L1_g10_HF')
+    #test_JBSparameter('QuartzRefExample_L1_g10_HF')
