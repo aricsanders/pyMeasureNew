@@ -375,6 +375,121 @@ def read_schema(file_path,format=None):
             schema[line.split(":")[0]]=line.split(":")[1].replace("\\n","\n")
         #in_dictionary=dict(*str(in_dictionary).split(","))
     return schema
+
+def parse_lines(string_list,**options):
+    """Default behavior returns a two dimensional list given a list of strings that represent a table."""
+    defaults={"row_pattern":None,"column_names":None,
+              "column_types":None,"output":'list_list',"delimiter":None,"row_begin_token":None,
+              "row_end_token":None,"data_begin_token":None,"data_end_token":None,"escape_character":None}
+    parse_options={}
+    for key,value in defaults.iteritems():
+        parse_options[key]=value
+    for key,value in options.iteritems():
+        parse_options[key]=value
+    out_list=[]
+    out_dict_list=[]
+    out_list=strip_tokens(string_list,*[parse_options["data_begin_token"],parse_options["data_begin_token"]])
+    out_list=strip_all_line_tokens(out_list,begin_token=parse_options["row_begin_token"],
+                                  end_token=parse_options["row_end_token"])
+    #print("{0} is {1}".format('out_list',out_list))
+    try:
+        if parse_options["row_pattern"]:
+            parsed_out_list=[]
+            for line in out_list:
+                match=re.match(parse_options["row_pattern"],line)
+                if parse_options["column_names"]:
+                    out_row_dict=match.groupdict()
+                    out_dict_list.append(out_row_dict)
+                    out_row=[]
+                    for column_name in parse_options["column_names"]:
+                        out_row.append(out_row_dict[column_name])
+                    #print("{0} is {1}".format('out_row',out_row))
+                    parsed_out_list.append(out_row)
+            out_list=parsed_out_list
+        else:
+            out_list=split_all_rows(out_list,delimiter=parse_options["delimiter"],
+                                     escape_character=parse_options["escape_character"])
+        if parse_options["column_types"]:
+            out_list=convert_all_rows(out_list,parse_options["column_types"])
+        if out_dict_list == [] and parse_options["column_names"] is not None:
+            for row in out_list:
+                out_row_dict={column_name:row[index] for index,column_name in parse_options["column_names"]}
+    except:
+        print("Could not parse table")
+        raise
+    if parse_options["output"] in ['list_list']:
+        return out_list
+    elif parse_options["output"] in ['dict_list']:
+        return out_dict_list
+    elif parse_options["output"] in ['numpy']:
+        # Todo: Add the conversion to numpy array
+        return out_list
+    elif parse_options["output"] in ['pandas']:
+        # Todo: Add the conversion to pandas
+        return out_list
+
+def ascii_data_table_join(column_selector,table_1,table_2):
+    """Given a column selector (name or zero based index) and
+    two tables a data_table with extra columns is returned. The options from table 1 are inherited
+    headers and footers are added, if the tables have a diffferent number of rows problems may occur"""
+    if table_1.header is None and table_2.header is None:
+        header=None
+    elif table_1.header is None:
+        header=table_2.header[:]
+    elif table_2.header is None:
+        header=table_2.header[:]
+    else:
+        header=[]
+        for line in table_1.header:
+            header.append(line)
+        for line in table_2.header:
+            header.append(line)
+
+    if table_1.footer is None and table_2.footer is None:
+        footer=None
+    elif table_1.footer is None:
+        footer=table_2.footer[:]
+    elif table_2.header is None:
+        footer=table_2.footer[:]
+    else:
+        footer=[]
+        for line in table_1.footer:
+            footer.append(line)
+        for line in table_2.footer:
+            footer.append(line)
+
+    if column_selector in table_2.column_names:
+        column_selector_2=table_2.column_names.index(column_selector)
+
+    options=table_1.options.copy()
+    new_table=AsciiDataTable(None,**options)
+    new_table.data=table_1.data[:]
+    new_table.column_names=table_1.column_names[:]
+    if header is None:
+        new_table.header=None
+    else:
+        new_table.header=header[:]
+    if footer is None:
+        new_table.footer=None
+    else:
+        new_table.footer=footer[:]
+    #Todo: make this work for tables without column_names
+    for index,column in enumerate(table_2.column_names):
+        if column == table_2.column_names[column_selector_2]:
+            pass
+        else:
+            if table_2.options["column_types"] is None:
+                column_type=None
+            else:
+                if type(table_2.options["column_types"]) is DictionaryType:
+                    column_type=table_2.options["column_types"][column]
+                elif type(table_2.options["column_types"]) is ListType:
+                    column_type=table_2.options["column_types"][index]
+            column_data=table_2.get_column(column)
+            new_table.add_column(column,column_type=column_type,column_data=column_data)
+
+    return new_table
+
 #-----------------------------------------------------------------------------
 # Module Classes
 class AsciiDataTable():
@@ -1305,30 +1420,46 @@ class AsciiDataTable():
         self.data.pop(row_index)
         self.update_model()
 
-    def add_column(self,column_name=None,column_type=None,column_data=None):
+    def add_column(self,column_name=None,column_type=None,column_data=None,format_string=None):
         """Adds a column with column_name, and column_type. If column data is supplied and it's length is the
         same as data(same number of rows) then it is added, else self.options['empty_character'] is added in each
         spot in the preceding rows"""
-        original_column_names=self.column_names
+        original_column_names=self.column_names[:]
         try:
             self.column_names.append(column_name)
-            self.options["column_types"].append(column_type)
-            if len(column_data) is len(self.data):
+            if self.options["column_types"]:
+                self.options["column_types"]=self.options["column_types"].append(column_type)
+            if len(column_data) == len(self.data):
                 for index,row in enumerate(self.data):
-                    row.append(column_data[index])
+                    #print("{0} is {1}".format('self.data[index]',self.data[index]))
+                    #print("{0} is {1}".format('row',row))
+                    new_row=row[:]
+                    new_row.append(column_data[index])
+                    self.data[index]=new_row
             else:
                 for index,row in enumerate(self.data):
-                    row.append(self.options['empty_value'])
+                    self.data[index]=row.append(self.options['empty_value'])
                     if column_data is not None:
                         for item in column_data:
                             empty_row=[self.options['empty_value'] for column in original_column_names]
-                            self.add_row(empty_row.append(item))
+                            empty_row.append(item)
+                            self.add_row(empty_row)
+            if self.options["row_formatter_string"] is None:
+                pass
+            else:
+                if format_string is None:
+                    self.options["row_formatter_string"]=self.options["row_formatter_string"]+\
+                                                                 '{delimiter}'+"{"+str(len(self.column_names)-1)+"}"
+                else:
+                    self.options["row_formatter_string"]=self.options["row_formatter_string"]+format_string
+            #self.update_model()
         except:
             self.column_names=original_column_names
             print("Could not add columns")
-            pass
+            raise
+
     def remove_column(self,column_name=None,column_index=None):
-        """Rmoves the column specified by column_name or column_index and updates the model. The column is removed from
+        """Removes the column specified by column_name or column_index and updates the model. The column is removed from
         column_names, data and if present column_types, column_descriptions and row formatter"""
         pass
         #Todo:Add remove column functionality
@@ -1870,10 +2001,29 @@ def test_change_unit_prefix():
     print new_table.options["column_descriptions"]
     print new_table.is_valid()
 
+def test_add_column():
+    "Tests the add_column method of AsciiDataTable"
+    options={"column_names":["Frequency","b","c"],"column_names_delimiter":",","data":[[0.1*10**10,1,2],[2*10**10,3,4]],"data_delimiter":'\t',
+             "header":['Hello There',"My Darling"],"column_names_begin_token":'#',"comment_begin":'!',
+             "comment_end":"\n",
+             "directory":TESTS_DIRECTORY,
+             "column_units":["Hz",None,None],
+             "column_descriptions":["Frequency in Hz",None,None],
+             "column_types":['float','float','float'],
+             "row_formatter_string":"{0:.2e}{delimiter}{1}{delimiter}{2}",
+             "treat_header_as_comment":True}
+    new_table=AsciiDataTable(None,**options)
+    print("The new table before adding the column is :\n")
+    print new_table
+    new_table.add_column(column_name='Test',column_type='float',column_data=[3,5.0201],format_string=None)
+    print("The value of {0} is {1}".format('new_table.options["row_formatter_string"]',
+                                           new_table.options["row_formatter_string"]))
+    print("The new table after adding the column is :\n")
+    print new_table
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
-    test_AsciiDataTable()
+    #test_AsciiDataTable()
     #test_open_existing_AsciiDataTable()
     #test_AsciiDataTable_equality()
     #test_inline_comments()
@@ -1883,3 +2033,4 @@ if __name__ == '__main__':
     #test_save_schema()
     #test_read_schema()
     #test_change_unit_prefix()
+    test_add_column()

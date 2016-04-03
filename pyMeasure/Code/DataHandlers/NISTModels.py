@@ -33,7 +33,8 @@ except:
     raise ImportError
 #-----------------------------------------------------------------------------
 # Module Constants
-
+ONE_PORT_COLUMN_NAMES=["Frequency", "Magnitude", "uMb", "uMa", "uMd", "uMg", "Phase",
+                                    "uPhb", "uPha", "uPhd", "uPhg"]
 #-----------------------------------------------------------------------------
 # Module Functions
 def calrep_to_benchmark(file_path):
