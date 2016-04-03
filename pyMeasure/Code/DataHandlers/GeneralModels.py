@@ -397,7 +397,7 @@ def parse_lines(string_list,**options):
             parsed_out_list=[]
             for line in out_list:
                 match=re.match(parse_options["row_pattern"],line)
-                if parse_options["column_names"]:
+                if parse_options["column_names"]and match:
                     out_row_dict=match.groupdict()
                     out_dict_list.append(out_row_dict)
                     out_row=[]
