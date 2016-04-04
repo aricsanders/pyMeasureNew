@@ -26,6 +26,13 @@ except:
           "please put it on the python path")
     raise ImportError
 try:
+    from pyMeasure.Code.DataHandlers.TouchstoneModels import *
+except:
+    print("The module pyMeasure.Code.DataHandlers.TouchstoneModels was not found,"
+          "please put it on the python path")
+    raise ImportError
+
+try:
     import numpy as np
 except:
     print("The module numpy was not found,"
@@ -35,6 +42,8 @@ except:
 # Module Constants
 ONE_PORT_COLUMN_NAMES=["Frequency", "Magnitude", "uMb", "uMa", "uMd", "uMg", "Phase",
                                     "uPhb", "uPha", "uPhd", "uPhg"]
+POWER_COLUMN_NAMES=['Frequency', 'Efficiency','uEs', 'uEc', 'uEe',
+                    'Calibration Factor', 'uCs', 'uCc', 'uCe']
 #-----------------------------------------------------------------------------
 # Module Functions
 def calrep_to_benchmark(file_path):
@@ -227,7 +236,57 @@ class TwoPortCalrep():
         """Intializes the TwoPortCalrep class, if a file path is specified it opens and reads the file"""
         if file_path is None:
             pass
+        elif re.match('asc',file_path.split(".")[-1],re.IGNORECASE):
+            self.table_names=['header','S11','S22','S21']
+            self.row_pattern=make_row_match_string(ONE_PORT_COLUMN_NAMES)
+            self.path=file_path
+            self.__read_and_fix__()
 
+    def __read_and_fix__(self):
+        in_file=open(self.path,'r')
+        self.lines=[]
+        table_locators=["Table 1","Table 2","Table 3"]
+        begin_lines=[]
+        for index,line in enumerate(in_file):
+            self.lines.append(line)
+            for table in table_locators:
+                if re.search(table,line,re.IGNORECASE):
+                    begin_lines.append(index)
+        in_file.close()
+        self.table_line_numbers=[]
+        for index,begin_line in enumerate(begin_lines):
+            if index == 0:
+                header_begin_line=0
+                header_end_line=begin_line-2
+                table_1_begin_line=begin_line+3
+                table_1_end_line=begin_lines[index+1]-1
+                self.table_line_numbers.append([header_begin_line,header_end_line])
+                self.table_line_numbers.append([table_1_begin_line,table_1_end_line])
+
+            elif index>0 and index<(len(begin_lines)-1):
+                table_begin_line=begin_line+3
+                table_end_line=begin_lines[index+1]-1
+                self.table_line_numbers.append([table_begin_line,table_end_line])
+
+            elif index==(len(begin_lines)-1):
+                table_begin_line=begin_line+3
+                table_end_line=None
+                self.table_line_numbers.append([table_begin_line,table_end_line])
+        self.tables=[]
+        for index,name in enumerate(self.table_names):
+            self.table_lines=self.lines[self.table_line_numbers[index][0]:self.table_line_numbers[index][1]]
+            self.tables.append(self.table_lines)
+        for index,table in enumerate(self.table_names):
+            if index==0:
+                # by using parse_lines we get a list_list of strings instead of list_string
+                # we can just remove end lines
+                self.tables[index]=strip_all_line_tokens(self.tables[index],begin_token=None,end_token='\n')
+            else:
+
+                column_types=['float' for i in range(len(ONE_PORT_COLUMN_NAMES))]
+                options={"row_pattern":self.row_pattern,"column_names":ONE_PORT_COLUMN_NAMES,"output":"list_list"}
+                options["column_types"]=column_types
+                self.tables[index]=parse_lines(self.tables[index],**options)
 
 class JBSparameter(AsciiDataTable):
     """JBSparameter is a class that holds data taken and stored using Jim Booth's two port format.
@@ -352,6 +411,11 @@ def test_JBSparameter(file_path="ftest6_L1_g5_HF_air"):
     print new_table.get_column(None,0)
     print new_table.get_frequency_units()
     print new_table.get_header_string()
+
+def test_TwoPortCalrep(file_name="922729.asc"):
+    """Tests the TwoPortCalrep model type"""
+    pass
+
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
