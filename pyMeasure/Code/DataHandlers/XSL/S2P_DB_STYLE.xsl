@@ -76,21 +76,64 @@
         <button id="ToggleButton" type="button" class="btn btn-primary">Show Table</button><br/><hr/>
 		<table class='table table-hover table-condensed table-bordered table-responsive' id="DataTable">
 		    <tr>
-
-            <xsl:for-each select="//Data/Tuple[1]/@*">
-            
-            <th ><b><xsl:value-of select="name()"/></b></th>
-            
-            </xsl:for-each>
+            <th >
+                <b>Frequency</b>
+            </th>
+            <th >
+                <b>dbS11</b>
+            </th>
+            <th >
+                <b>argS11</b>
+            </th>
+            <th >
+                <b>dbS21</b>
+            </th>
+            <th >
+                <b>argS21</b>
+            </th>
+            <th >
+                <b>dbS12</b>
+            </th>
+            <th >
+                <b>argS12</b>
+            </th>
+            <th >
+                <b>dbS22</b>
+            </th>
+            <th >
+                <b>argS22</b>
+            </th>
             </tr>
             <xsl:for-each select="//Data/Tuple">
             <tr>
-		    
-            <xsl:for-each select="./@*">
-         
-                <td><xsl:value-of select="."/></td>
-            
+            <xsl:for-each select="./@Frequency">
+            <td><xsl:value-of select="."/></td>
 		    </xsl:for-each>
+            <xsl:for-each select="./@dbS11">
+            <td><xsl:value-of select="."/></td>
+		    </xsl:for-each>
+            <xsl:for-each select="./@argS11">
+            <td><xsl:value-of select="."/></td>
+		    </xsl:for-each>
+            <xsl:for-each select="./@dbS21">
+            <td><xsl:value-of select="."/></td>
+		    </xsl:for-each>
+            <xsl:for-each select="./@argS21">
+            <td><xsl:value-of select="."/></td>
+		    </xsl:for-each>
+            <xsl:for-each select="./@dbS12">
+            <td><xsl:value-of select="."/></td>
+		    </xsl:for-each>
+            <xsl:for-each select="./@argS12">
+            <td><xsl:value-of select="."/></td>
+		    </xsl:for-each>
+            <xsl:for-each select="./@dbS22">
+            <td><xsl:value-of select="."/></td>
+		    </xsl:for-each>
+            <xsl:for-each select="./@argS22">
+            <td><xsl:value-of select="."/></td>
+		    </xsl:for-each>
+
             </tr>
             </xsl:for-each>
 		</table>
@@ -218,7 +261,7 @@ var dbS22Layout = {
     var dbS12 =
   {
     x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
-    y: [<xsl:for-each select="//Data/Tuple/@dbS21"><xsl:value-of select="."/>,</xsl:for-each>],
+    y: [<xsl:for-each select="//Data/Tuple/@dbS12"><xsl:value-of select="."/>,</xsl:for-each>],
     type: 'scatter',
     mode:'markers',
     name:'S12'
@@ -226,7 +269,7 @@ var dbS22Layout = {
         var argS12 =
   {
     x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
-    y: [<xsl:for-each select="//Data/Tuple/@argS21"><xsl:value-of select="."/>,</xsl:for-each>],
+    y: [<xsl:for-each select="//Data/Tuple/@argS12"><xsl:value-of select="."/>,</xsl:for-each>],
 
     type: 'scatter',
     mode:'markers',
