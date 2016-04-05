@@ -41,8 +41,8 @@ except:
     raise ImportError
 #-----------------------------------------------------------------------------
 # Module Constants
-ONE_PORT_COLUMN_NAMES=["Frequency", "Magnitude", "uMb", "uMa", "uMd", "uMg", "Phase",
-                                    "uPhb", "uPha", "uPhd", "uPhg"]
+ONE_PORT_COLUMN_NAMES=["Frequency", "mag", "uMb", "uMa", "uMd", "uMg", "arg",
+                                    "uAb", "uAa", "uAd", "uAg"]
 #Note there are 2 power models!!! one with 4 error terms and one with 3
 POWER_COLUMN_NAMES=['Frequency','Efficiency','uEb', 'uEa','uEd','uEg',
                     'Calibration_Factor','uCb','uCa','uCd','uCg']
@@ -85,8 +85,7 @@ class OnePortModel(AsciiDataTable):
                                            "uPha": "Uncertainty in phase due to electronics",
                                            "uPhd": "Uncertainty in phase for repeated connects",
                                            "uPhg": "Total uncertainty in phase"}, "header": None,
-                   "column_names": ["Frequency", "Magnitude", "uMb", "uMa", "uMd", "uMg", "Phase",
-                                    "uPhb", "uPha", "uPhd", "uPhg"], "column_names_end_token": "\n", "data": None,
+                   "column_names": ONE_PORT_COLUMN_NAMES, "column_names_end_token": "\n", "data": None,
                    "row_formatter_string": None, "data_table_element_separator": None,"row_begin_token":None,
                    "row_end_token":None,"escape_character":None,
                    "data_begin_token":None,"data_end_token":None}
@@ -116,8 +115,6 @@ class OnePortModel(AsciiDataTable):
         AsciiDataTable.__init__(self,None,**self.options)
         if file_path is not None:
             self.path=file_path
-
-
 
     def __read_and_fix__(self):
         """Reads in a 1 port ascii file and fixes any issues with inconsistent delimiters, etc"""
@@ -183,7 +180,6 @@ class PowerModel(AsciiDataTable):
         if file_path is not None:
             self.path=file_path
             self.__read_and_fix__()
-
         #build the row_formatting string, the original files have 4 decimals of precision for freq/gamma and 2 for Phase
         row_formatter=""
         for i in range(11):
@@ -197,8 +193,6 @@ class PowerModel(AsciiDataTable):
         AsciiDataTable.__init__(self,None,**self.options)
         if file_path is not None:
             self.path=file_path
-
-
 
     def __read_and_fix__(self):
         """Reads in a 1 port ascii file and fixes any issues with inconsistent delimiters, etc"""
@@ -323,6 +317,7 @@ class TwoPortCalrep():
             self.row_pattern=make_row_match_string(ONE_PORT_COLUMN_NAMES)
             self.path=file_path
             self.__read_and_fix__()
+
         elif re.match('txt',file_path.split(".")[-1],re.IGNORECASE) or type(file_path) is ListType:
             self.table_names=['S11','S22','S21']
             if type(file_path) is ListType:
@@ -412,14 +407,19 @@ class TwoPortCalrep():
                 self.tables[index]=parse_lines(self.tables[index],**options)
 
         for index,table in enumerate(self.tables):
+            print("{0} is {1}".format("index",index))
             if index==0:
                 pass
             else:
-                options={"data":self.tables[index]}
-                self.tables[index]=OnePortModel(None,**options)
+                table_options={"data":self.tables[index]}
+                self.tables[index]=OnePortModel(None,**table_options)
+                print("{0} is {1}".format("self.tables[index].column_names",self.tables[index].column_names))
                 for column_number,column in enumerate(self.tables[index].column_names):
                     if column is not "Frequency":
-                        self.tables[index].column_names[column_number]=self.table_names[index]+"_"+column
+                        print("{0} is {1}".format("self.table_names[index]",self.table_names[index]))
+                        print("{0} is {1}".format("column",column))
+                        self.tables[index].column_names[column_number]=self.table_names[:][index]+"_"+column
+
         self.tables[1].header=self.tables[0]
         self.joined_table=ascii_data_table_join("Frequency",self.tables[1],self.tables[3])
         self.joined_table=ascii_data_table_join("Frequency",self.joined_table,self.tables[2])
@@ -677,11 +677,10 @@ def test_PowerCalrep(file_name="700196.asc"):
 # Module Runner
 if __name__ == '__main__':
     #test_OnePortModel()
-
     #test_OnePortModel_Ctable(file_path_1='922729c.txt')
     #test_OnePortRawModel()
     #test_JBSparameter()
     #test_JBSparameter('QuartzRefExample_L1_g10_HF')
     #test_TwoPortCalrep()
-    #test_TwoPortCalrep('922729.asc')
-    test_PowerCalrep()
+    test_TwoPortCalrep('922729.asc')
+    #test_PowerCalrep()
