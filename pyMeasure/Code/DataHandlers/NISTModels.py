@@ -10,6 +10,7 @@
 #-----------------------------------------------------------------------------
 # Standard Imports
 import os
+import fnmatch
 #-----------------------------------------------------------------------------
 # Third Party Imports
 try:
@@ -42,8 +43,11 @@ except:
 # Module Constants
 ONE_PORT_COLUMN_NAMES=["Frequency", "Magnitude", "uMb", "uMa", "uMd", "uMg", "Phase",
                                     "uPhb", "uPha", "uPhd", "uPhg"]
-POWER_COLUMN_NAMES=['Frequency', 'Efficiency','uEs', 'uEc', 'uEe',
-                    'Calibration Factor', 'uCs', 'uCc', 'uCe']
+#Note there are 2 power models!!! one with 4 error terms and one with 3
+POWER_COLUMN_NAMES=['Frequency','Efficiency','uEb', 'uEa','uEd','uEg',
+                    'Calibration_Factor','uCb','uCa','uCd','uCg']
+POWER_3TERM_COLUMN_NAMES=['Frequency','Efficiency','uEs', 'uEc','uEe',
+                    'Calibration_Factor','uCs','uCc','uCe']
 #-----------------------------------------------------------------------------
 # Module Functions
 def calrep_to_benchmark(file_path):
@@ -134,7 +138,10 @@ class OnePortModel(AsciiDataTable):
                                      escape_character=self.options["escape_character"])
             self.options["data"]=convert_all_rows(self.options["data"],self.options["column_types"])
             #print self.options["data"]
-            self.options["header"]=["Device_Id = {0}".format(self.path.split(".")[-2])]
+            root_name_pattern=re.compile('(?P<root_name>\w+)[abc].txt',re.IGNORECASE)
+            root_name_match=re.search(root_name_pattern,self.path)
+            root_name=root_name_match.groupdict()["root_name"]
+            self.options["header"]=["Device_Id = {0}".format(root_name)]
         elif re.match("asc",table_type,re.IGNORECASE):
             self.lines=lines
             data_begin_line=self.find_line(" TABLE")+2
@@ -142,6 +149,81 @@ class OnePortModel(AsciiDataTable):
             self.options["data"]=data.tolist()
             self.options["header"]=lines[:self.find_line(" TABLE")]
             #print("The {0} variable is {1}".format('data.tolist()',data.tolist()))
+
+class PowerModel(AsciiDataTable):
+    def __init__(self,file_path,**options):
+        "Intializes the PowerModel Class, it is assumed that the file is of  table type"
+        # This is a general pattern for adding a lot of options
+        defaults= {"data_delimiter": ",", "column_names_delimiter": ",", "specific_descriptor": 'One_Port',
+                   "general_descriptor": 'Power', "extension": 'txt', "comment_begin": "#", "comment_end": "\n",
+                   "column_types": ['float' for i in range(len(POWER_COLUMN_NAMES))],
+                   "column_descriptions": {"Frequency": "Frequency in GHz",
+                                           "Efficiency": "Linear magnitude",
+                                           "uEs": "Uncertainty in efficiency due to standards",
+                                           "uEc": "Uncertainty in efficiency for repeated connects",
+                                           "uEe": "Total uncertainty in Efficiency",
+                                           "Calibration_Factor": "Effective efficiency modified by reflection coefficient",
+                                           "uCs": "Uncertainty in calibration factor due to standards",
+                                           "uCc": "Uncertainty in calibration factor for repeated connects",
+                                           "uCe": "Total uncertainty in calibration factor"},
+                   "header": None,
+                   "column_names":POWER_COLUMN_NAMES, "column_names_end_token": "\n", "data": None,
+                   "row_formatter_string": None, "data_table_element_separator": None,"row_begin_token":None,
+                   "row_end_token":None,"escape_character":None,
+                   "data_begin_token":None,"data_end_token":None}
+        self.options={}
+        for key,value in defaults.iteritems():
+            self.options[key]=value
+        for key,value in options.iteritems():
+            self.options[key]=value
+        # Define Method Aliases if they are available
+        if METHOD_ALIASES:
+            for command in alias(self):
+                exec(command)
+        if file_path is not None:
+            self.path=file_path
+            self.__read_and_fix__()
+
+        #build the row_formatting string, the original files have 4 decimals of precision for freq/gamma and 2 for Phase
+        row_formatter=""
+        for i in range(11):
+            if i<6:
+                row_formatter=row_formatter+"{"+str(i)+":.4f}{delimiter}"
+            elif i==10:
+                row_formatter=row_formatter+"{"+str(i)+":.2f}"
+            else:
+                row_formatter=row_formatter+"{"+str(i)+":.2f}{delimiter}"
+        self.options["row_formatter_string"]=row_formatter
+        AsciiDataTable.__init__(self,None,**self.options)
+        if file_path is not None:
+            self.path=file_path
+
+
+
+    def __read_and_fix__(self):
+        """Reads in a 1 port ascii file and fixes any issues with inconsistent delimiters, etc"""
+        lines=[]
+        table_type=self.path.split(".")[-1]
+        in_file=open(self.path,'r')
+        for line in in_file:
+            if not re.match('[\s]+(?!\w+)',line):
+                #print line
+                lines.append(line)
+        # Handle the cases in which it is the comma delimited table
+        if re.match('txt',table_type,re.IGNORECASE):
+            lines=strip_tokens(lines,*[self.options['data_begin_token'],
+                                                    self.options['data_end_token']])
+            self.options["data"]=strip_all_line_tokens(lines,begin_token=self.options["row_begin_token"],
+                                            end_token=self.options["row_end_token"])
+            self.options["data"]=split_all_rows(self.options["data"],delimiter=self.options["data_delimiter"],
+                                     escape_character=self.options["escape_character"])
+            self.options["data"]=convert_all_rows(self.options["data"],self.options["column_types"])
+            #print self.options["data"]
+            root_name_pattern=re.compile('(?P<root_name>\w+)[abc].txt',re.IGNORECASE)
+            root_name_match=re.search(root_name_pattern,self.path)
+            root_name=root_name_match.groupdict()["root_name"]
+            self.options["header"]=["Device_Id = {0}".format(root_name)]
+
 
 class OnePortRawModel(AsciiDataTable):
     """ Class that deals with the OnePort Raw Files after conversion to Ascii using Ron Ginley's converter.
@@ -241,6 +323,47 @@ class TwoPortCalrep():
             self.row_pattern=make_row_match_string(ONE_PORT_COLUMN_NAMES)
             self.path=file_path
             self.__read_and_fix__()
+        elif re.match('txt',file_path.split(".")[-1],re.IGNORECASE) or type(file_path) is ListType:
+            self.table_names=['S11','S22','S21']
+            if type(file_path) is ListType:
+                self.file_names=file_path
+                self.tables=[]
+                for index,table in enumerate(self.table_names):
+                    if index==2:
+                        #fixes a problem with the c tables, extra comma at the end
+                        options={"row_end_token":',\n'}
+                        self.tables.append(OnePortModel(self.file_names[index],**options))
+                        self.tables[2].options["row_end_token"]=None
+                    else:
+                        self.tables.append(OnePortModel(self.file_names[index]))
+            else:
+                try:
+                    root_name_pattern=re.compile('(?P<root_name>\w+)[abc].txt')
+                    root_name_match=re.match(root_name_pattern,file_path)
+                    root_name=root_name_match.groupdict()["root_name"]
+                    directory=os.path.dirname(os.path.realpath(file_path))
+                    self.file_names=[os.path.join(directory,root_name+end) for end in ['a.txt','b.txt','c.txt']]
+                    self.tables=[]
+                    for index,table in enumerate(self.table_names):
+                        if index==2:
+                            #fixes a problem with the c tables, extra comma at the end
+                            options={"row_end_token":',\n'}
+                            self.tables.append(OnePortModel(self.file_names[index],**options))
+                            self.tables[2].options["row_end_token"]=None
+                        else:
+                            self.tables.append(OnePortModel(self.file_names[index]))
+
+                except:
+                    print("Could not import {0} please check that the a,b,c "
+                          "tables are all in the same directory".format(file_path))
+                    raise
+            for index,table in enumerate(self.tables):
+                for column_number,column in enumerate(table.column_names):
+                    if column is not "Frequency":
+                        table.column_names[column_number]=self.table_names[index]+"_"+column
+
+            self.joined_table=ascii_data_table_join("Frequency",self.tables[0],self.tables[2])
+            self.joined_table=ascii_data_table_join("Frequency",self.joined_table,self.tables[1])
 
     def __read_and_fix__(self):
         in_file=open(self.path,'r')
@@ -287,6 +410,127 @@ class TwoPortCalrep():
                 options={"row_pattern":self.row_pattern,"column_names":ONE_PORT_COLUMN_NAMES,"output":"list_list"}
                 options["column_types"]=column_types
                 self.tables[index]=parse_lines(self.tables[index],**options)
+
+        for index,table in enumerate(self.tables):
+            if index==0:
+                pass
+            else:
+                options={"data":self.tables[index]}
+                self.tables[index]=OnePortModel(None,**options)
+                for column_number,column in enumerate(self.tables[index].column_names):
+                    if column is not "Frequency":
+                        self.tables[index].column_names[column_number]=self.table_names[index]+"_"+column
+        self.tables[1].header=self.tables[0]
+        self.joined_table=ascii_data_table_join("Frequency",self.tables[1],self.tables[3])
+        self.joined_table=ascii_data_table_join("Frequency",self.joined_table,self.tables[2])
+
+class PowerCalrep():
+    """PowerCalrep is a model that holds data output by analyzing several datafiles using the HPBasic program
+    Calrep. The data is stored in 2 tables: a S11 table, and a power table. The data is in linear
+    magnitude and angle in degrees. There are 2 types of files, one is a single file with .asc extension
+    and 2 files with .txt extension"""
+
+    def __init__(self,file_path=None,**options):
+        """Intializes the PowerCalrep class, if a file path is specified it opens and reads the file"""
+        if file_path is None:
+            pass
+        elif re.match('asc',file_path.split(".")[-1],re.IGNORECASE):
+            self.table_names=['header','S11','Efficiency']
+            self.row_pattern=make_row_match_string(ONE_PORT_COLUMN_NAMES)
+            self.power_row_pattern=make_row_match_string(POWER_COLUMN_NAMES)
+            self.path=file_path
+            self.__read_and_fix__()
+        elif re.match('txt',file_path.split(".")[-1],re.IGNORECASE) or type(file_path) is ListType:
+            self.table_names=['S11','Efficiency']
+            if type(file_path) is ListType:
+                self.file_names=file_path
+                self.tables=[]
+                for index,table in enumerate(self.table_names):
+                    if index==0:
+                        self.tables.append(PowerModel(self.file_names[index]))
+                    elif index==1:
+                        self.tables.append(OnePortModel(self.file_names[index]))
+            else:
+                try:
+                    root_name_pattern=re.compile('(?P<root_name>\w+)[abc].txt',re.IGNORECASE)
+                    root_name_match=re.search(root_name_pattern,file_path)
+                    root_name=root_name_match.groupdict()["root_name"]
+                    directory=os.path.dirname(os.path.realpath(file_path))
+                    self.file_names=[os.path.join(directory,root_name+end) for end in ['a.txt','b.txt']]
+                    self.tables=[]
+                    for index,table in enumerate(self.table_names):
+                        if index==0:
+                            self.tables.append(OnePortModel(self.file_names[index]))
+                        elif index==1:
+                            self.tables.append(PowerModel(self.file_names[index]))
+                except:
+                    print("Could not import {0} please check that the a,b "
+                          "tables are all in the same directory".format(file_path))
+                    raise
+
+            for index,table in enumerate(self.tables):
+                for column_number,column in enumerate(table.column_names):
+                    if column is not "Frequency":
+                        table.column_names[column_number]=self.table_names[index]+"_"+column
+
+            self.joined_table=ascii_data_table_join("Frequency",self.tables[0],self.tables[1])
+
+    def __read_and_fix__(self):
+        in_file=open(self.path,'r')
+        self.lines=[]
+        table_locators=["Table 1","Table 2"]
+        begin_lines=[]
+        for index,line in enumerate(in_file):
+            self.lines.append(line)
+            for table in table_locators:
+                if re.search(table,line,re.IGNORECASE):
+                    begin_lines.append(index)
+        in_file.close()
+        self.table_line_numbers=[]
+        for index,begin_line in enumerate(begin_lines):
+            if index == 0:
+                header_begin_line=0
+                header_end_line=begin_line-2
+                table_1_begin_line=begin_line+3
+                table_1_end_line=begin_lines[index+1]-1
+                self.table_line_numbers.append([header_begin_line,header_end_line])
+                self.table_line_numbers.append([table_1_begin_line,table_1_end_line])
+            elif index>0 and index<(len(begin_lines)-1):
+                table_begin_line=begin_line+3
+                table_end_line=begin_lines[index+1]-1
+                self.table_line_numbers.append([table_begin_line,table_end_line])
+            elif index==(len(begin_lines)-1):
+                table_begin_line=begin_line+3
+                table_end_line=None
+                self.table_line_numbers.append([table_begin_line,table_end_line])
+        self.tables=[]
+        for index,name in enumerate(self.table_names):
+            self.table_lines=self.lines[self.table_line_numbers[index][0]:self.table_line_numbers[index][1]]
+            self.tables.append(self.table_lines)
+        for index,table in enumerate(self.table_names):
+            if index==0:
+                # by using parse_lines we get a list_list of strings instead of list_string
+                # we can just remove end lines
+                self.tables[index]=strip_all_line_tokens(self.tables[index],begin_token=None,end_token='\n')
+            elif index==1:
+                column_types=['float' for i in range(len(ONE_PORT_COLUMN_NAMES))]
+                options={"row_pattern":self.row_pattern,"column_names":ONE_PORT_COLUMN_NAMES,"output":"list_list"}
+                options["column_types"]=column_types
+                self.tables[index]=parse_lines(self.tables[index],**options)
+                table_options={"data":self.tables[index]}
+                self.tables[index]=OnePortModel(None,**table_options)
+            elif index==2:
+                column_types=['float' for i in range(len(POWER_COLUMN_NAMES))]
+                options={"row_pattern":self.power_row_pattern,"column_names":POWER_COLUMN_NAMES,"output":"list_list"}
+                options["column_types"]=column_types
+                self.tables[index]=parse_lines(self.tables[index],**options)
+                table_options={"data":self.tables[index]}
+                self.tables[index]=PowerModel(None,**table_options)
+
+
+        self.tables[1].header=self.tables[0]
+        self.joined_table=ascii_data_table_join("Frequency",self.tables[1],self.tables[2])
+
 
 class JBSparameter(AsciiDataTable):
     """JBSparameter is a class that holds data taken and stored using Jim Booth's two port format.
@@ -412,15 +656,32 @@ def test_JBSparameter(file_path="ftest6_L1_g5_HF_air"):
     print new_table.get_frequency_units()
     print new_table.get_header_string()
 
-def test_TwoPortCalrep(file_name="922729.asc"):
+def test_TwoPortCalrep(file_name="922729a.txt"):
     """Tests the TwoPortCalrep model type"""
-    pass
+    os.chdir(TESTS_DIRECTORY)
+    new_two_port=TwoPortCalrep(file_name)
+    for table in new_two_port.tables:
+        print table
+    print new_two_port.joined_table
+
+def test_PowerCalrep(file_name="700196.asc"):
+    """Tests the TwoPortCalrep model type"""
+    os.chdir(TESTS_DIRECTORY)
+    new_power=PowerCalrep(file_name)
+    for table in new_power.tables:
+        print table
+    print new_power.joined_table
+
 
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
     #test_OnePortModel()
-    test_OnePortModel_Ctable(file_path_1='922729c.txt')
+
+    #test_OnePortModel_Ctable(file_path_1='922729c.txt')
     #test_OnePortRawModel()
     #test_JBSparameter()
     #test_JBSparameter('QuartzRefExample_L1_g10_HF')
+    #test_TwoPortCalrep()
+    #test_TwoPortCalrep('922729.asc')
+    test_PowerCalrep()

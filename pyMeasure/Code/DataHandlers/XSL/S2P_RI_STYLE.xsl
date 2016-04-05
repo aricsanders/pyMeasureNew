@@ -47,6 +47,30 @@
     <div>
         <h3>Data Plot:</h3>
      <button id="ToggleButtonPlot" type="button" class="btn btn-primary">Show Plots</button><br/><hr/>
+    <table>
+        <tr>
+            <td>
+        <div id="reS11" style="width: 480px; height: 400px;" class="plot">
+        <!-- Plotly chart will be drawn inside this DIV --></div></td>
+        <td><div id="imS11" style="width: 480px; height: 400px;" class="plot">
+        <!-- Plotly chart will be drawn inside this DIV --></div></td>
+        </tr>
+        <tr>
+            <td>
+        <div id="reS21" style="width: 480px; height: 400px;" class="plot">
+        <!-- Plotly chart will be drawn inside this DIV --></div></td>
+        <td><div id="imS21" style="width: 480px; height: 400px;" class="plot">
+        <!-- Plotly chart will be drawn inside this DIV --></div></td>
+        </tr>
+        <tr>
+            <td>
+        <div id="reS22" style="width: 480px; height: 400px;" class="plot">
+        <!-- Plotly chart will be drawn inside this DIV --></div></td>
+        <td><div id="imS22" style="width: 480px; height: 400px;" class="plot">
+        <!-- Plotly chart will be drawn inside this DIV --></div></td>
+        </tr>
+</table>
+    </div>
     <div>
         <h3>Data:</h3>
         <button id="ToggleButton" type="button" class="btn btn-primary">Show Table</button><br/><hr/>
@@ -56,85 +80,60 @@
                 <b>Frequency</b>
             </th>
             <th >
-                <b>magS11</b>
+                <b>reS11</b>
+            </th>                
+            <th >
+                <b>imS11</b>
             </th>
             <th >
-                <b>argS11</b>
+                <b>reS21</b>
             </th>
             <th >
-                <b>magS21</b>
+                <b>imS21</b>
             </th>
             <th >
-                <b>argS21</b>
+                <b>reS12</b>
             </th>
             <th >
-                <b>magS12</b>
+                <b>imS12</b>
             </th>
             <th >
-                <b>argS12</b>
+                <b>reS22</b>
             </th>
             <th >
-                <b>magS22</b>
-            </th>
-            <th >
-                <b>argS22</b>
-            </th>
+                <b>imS22</b>
+            </th>                
             </tr>
             <xsl:for-each select="//Data/Tuple">
             <tr>
             <xsl:for-each select="./@Frequency">
             <td><xsl:value-of select="."/></td>
 		    </xsl:for-each>
-            <xsl:for-each select="./@magS11">
+            <xsl:for-each select="./@reS11">
             <td><xsl:value-of select="."/></td>
 		    </xsl:for-each>
-            <xsl:for-each select="./@argS11">
+            <xsl:for-each select="./@imS11">
             <td><xsl:value-of select="."/></td>
 		    </xsl:for-each>
-            <xsl:for-each select="./@magS21">
+            <xsl:for-each select="./@reS21">
             <td><xsl:value-of select="."/></td>
-		    </xsl:for-each>
-            <xsl:for-each select="./@argS21">
+		    </xsl:for-each>    
+            <xsl:for-each select="./@imS21">
             <td><xsl:value-of select="."/></td>
-		    </xsl:for-each>
-            <xsl:for-each select="./@magS12">
+		    </xsl:for-each>    
+            <xsl:for-each select="./@reS12">
             <td><xsl:value-of select="."/></td>
-		    </xsl:for-each>
-            <xsl:for-each select="./@argS12">
+		    </xsl:for-each>    
+            <xsl:for-each select="./@imS12">
             <td><xsl:value-of select="."/></td>
-		    </xsl:for-each>
-            <xsl:for-each select="./@magS22">
+		    </xsl:for-each>    
+            <xsl:for-each select="./@reS22">
             <td><xsl:value-of select="."/></td>
-		    </xsl:for-each>
-            <xsl:for-each select="./@argS22">
+		    </xsl:for-each>    
+            <xsl:for-each select="./@imS22">
             <td><xsl:value-of select="."/></td>
-		    </xsl:for-each>
-
-            </tr>
-            </xsl:for-each>
-		</table>
-    </div>
-    </div>
-    <div>
-        <h3>Data:</h3>
-        <button id="ToggleButton" type="button" class="btn btn-primary">Show Table</button><br/><hr/>
-		<table class='table table-hover table-condensed table-bordered table-responsive' id="DataTable">
-		    <tr>
-
-            <xsl:for-each select="//Data/Tuple[1]/@*">
-            
-            <th ><b><xsl:value-of select="name()"/></b></th>
-            
-            </xsl:for-each>
-            </tr>
-            <xsl:for-each select="//Data/Tuple">
-            <tr>
-		    
-            <xsl:for-each select="./@*">
-         
-                <td><xsl:value-of select="."/></td>
-            
-		    </xsl:for-each>
+		    </xsl:for-each>                    
+                
             </tr>
             </xsl:for-each>
 		</table>
@@ -147,24 +146,24 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
 <script>
-    var magS11 = [
+    var reS11 = [
   {
     x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
-    y: [<xsl:for-each select="//Data/Tuple/@magS11"><xsl:value-of select="."/>,</xsl:for-each>],
+    y: [<xsl:for-each select="//Data/Tuple/@reS11"><xsl:value-of select="."/>,</xsl:for-each>],
     type: 'scatter',
     mode:'markers'
   }
 ];
-        var argS11 = [
+        var imS11 = [
   {
     x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
-    y: [<xsl:for-each select="//Data/Tuple/@argS11"><xsl:value-of select="."/>,</xsl:for-each>],
+    y: [<xsl:for-each select="//Data/Tuple/@imS11"><xsl:value-of select="."/>,</xsl:for-each>],
 
     type: 'scatter',
        mode:'markers'
   }
 ];
-var magS11Layout = {
+var reS11Layout = {
   legend: {
     y: 0.5,
     yref: 'paper',
@@ -177,10 +176,10 @@ var magS11Layout = {
   },
     xaxis:{
     title:'Frequency (GHz)'},
-  title:'magS11'
+  title:'reS11'
 };
 
-    var argS11Layout = {
+    var imS11Layout = {
   legend: {
     y: 0.5,
     yref: 'paper',
@@ -192,26 +191,26 @@ var magS11Layout = {
   },
     xaxis:{
     title:'Frequency (GHz)'},
-  title:'argS11'
+  title:'imS11'
 };
-    var magS22 = [
+    var reS22 = [
   {
     x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
-    y: [<xsl:for-each select="//Data/Tuple/@magS22"><xsl:value-of select="."/>,</xsl:for-each>],
+    y: [<xsl:for-each select="//Data/Tuple/@reS22"><xsl:value-of select="."/>,</xsl:for-each>],
     type: 'scatter',
     mode:'markers'
   }
 ];
-        var argS22 = [
+        var imS22 = [
   {
     x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
-    y: [<xsl:for-each select="//Data/Tuple/@argS22"><xsl:value-of select="."/>,</xsl:for-each>],
+    y: [<xsl:for-each select="//Data/Tuple/@imS22"><xsl:value-of select="."/>,</xsl:for-each>],
 
     type: 'scatter',
        mode:'markers'
   }
 ];
-var magS22Layout = {
+var reS22Layout = {
   legend: {
     y: 0.5,
     yref: 'paper',
@@ -224,10 +223,10 @@ var magS22Layout = {
   },
     xaxis:{
     title:'Frequency (GHz)'},
-  title:'magS22'
+  title:'reS22'
 };
 
-    var argS22Layout = {
+    var imS22Layout = {
   legend: {
     y: 0.5,
     yref: 'paper',
@@ -239,45 +238,45 @@ var magS22Layout = {
   },
     xaxis:{
     title:'Frequency (GHz)'},
-  title:'argS22'
+  title:'imS22'
 };
-    var magS21 =
+    var reS21 =
   {
     x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
-    y: [<xsl:for-each select="//Data/Tuple/@magS21"><xsl:value-of select="."/>,</xsl:for-each>],
+    y: [<xsl:for-each select="//Data/Tuple/@reS21"><xsl:value-of select="."/>,</xsl:for-each>],
     type: 'scatter',
     mode:'markers',
     name:'S21'
   };
-        var argS21 =
+        var imS21 =
   {
     x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
-    y: [<xsl:for-each select="//Data/Tuple/@argS21"><xsl:value-of select="."/>,</xsl:for-each>],
+    y: [<xsl:for-each select="//Data/Tuple/@imS21"><xsl:value-of select="."/>,</xsl:for-each>],
 
     type: 'scatter',
     mode:'markers',
     name:'S21'
   };
 
-    var magS12 =
+    var reS12 =
   {
     x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
-    y: [<xsl:for-each select="//Data/Tuple/@magS21"><xsl:value-of select="."/>,</xsl:for-each>],
+    y: [<xsl:for-each select="//Data/Tuple/@reS21"><xsl:value-of select="."/>,</xsl:for-each>],
     type: 'scatter',
     mode:'markers',
     name:'S12'
   };
-        var argS12 =
+        var imS12 =
   {
     x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
-    y: [<xsl:for-each select="//Data/Tuple/@argS21"><xsl:value-of select="."/>,</xsl:for-each>],
+    y: [<xsl:for-each select="//Data/Tuple/@imS21"><xsl:value-of select="."/>,</xsl:for-each>],
 
     type: 'scatter',
     mode:'markers',
     name:'S12'
   };
 
-var magS21Layout = {
+var reS21Layout = {
   legend: {
     y: 0.5,
     yref: 'paper',
@@ -290,10 +289,10 @@ var magS21Layout = {
   },
     xaxis:{
     title:'Frequency (GHz)'},
-  title:'magS21'
+  title:'reS21'
 };
 
-    var argS21Layout = {
+    var imS21Layout = {
   legend: {
     y: 0.5,
     yref: 'paper',
@@ -305,14 +304,14 @@ var magS21Layout = {
   },
     xaxis:{
     title:'Frequency (GHz)'},
-  title:'argS21'
+  title:'imS21'
 };
-Plotly.newPlot('magS11', magS11,magS11Layout);
-Plotly.newPlot('argS11', argS11,argS11Layout);
-Plotly.newPlot('magS21', [magS21,magS12],magS21Layout);
-Plotly.newPlot('argS21', [argS21,argS12],argS21Layout);
-Plotly.newPlot('magS22', magS22,magS22Layout);
-Plotly.newPlot('argS22', argS22,argS22Layout);
+Plotly.newPlot('reS11', reS11,reS11Layout);
+Plotly.newPlot('imS11', imS11,imS11Layout);
+Plotly.newPlot('reS21', [reS21,reS12],reS21Layout);
+Plotly.newPlot('imS21', [imS21,imS12],imS21Layout);
+Plotly.newPlot('reS22', reS22,reS22Layout);
+Plotly.newPlot('imS22', imS22,imS22Layout);
 	</script>
 <script>
 $(document).ready(function(){

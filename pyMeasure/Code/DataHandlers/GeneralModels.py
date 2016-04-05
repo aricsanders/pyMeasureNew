@@ -437,7 +437,9 @@ def ascii_data_table_join(column_selector,table_1,table_2):
     elif table_1.header is None:
         header=table_2.header[:]
     elif table_2.header is None:
-        header=table_2.header[:]
+        header=table_1.header[:]
+    elif table_1.header==table_2.header:
+        header=table_1.header
     else:
         header=[]
         for line in table_1.header:
@@ -450,6 +452,8 @@ def ascii_data_table_join(column_selector,table_1,table_2):
     elif table_1.footer is None:
         footer=table_2.footer[:]
     elif table_2.header is None:
+        footer=table_1.footer[:]
+    elif table_1.footer==table_2.footer:
         footer=table_2.footer[:]
     else:
         footer=[]
