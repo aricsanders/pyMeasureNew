@@ -91,7 +91,7 @@
     var magnitude = [
   {
     x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
-    y: [<xsl:for-each select="//Data/Tuple/@Magnitude_S11"><xsl:value-of select="."/>,</xsl:for-each>],
+    y: [<xsl:for-each select="//Data/Tuple/@magS11"><xsl:value-of select="."/>,</xsl:for-each>],
     type: 'scatter',
     mode:'markers+lines'
   }
@@ -99,7 +99,7 @@
         var phase = [
   {
     x: [<xsl:for-each select="//Data/Tuple/@Frequency"><xsl:value-of select="."/>,</xsl:for-each>],
-    y: [<xsl:for-each select="//Data/Tuple/@Phase_S11"><xsl:value-of select="."/>,</xsl:for-each>],
+    y: [<xsl:for-each select="//Data/Tuple/@argS11"><xsl:value-of select="."/>,</xsl:for-each>],
     type: 'scatter',
     mode:'markers+lines'
   }

@@ -104,7 +104,7 @@ def AsciiDataTable_to_Excel(ascii_data_table,file_path=None):
         data_frame=pandas.DataFrame(data=ascii_data_table.data,columns=ascii_data_table.column_names,index=False)
 
 def S2PV1_to_XMLDataTable(s2p,**options):
-    """Transforms a s2p's sparameters to a XMLDataTable. Converts the format to RI first"""
+    """Transforms a s2p's sparameters to a XMLDataTable. Converts the format to #GHz DB first"""
     defaults={"specific_descriptor":s2p.options["specific_descriptor"],
                      "general_descriptor":s2p.options["general_descriptor"],
                       "directory":s2p.options["directory"],
@@ -164,6 +164,23 @@ def S1PV1_to_XMLDataTable(s1p,**options):
     XML_options["data_dictionary"]=data_dictionary
     new_xml_data_table=DataTable(None,**XML_options)
     return new_xml_data_table
+
+def TwoPortCalrep_to_XMLDataTable(two_port_calrep_table,**options):
+    """Converts the 2-port calrep model to xml"""
+    table=two_port_calrep_table.joined_table
+    defaults={"specific_descriptor":table.options["specific_descriptor"],
+                     "general_descriptor":table.options["general_descriptor"],
+                      "directory":table.options["directory"],
+              "style_sheet":"../XSL/TWO_PORT_CALREP_STYLE.xsl"
+                     }
+    XML_options={}
+    for key,value in defaults.iteritems():
+        XML_options[key]=value
+    for key,value in options.iteritems():
+        XML_options[key]=value
+    new_xml=AsciiDataTable_to_XMLDataTable(table,**XML_options)
+    return new_xml
+
 #-----------------------------------------------------------------------------
 # Module Classes
 
@@ -217,6 +234,14 @@ def test_S2P_to_XMLDataTable_02(file_path="thru.s2p",**options):
     s2p_file=S2PV1(file_path)
     XML_s2p=S2PV1_to_XMLDataTable(s2p_file,**options)
     #XML_s2p.save()
+def test_TwoPortCalrep_to_XMLDataTable(file_path='922729.asc',**options):
+    """Test's the conversion of the TwoPortCalrep to XMLDataTable"""
+    os.chdir(TESTS_DIRECTORY)
+    two_port=TwoPortCalrep(file_path)
+    two_port.joined_table.save()
+    xml=TwoPortCalrep_to_XMLDataTable(two_port,**options)
+    xml.save()
+    xml.save_HTML()
 
 #-----------------------------------------------------------------------------
 # Module Runner
@@ -231,5 +256,6 @@ if __name__ == '__main__':
     #               setup="from __main__ import test_OnePortRaw_to_XMLDataTable",n_loops=10)
     #test_S2P_to_XMLDataTable()
     #test_S2P_to_XMLDataTable('TwoPortTouchstoneTestFile.s2p')
-    test_S2P_to_XMLDataTable('20160301_30ft_cable_0.s2p')
+    #test_S2P_to_XMLDataTable('20160301_30ft_cable_0.s2p')
     #test_S2P_to_XMLDataTable_02('20160301_30ft_cable_0.s2p',**{"style_sheet":"../XSL/S2P_STYLE_02.xsl"})
+    test_TwoPortCalrep_to_XMLDataTable(r'C:\Share\ascii.dut\000146a.txt')

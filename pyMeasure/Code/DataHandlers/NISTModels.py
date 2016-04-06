@@ -252,14 +252,15 @@ class OnePortRawModel(AsciiDataTable):
                    "column_types": ['float','int','int','float','float','float','float'],
                    "column_descriptions": {"Frequency":"Frequency in GHz",
                                            "Direction":"Direction of connects, may be unused",
-                                           "Connect":"Connect number", "Magnitude_S11":"Linear magnitude for port 1",
-                                           "Phase_S11":"Phase in degrees for port 1",
-                                           "Magnitude_S22":"Linear magnitude for port 2",
-                                           "Phase_S22":"Phase in degrees for port 2"}, "header": None,
-                   "column_names": ["Frequency","Direction","Connect", "Magnitude_S11",
-                                    "Phase_S11","Magnitude_S22",  "Phase_S22"],
+                                           "Connect":"Connect number", "magS11":"Linear magnitude for port 1",
+                                           "argS11":"Phase in degrees for port 1",
+                                           "magS22":"Linear magnitude for port 2",
+                                           "argS22":"Phase in degrees for port 2"}, "header": None,
+                   "column_names": ["Frequency","Direction","Connect", "magS11",
+                                    "argS11","magS22",  "argS22"],
                    "column_names_end_token": "\n", "data": None,
-                   'row_formatter_string': "{0:.5f}{delimiter}{1}{delimiter}{2}{delimiter}{3:.4f}{delimiter}{4:.2f}{delimiter}{5:.4f}{delimiter}{6:.2f}",
+                   'row_formatter_string': "{0:.5f}{delimiter}{1}{delimiter}{2}{delimiter}"
+                                           "{3:.4f}{delimiter}{4:.2f}{delimiter}{5:.4f}{delimiter}{6:.2f}",
                    "data_table_element_separator": None}
         self.options={}
         for key,value in defaults.iteritems():
@@ -302,6 +303,97 @@ class OnePortRawModel(AsciiDataTable):
         for index,key in enumerate(keys):
             self.metadata[key]=self.header[index]
 
+class TwoPortRawModel(AsciiDataTable):
+    """ Class that deals with the TwoPort Raw Files after conversion to Ascii using Ron Ginley's converter.
+    These files typically have header information seperated from data by !!
+    Header format is:
+    Line 1:		Spid$ - identification of type of system used
+    Line 2:		Systemletter$ - letter name indicating which system was used
+    Line 3:		Conncal$ - connector type from the system calibration
+    Line 4:		Connectors$ - connector type used for the measurement
+    Line 5:		Meastype$ - type of measurement (basically 1-port, 2-port or power)
+    Line 6:		Datea$ - date of measurement
+    Line 7:		Timea$ - time of measurement
+    Line 8:		Programm$ - name of program used
+    Line 9:		Rev$ - program revision
+    Line 10:	Opr$ - operator
+    Line 11:	Cfile$ - calibration name
+    Line 12:	Cdate$ - calibration date
+    Line 13:	Sport - identification of which port or direction was used for measurement
+    Line 14:	Numconnects ? number of disconnect/reconnect cycles
+    Line 15:	Numrepeats ? number of repeat measurements for each connect (usually 1)
+    Line 16:	Nbs ? not sure
+    Line 17:	Nfreq ? number of frequencies
+    Line 18:	Startfreq ? data row pointer for bdat files
+    Line 19:	Devicedescript$ - description of device being measured or of test being done
+    Line 20:	Devicenum$ - Identifying number for device ? used for file names
+    """
+    def __init__(self,file_path=None,**options):
+        """Initializes the TwoPortRaw class, if a file_path is specified opens an existing file, else creates an
+        empty container"""
+        defaults= {"data_delimiter": ",", "column_names_delimiter": ",", "specific_descriptor": 'Two_Port_Raw',
+                   "general_descriptor": 'Sparameter', "extension": 'txt', "comment_begin": "#", "comment_end": "\n",
+                   "column_types": ['float','int','int','float','float','float','float','float','float'],
+                   "column_descriptions": {"Frequency":"Frequency in GHz",
+                                           "Direction":"Direction of connects, may be unused",
+                                           "Connect":"Connect number", "magS11":"Linear magnitude for S11",
+                                           "argS11":"Phase in degrees for S11",
+                                           "magS21":"Linear magnitude for S21",
+                                           "argS21":"Phase in degrees for S21",
+                                           "magS22":"Linear magnitude for S22",
+                                           "argS22":"Phase in degrees for S22"},
+                   "header": None,
+                   "column_names": ["Frequency","Direction","Connect", "magS11",
+                                    "argS11","magS21","argS21","magS22","argS22"],
+                   "column_names_end_token": "\n", "data": None,
+                   'row_formatter_string': "{0:.5f}{delimiter}{1}{delimiter}{2}"
+                                           "{delimiter}{3:.4f}{delimiter}{4:.2f}{delimiter}"
+                                           "{5:.4f}{delimiter}{6:.2f}{delimiter}"
+                                           "{7:.4f}{delimiter}{8:.2f}",
+                   "data_table_element_separator": None}
+        self.options={}
+        for key,value in defaults.iteritems():
+            self.options[key]=value
+        for key,value in options.iteritems():
+            self.options[key]=value
+        # Define Method Aliases if they are available
+        if METHOD_ALIASES:
+            for command in alias(self):
+                exec(command)
+        if file_path is not None:
+            self.__read_and_fix__(file_path)
+
+        AsciiDataTable.__init__(self,None,**self.options)
+        self.path=file_path
+        self.structure_metadata()
+
+    def __read_and_fix__(self,file_path=None):
+        """Inputs in the raw OnePortRaw file and fixes any problems with delimiters,etc."""
+        lines=[]
+        in_file=open(file_path,'r')
+        for index,line in enumerate(in_file):
+            lines.append(line)
+            if re.search("!!",line):
+                data_begin_line=index+1
+        self.lines=lines
+        parse_options={"delimiter":", ","row_end_token":'\n'}
+        data=parse_lines(lines[data_begin_line:],**parse_options)
+        self.options["data"]=data
+        self.options["header"]=lines[:data_begin_line-1]
+        #print data
+
+
+    def structure_metadata(self):
+        """Returns a dictionary of key,value pairs extracted from the header"""
+        keys=["System_Id","System_Letter","Connector_Type_Calibration","Connector_Type_Measurement",
+              "Measurement_Type","Measurement_Date","Measurement_Time","Program_Used","Program_Revision","Operator",
+              "Calibration_Name","calibration_date","Port_Used","Number_Connects","Number_Repeats","Nbs",
+              "Number_Frequencies","Start_Frequency",
+              "Device_Description","Device_Id"]
+        self.metadata={}
+        for index,key in enumerate(keys):
+            self.metadata[key]=self.header[index]
+
 class TwoPortCalrep():
     """TwoPortCalrep is a model that holds data output by analyzing several datafiles using the HPBasic program
     Calrep. The data is stored in 3 tables: a S11 table, a S21 table and a S22 table. The data is in linear
@@ -310,6 +402,12 @@ class TwoPortCalrep():
 
     def __init__(self,file_path=None,**options):
         """Intializes the TwoPortCalrep class, if a file path is specified it opens and reads the file"""
+        defaults= {"specific_descriptor": 'Two_Port_Calrep'}
+        self.options={}
+        for key,value in defaults.iteritems():
+            self.options[key]=value
+        for key,value in options.iteritems():
+            self.options[key]=value
         if file_path is None:
             pass
         elif re.match('asc',file_path.split(".")[-1],re.IGNORECASE):
@@ -333,8 +431,8 @@ class TwoPortCalrep():
                         self.tables.append(OnePortModel(self.file_names[index]))
             else:
                 try:
-                    root_name_pattern=re.compile('(?P<root_name>\w+)[abc].txt')
-                    root_name_match=re.match(root_name_pattern,file_path)
+                    root_name_pattern=re.compile('(?P<root_name>\w+)[abc].txt',re.IGNORECASE)
+                    root_name_match=re.search(root_name_pattern,file_path)
                     root_name=root_name_match.groupdict()["root_name"]
                     directory=os.path.dirname(os.path.realpath(file_path))
                     self.file_names=[os.path.join(directory,root_name+end) for end in ['a.txt','b.txt','c.txt']]
@@ -353,10 +451,20 @@ class TwoPortCalrep():
                           "tables are all in the same directory".format(file_path))
                     raise
             for index,table in enumerate(self.tables):
+                column_names=[]
                 for column_number,column in enumerate(table.column_names):
                     if column is not "Frequency":
-                        table.column_names[column_number]=self.table_names[index]+"_"+column
-
+                        column_names.append(column+self.table_names[index])
+                    else:
+                        column_names.append(column)
+                #print column_names
+                table.column_names=column_names
+            for row_number,row in enumerate(self.tables[2].data):
+                new_value=self.tables[2].data[row_number][1]
+                new_value=10.**(-1*new_value/20.)
+                self.tables[2].data[row_number][1]=new_value
+            for key,value in self.options.iteritems():
+                self.tables[0].options[key]=value
             self.joined_table=ascii_data_table_join("Frequency",self.tables[0],self.tables[2])
             self.joined_table=ascii_data_table_join("Frequency",self.joined_table,self.tables[1])
 
@@ -405,22 +513,33 @@ class TwoPortCalrep():
                 options={"row_pattern":self.row_pattern,"column_names":ONE_PORT_COLUMN_NAMES,"output":"list_list"}
                 options["column_types"]=column_types
                 self.tables[index]=parse_lines(self.tables[index],**options)
+        # need to put S21 mag into linear magnitude
+        for row_number,row in enumerate(self.tables[3]):
+            new_value=self.tables[3][row_number][1]
+            new_value=10.**(-1*new_value/20.)
+            self.tables[3][row_number][1]=new_value
 
         for index,table in enumerate(self.tables):
-            print("{0} is {1}".format("index",index))
+            #print("{0} is {1}".format("index",index))
             if index==0:
                 pass
             else:
                 table_options={"data":self.tables[index]}
                 self.tables[index]=OnePortModel(None,**table_options)
-                print("{0} is {1}".format("self.tables[index].column_names",self.tables[index].column_names))
+                #print("{0} is {1}".format("self.tables[index].column_names",self.tables[index].column_names))
+                column_names=[]
                 for column_number,column in enumerate(self.tables[index].column_names):
                     if column is not "Frequency":
-                        print("{0} is {1}".format("self.table_names[index]",self.table_names[index]))
-                        print("{0} is {1}".format("column",column))
-                        self.tables[index].column_names[column_number]=self.table_names[:][index]+"_"+column
+                        #print("{0} is {1}".format("self.table_names[index]",self.table_names[index]))
+                        #print("{0} is {1}".format("column",column))
+                        column_names.append(column+self.table_names[:][index])
+                    else:
+                        column_names.append(column)
+                self.tables[index].column_names=column_names
 
         self.tables[1].header=self.tables[0]
+        for key,value in self.options.iteritems():
+            self.tables[1].options[key]=value
         self.joined_table=ascii_data_table_join("Frequency",self.tables[1],self.tables[3])
         self.joined_table=ascii_data_table_join("Frequency",self.joined_table,self.tables[2])
 
@@ -641,6 +760,12 @@ def test_OnePortRawModel(file_path='OnePortRawTestFile.txt'):
     print new_table_1.column_names
     print('index' in new_table_1.column_names )
 
+def test_TwoPortRawModel(file_path='TestFileTwoPortRaw.txt'):
+    os.chdir(TESTS_DIRECTORY)
+    print(" Import of {0} results in:".format(file_path))
+    new_table_1=TwoPortRawModel(file_path=file_path)
+    print new_table_1
+
 def test_JBSparameter(file_path="ftest6_L1_g5_HF_air"):
     """Tests the JBSparameter class"""
     os.chdir(TESTS_DIRECTORY)
@@ -679,8 +804,10 @@ if __name__ == '__main__':
     #test_OnePortModel()
     #test_OnePortModel_Ctable(file_path_1='922729c.txt')
     #test_OnePortRawModel()
+    #test_OnePortRawModel('OnePortRawTestFile_002.txt')
+    test_TwoPortRawModel()
     #test_JBSparameter()
     #test_JBSparameter('QuartzRefExample_L1_g10_HF')
     #test_TwoPortCalrep()
-    test_TwoPortCalrep('922729.asc')
+    #test_TwoPortCalrep('922729a.txt')
     #test_PowerCalrep()
