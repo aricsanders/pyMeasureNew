@@ -48,6 +48,7 @@ POWER_COLUMN_NAMES=['Frequency','Efficiency','uEb', 'uEa','uEd','uEg',
                     'Calibration_Factor','uCb','uCa','uCd','uCg']
 POWER_3TERM_COLUMN_NAMES=['Frequency','Efficiency','uEs', 'uEc','uEe',
                     'Calibration_Factor','uCs','uCc','uCe']
+CONVERT_S21=False
 #-----------------------------------------------------------------------------
 # Module Functions
 def calrep_to_benchmark(file_path):
@@ -155,7 +156,7 @@ class PowerModel(AsciiDataTable):
                    "general_descriptor": 'Power', "extension": 'txt', "comment_begin": "#", "comment_end": "\n",
                    "column_types": ['float' for i in range(len(POWER_COLUMN_NAMES))],
                    "column_descriptions": {"Frequency": "Frequency in GHz",
-                                           "Efficiency": "Linear magnitude",
+                                           "Efficiency":"Effective Efficiency",
                                            "uEs": "Uncertainty in efficiency due to standards",
                                            "uEc": "Uncertainty in efficiency for repeated connects",
                                            "uEe": "Total uncertainty in Efficiency",
@@ -393,6 +394,94 @@ class TwoPortRawModel(AsciiDataTable):
         self.metadata={}
         for index,key in enumerate(keys):
             self.metadata[key]=self.header[index]
+class PowerRawModel(AsciiDataTable):
+    """ Class that deals with the PowerRaw Files after conversion to Ascii using Ron Ginley's converter.
+    These files typically have header information seperated from data by !!
+    Header format is:
+    Line 1:		Spid$ - identification of type of system used
+    Line 2:		Systemletter$ - letter name indicating which system was used
+    Line 3:		Conncal$ - connector type from the system calibration
+    Line 4:		Connectors$ - connector type used for the measurement
+    Line 5:		Meastype$ - type of measurement (basically 1-port, 2-port or power)
+    Line 6:		Datea$ - date of measurement
+    Line 7:		Timea$ - time of measurement
+    Line 8:		Programm$ - name of program used
+    Line 9:		Rev$ - program revision
+    Line 10:	Opr$ - operator
+    Line 11:	Cfile$ - calibration name
+    Line 12:	Cdate$ - calibration date
+    Line 13:	Sport - identification of which port or direction was used for measurement
+    Line 14:	Numconnects ? number of disconnect/reconnect cycles
+    Line 15:	Numrepeats ? number of repeat measurements for each connect (usually 1)
+    Line 16:	Nbs ? not sure
+    Line 17:	Nfreq ? number of frequencies
+    Line 18:	Startfreq ? data row pointer for bdat files
+    Line 19:	Devicedescript$ - description of device being measured or of test being done
+    Line 20:	Devicenum$ - Identifying number for device ? used for file names
+    """
+    def __init__(self,file_path=None,**options):
+        """Initializes the PowerRaw class, if a file_path is specified opens an existing file, else creates an
+        empty container"""
+        defaults= {"data_delimiter": ",", "column_names_delimiter": ",", "specific_descriptor": 'Raw',
+                   "general_descriptor": 'Power', "extension": 'txt', "comment_begin": "#", "comment_end": "\n",
+                   "column_types": ['float','int','int','float','float','float','float'],
+                   "column_descriptions": {"Frequency":"Frequency in GHz",
+                                           "Direction":"Direction of connects, may be unused",
+                                           "Connect":"Connect number", "magS11":"Linear magnitude for S11",
+                                           "argS11":"Phase in degrees for S11",
+                                           "Efficiency":"Effective Efficiency",
+                                           "Calibration_Factor":"Effective efficiency "
+                                                                "modified by reflection coefficient"},
+                   "header": None,
+                   "column_names": ["Frequency","Direction","Connect", "magS11",
+                                    "argS11","Efficiency","Calibration_Factor"],
+                   "column_names_end_token": "\n", "data": None,
+                   'row_formatter_string': "{0:.5g}{delimiter}{1}{delimiter}{2}"
+                                           "{delimiter}{3:.5g}{delimiter}{4:.3f}{delimiter}"
+                                           "{5:.5g}{delimiter}{6:.5g}",
+                   "data_table_element_separator": None}
+        self.options={}
+        for key,value in defaults.iteritems():
+            self.options[key]=value
+        for key,value in options.iteritems():
+            self.options[key]=value
+        # Define Method Aliases if they are available
+        if METHOD_ALIASES:
+            for command in alias(self):
+                exec(command)
+        if file_path is not None:
+            self.__read_and_fix__(file_path)
+
+        AsciiDataTable.__init__(self,None,**self.options)
+        self.path=file_path
+        self.structure_metadata()
+
+    def __read_and_fix__(self,file_path=None):
+        """Inputs in the PowerRaw file and fixes any problems with delimiters,etc."""
+        lines=[]
+        in_file=open(file_path,'r')
+        for index,line in enumerate(in_file):
+            lines.append(line)
+            if re.search("!!",line):
+                data_begin_line=index+1
+        self.lines=lines
+        parse_options={"delimiter":", ","row_end_token":'\n'}
+        data=parse_lines(lines[data_begin_line:],**parse_options)
+        self.options["data"]=data
+        self.options["header"]=lines[:data_begin_line-1]
+        #print data
+
+
+    def structure_metadata(self):
+        """Returns a dictionary of key,value pairs extracted from the header"""
+        keys=["System_Id","System_Letter","Connector_Type_Calibration","Connector_Type_Measurement",
+              "Measurement_Type","Measurement_Date","Measurement_Time","Program_Used","Program_Revision","Operator",
+              "Calibration_Name","calibration_date","Port_Used","Number_Connects","Number_Repeats","Nbs",
+              "Number_Frequencies","Start_Frequency",
+              "Device_Description","Device_Id"]
+        self.metadata={}
+        for index,key in enumerate(keys):
+            self.metadata[key]=self.header[index]
 
 class TwoPortCalrep():
     """TwoPortCalrep is a model that holds data output by analyzing several datafiles using the HPBasic program
@@ -459,10 +548,12 @@ class TwoPortCalrep():
                         column_names.append(column)
                 #print column_names
                 table.column_names=column_names
-            for row_number,row in enumerate(self.tables[2].data):
-                new_value=self.tables[2].data[row_number][1]
-                new_value=10.**(-1*new_value/20.)
-                self.tables[2].data[row_number][1]=new_value
+            if CONVERT_S21:
+                for row_number,row in enumerate(self.tables[2].data):
+                    new_value=[self.tables[2].data[row_number][i] for i in range(1,6)]
+                    new_value=map(lambda x:10.**(-1*x/20.),new_value)
+                    for i in range(1,6):
+                        self.tables[2].data[row_number][i]=new_value[i-1]
             for key,value in self.options.iteritems():
                 self.tables[0].options[key]=value
             self.joined_table=ascii_data_table_join("Frequency",self.tables[0],self.tables[2])
@@ -514,10 +605,12 @@ class TwoPortCalrep():
                 options["column_types"]=column_types
                 self.tables[index]=parse_lines(self.tables[index],**options)
         # need to put S21 mag into linear magnitude
-        for row_number,row in enumerate(self.tables[3]):
-            new_value=self.tables[3][row_number][1]
-            new_value=10.**(-1*new_value/20.)
-            self.tables[3][row_number][1]=new_value
+        if CONVERT_S21:
+            for row_number,row in enumerate(self.tables[3]):
+                new_value=[self.tables[3][row_number][i] for i in range(1,6)]
+                new_value=map(lambda x:10.**(-1*x/20.),new_value)
+                for i in range(1,6):
+                    self.tables[3][row_number][i]=new_value[i-1]
 
         for index,table in enumerate(self.tables):
             #print("{0} is {1}".format("index",index))
@@ -766,6 +859,12 @@ def test_TwoPortRawModel(file_path='TestFileTwoPortRaw.txt'):
     new_table_1=TwoPortRawModel(file_path=file_path)
     print new_table_1
 
+def test_PowerRawModel(file_path='TestFilePowerRaw.txt'):
+    os.chdir(TESTS_DIRECTORY)
+    print(" Import of {0} results in:".format(file_path))
+    new_table_1=PowerRawModel(file_path=file_path)
+    print new_table_1
+
 def test_JBSparameter(file_path="ftest6_L1_g5_HF_air"):
     """Tests the JBSparameter class"""
     os.chdir(TESTS_DIRECTORY)
@@ -788,6 +887,11 @@ def test_TwoPortCalrep(file_name="922729a.txt"):
     for table in new_two_port.tables:
         print table
     print new_two_port.joined_table
+    new_two_port.joined_table.save()
+    new_two_port.joined_table.path='N205RV.txt'
+    new_two_port.joined_table.header=None
+    new_two_port.joined_table.column_names=None
+    new_two_port.joined_table.save()
 
 def test_PowerCalrep(file_name="700196.asc"):
     """Tests the TwoPortCalrep model type"""
@@ -805,9 +909,10 @@ if __name__ == '__main__':
     #test_OnePortModel_Ctable(file_path_1='922729c.txt')
     #test_OnePortRawModel()
     #test_OnePortRawModel('OnePortRawTestFile_002.txt')
-    test_TwoPortRawModel()
+    #test_TwoPortRawModel()
+    #test_PowerRawModel()
     #test_JBSparameter()
     #test_JBSparameter('QuartzRefExample_L1_g10_HF')
     #test_TwoPortCalrep()
-    #test_TwoPortCalrep('922729a.txt')
+    test_TwoPortCalrep('N205RV.asc')
     #test_PowerCalrep()
