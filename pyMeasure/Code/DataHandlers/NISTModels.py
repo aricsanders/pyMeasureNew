@@ -48,7 +48,7 @@ POWER_COLUMN_NAMES=['Frequency','Efficiency','uEb', 'uEa','uEd','uEg',
                     'Calibration_Factor','uCb','uCa','uCd','uCg']
 POWER_3TERM_COLUMN_NAMES=['Frequency','Efficiency','uEs', 'uEc','uEe',
                     'Calibration_Factor','uCs','uCc','uCe']
-CONVERT_S21=False
+CONVERT_S21=True
 #-----------------------------------------------------------------------------
 # Module Functions
 def calrep_to_benchmark(file_path):
@@ -550,10 +550,13 @@ class TwoPortCalrep():
                 table.column_names=column_names
             if CONVERT_S21:
                 for row_number,row in enumerate(self.tables[2].data):
-                    new_value=[self.tables[2].data[row_number][i] for i in range(1,6)]
-                    new_value=map(lambda x:10.**(-1*x/20.),new_value)
-                    for i in range(1,6):
-                        self.tables[2].data[row_number][i]=new_value[i-1]
+                    new_S21=self.tables[2].data[row_number][1]
+                    new_S21=10.**(-1*new_S21/20.)
+                    new_value=[self.tables[2].data[row_number][i] for i in range(2,6)]
+                    new_value=map(lambda x:abs((1/np.log10(np.e))*new_S21*x/20.),new_value)
+                    self.tables[2].data[row_number][1]=new_S21
+                    for i in range(2,6):
+                        self.tables[2].data[row_number][i]=new_value[i-2]
             for key,value in self.options.iteritems():
                 self.tables[0].options[key]=value
             self.joined_table=ascii_data_table_join("Frequency",self.tables[0],self.tables[2])
@@ -607,10 +610,13 @@ class TwoPortCalrep():
         # need to put S21 mag into linear magnitude
         if CONVERT_S21:
             for row_number,row in enumerate(self.tables[3]):
-                new_value=[self.tables[3][row_number][i] for i in range(1,6)]
-                new_value=map(lambda x:10.**(-1*x/20.),new_value)
-                for i in range(1,6):
-                    self.tables[3][row_number][i]=new_value[i-1]
+                new_S21=self.tables[3][row_number][1]
+                new_S21=10.**(-1*new_S21/20.)
+                new_value=[self.tables[3][row_number][i] for i in range(2,6)]
+                new_value=map(lambda x:abs((1/np.log10(np.e))*new_S21*x/20),new_value)
+                self.tables[3][row_number][1]=new_S21
+                for i in range(2,6):
+                    self.tables[3][row_number][i]=new_value[i-2]
 
         for index,table in enumerate(self.tables):
             #print("{0} is {1}".format("index",index))
