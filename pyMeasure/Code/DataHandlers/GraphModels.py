@@ -338,10 +338,10 @@ class Graph():
                 out=False
         return out
 
- def StringGraph(Graph):
-     """String Graph is  a graph relating different string forms"""
-     def __init__(self,**options):
-         """Intializes the StringGraph Class by defining nodes and edges"""
+class StringGraph(Graph):
+    """String Graph is  a graph relating different string forms"""
+    def __init__(self,**options):
+        """Intializes the StringGraph Class by defining nodes and edges"""
         defaults={"graph_name":"StringGraph",
                   "node_names":['n1','n2'],
                   "node_descriptions":{'n1':"A plain string",
