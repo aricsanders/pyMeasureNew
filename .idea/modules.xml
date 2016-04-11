@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../Jupyter-Notebooks/.idea/Jupyter-Notebooks.iml" filepath="$PROJECT_DIR$/../Jupyter-Notebooks/.idea/Jupyter-Notebooks.iml" />
       <module fileurl="file://$PROJECT_DIR$/../html-examples/.idea/html-examples.iml" filepath="$PROJECT_DIR$/../html-examples/.idea/html-examples.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../pyMeasure/.idea/pyMeasure.iml" filepath="$PROJECT_DIR$/../pyMeasure/.idea/pyMeasure.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/pyMeasureNew.iml" filepath="$PROJECT_DIR$/.idea/pyMeasureNew.iml" />
       <module fileurl="file://$PROJECT_DIR$/../svg/.idea/svg.iml" filepath="$PROJECT_DIR$/../svg/.idea/svg.iml" />
       <module fileurl="file://$PROJECT_DIR$/../test_site/.idea/test_site.iml" filepath="$PROJECT_DIR$/../test_site/.idea/test_site.iml" />

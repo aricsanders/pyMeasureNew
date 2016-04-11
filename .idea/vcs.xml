@@ -3,6 +3,7 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../html-examples" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../pyMeasure" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../svg" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../test_site" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../test_site" vcs="Git" />

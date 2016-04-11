@@ -9,5 +9,6 @@
     <orderEntry type="module" module-name="svg" />
     <orderEntry type="module" module-name="test_site" />
     <orderEntry type="module" module-name="test_site" />
+    <orderEntry type="module" module-name="pyMeasure" />
   </component>
 </module>
