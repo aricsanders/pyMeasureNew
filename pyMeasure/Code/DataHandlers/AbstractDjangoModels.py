@@ -47,15 +47,41 @@ class UserFile(models.Model):
     def __str__(self):
         return self.name
 
+class Context(models.Model):
+    """Class that represents the Context element for metadata"""
+    name=models.CharField("The Context name",max_length=200)
+    entity=models.ManyToManyField(UserFile)
+    def __str__(self):
+        return self.name
+
+class Description(models.Model):
+    """A metadata description, or attribute, value pair"""
+    context=models.ForeignKey(Context)
+    key=models.CharField("The name of the attribute or property",max_length=200)
+    value=models.CharField("The value of the description",max_length=2000)
+    def __str__(self):
+        return self.key
+
+class ProjectType(models.Model):
+    """Container for project types. It selects the view associated with the project"""
+    name=models.CharField("The name of the project type")
+    description=models.TextField("A description of the project type")
+    view=models.CharField("View for the project",max_length=200)
+    def __str__(self):
+        return self.name
 
 class Project(models.Model):
     """Container for Projects that provides structure to a collection
     of data files"""
     name=models.CharField('Name of the Project', max_length=200)
-    groups=models.ManytoMany(Group)
-    type=models.ForeignKey(ProjectTypes)
+    groups=models.ManyToManyField(Group)
+    type=models.ForeignKey(ProjectType)
     description=models.TextField("A description of the project")
     wall=models.TextField("A log of comments and such for the project")
+    files=models.ManyToManyField(UserFile)
+    def __str__(self):
+        return self.name
+
 
 #-----------------------------------------------------------------------------
 # Module Scripts
