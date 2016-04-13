@@ -39,6 +39,11 @@ except:
     print("The module numpy was not found,"
           "please put it on the python path")
     raise ImportError
+try:
+    import matplotlib.pyplot as plt
+except:
+    print("The module matplotlib was not found,"
+          "please put it on the python path")
 #-----------------------------------------------------------------------------
 # Module Constants
 ONE_PORT_COLUMN_NAMES=["Frequency", "mag", "uMb", "uMa", "uMd", "uMg", "arg",
@@ -69,9 +74,9 @@ def calrep_to_benchmark(file_path):
     return [header,column_names,data]
 #-----------------------------------------------------------------------------
 # Module Classes
-class OnePortModel(AsciiDataTable):
+class OnePortCalrepModel(AsciiDataTable):
     def __init__(self,file_path,**options):
-        "Intializes the OnePortModel Class, it is assumed that the file is of the .asc or table type"
+        "Intializes the OnePortCalrepModel Class, it is assumed that the file is of the .asc or table type"
         # This is a general pattern for adding a lot of options
         defaults= {"data_delimiter": ",", "column_names_delimiter": ",", "specific_descriptor": 'One_Port',
                    "general_descriptor": 'Sparameter', "extension": 'txt', "comment_begin": "#", "comment_end": "\n",
@@ -147,8 +152,17 @@ class OnePortModel(AsciiDataTable):
             self.options["data"]=data.tolist()
             self.options["header"]=lines[:self.find_line(" TABLE")]
             #print("The {0} variable is {1}".format('data.tolist()',data.tolist()))
+    def show(self):
+        fig, (ax0, ax1) = plt.subplots(nrows=2, sharex=True)
+        ax0.errorbar(self.get_column('Frequency'),self.get_column('mag'),
+             yerr=self.get_column('uMg'),fmt='k--')
+        ax0.set_title('Magnitude S11')
+        ax1.errorbar(self.get_column('Frequency'),self.get_column('arg'),
+             yerr=self.get_column('uAg'),fmt='ro')
+        ax1.set_title('Phase S11')
+        plt.show()
 
-class PowerModel(AsciiDataTable):
+class PowerCalrepModel(AsciiDataTable):
     def __init__(self,file_path,**options):
         "Intializes the PowerModel Class, it is assumed that the file is of  table type"
         # This is a general pattern for adding a lot of options
@@ -303,6 +317,13 @@ class OnePortRawModel(AsciiDataTable):
         self.metadata={}
         for index,key in enumerate(keys):
             self.metadata[key]=self.header[index]
+    def show(self):
+        fig, (ax0, ax1) = plt.subplots(nrows=2, sharex=True)
+        ax0.plot(self.get_column('Frequency'),self.get_column('magS11'),'k--')
+        ax0.set_title('Magnitude S11')
+        ax1.plot(self.get_column('Frequency'),self.get_column('argS11'),'ro')
+        ax1.set_title('Phase S11')
+        plt.show()
 
 class TwoPortRawModel(AsciiDataTable):
     """ Class that deals with the TwoPort Raw Files after conversion to Ascii using Ron Ginley's converter.
@@ -394,6 +415,23 @@ class TwoPortRawModel(AsciiDataTable):
         self.metadata={}
         for index,key in enumerate(keys):
             self.metadata[key]=self.header[index]
+    def show(self):
+        fig, axes = plt.subplots(nrows=3, ncols=2)
+        ax0, ax1, ax2, ax3, ax4, ax5 = axes.flat
+        ax0.plot(self.get_column('Frequency'),self.get_column('magS11'),'k-o')
+        ax0.set_title('Magnitude S11')
+        ax1.plot(self.get_column('Frequency'),self.get_column('argS11'),'ro')
+        ax1.set_title('Phase S11')
+        ax2.plot(self.get_column('Frequency'),self.get_column('magS21'),'k-o')
+        ax2.set_title('Magnitude S21 in dB')
+        ax3.plot(self.get_column('Frequency'),self.get_column('argS21'),'ro')
+        ax3.set_title('Phase S21')
+        ax4.plot(self.get_column('Frequency'),self.get_column('magS22'),'k-o')
+        ax4.set_title('Magnitude S22')
+        ax5.plot(self.get_column('Frequency'),self.get_column('argS22'),'ro')
+        ax5.set_title('Phase S22')
+        plt.tight_layout()
+        plt.show()
 class PowerRawModel(AsciiDataTable):
     """ Class that deals with the PowerRaw Files after conversion to Ascii using Ron Ginley's converter.
     These files typically have header information seperated from data by !!
@@ -483,14 +521,14 @@ class PowerRawModel(AsciiDataTable):
         for index,key in enumerate(keys):
             self.metadata[key]=self.header[index]
 
-class TwoPortCalrep():
-    """TwoPortCalrep is a model that holds data output by analyzing several datafiles using the HPBasic program
+class TwoPortCalrepModel():
+    """TwoPortCalrepModel is a model that holds data output by analyzing several datafiles using the HPBasic program
     Calrep. The data is stored in 3 tables: a S11 table, a S21 table and a S22 table. The data is in linear
     magnitude and angle in degrees. There are 2 types of files, one is a single file with .asc extension
     and 3 files with .txt extension"""
 
     def __init__(self,file_path=None,**options):
-        """Intializes the TwoPortCalrep class, if a file path is specified it opens and reads the file"""
+        """Intializes the TwoPortCalrepModel class, if a file path is specified it opens and reads the file"""
         defaults= {"specific_descriptor": 'Two_Port_Calrep'}
         self.options={}
         for key,value in defaults.iteritems():
@@ -514,10 +552,10 @@ class TwoPortCalrep():
                     if index==2:
                         #fixes a problem with the c tables, extra comma at the end
                         options={"row_end_token":',\n'}
-                        self.tables.append(OnePortModel(self.file_names[index],**options))
+                        self.tables.append(OnePortCalrepModel(self.file_names[index],**options))
                         self.tables[2].options["row_end_token"]=None
                     else:
-                        self.tables.append(OnePortModel(self.file_names[index]))
+                        self.tables.append(OnePortCalrepModel(self.file_names[index]))
             else:
                 try:
                     root_name_pattern=re.compile('(?P<root_name>\w+)[abc].txt',re.IGNORECASE)
@@ -530,10 +568,10 @@ class TwoPortCalrep():
                         if index==2:
                             #fixes a problem with the c tables, extra comma at the end
                             options={"row_end_token":',\n'}
-                            self.tables.append(OnePortModel(self.file_names[index],**options))
+                            self.tables.append(OnePortCalrepModel(self.file_names[index],**options))
                             self.tables[2].options["row_end_token"]=None
                         else:
-                            self.tables.append(OnePortModel(self.file_names[index]))
+                            self.tables.append(OnePortCalrepModel(self.file_names[index]))
 
                 except:
                     print("Could not import {0} please check that the a,b,c "
@@ -624,7 +662,7 @@ class TwoPortCalrep():
                 pass
             else:
                 table_options={"data":self.tables[index]}
-                self.tables[index]=OnePortModel(None,**table_options)
+                self.tables[index]=OnePortCalrepModel(None,**table_options)
                 #print("{0} is {1}".format("self.tables[index].column_names",self.tables[index].column_names))
                 column_names=[]
                 for column_number,column in enumerate(self.tables[index].column_names):
@@ -641,6 +679,31 @@ class TwoPortCalrep():
             self.tables[1].options[key]=value
         self.joined_table=ascii_data_table_join("Frequency",self.tables[1],self.tables[3])
         self.joined_table=ascii_data_table_join("Frequency",self.joined_table,self.tables[2])
+    def __str__(self):
+        return self.joined_table.build_string()
+    def show(self):
+        fig, axes = plt.subplots(nrows=3, ncols=2)
+        ax0, ax1, ax2, ax3, ax4, ax5 = axes.flat
+        ax0.errorbar(self.joined_table.get_column('Frequency'),self.joined_table.get_column('magS11'),
+             yerr=self.joined_table.get_column('uMgS11'),fmt='k-o')
+        ax0.set_title('Magnitude S11')
+        ax1.errorbar(self.joined_table.get_column('Frequency'),self.joined_table.get_column('argS11'),
+             yerr=self.joined_table.get_column('uAgS11'),fmt='ro')
+        ax1.set_title('Phase S11')
+        ax2.errorbar(self.joined_table.get_column('Frequency'),self.joined_table.get_column('magS21'),
+             yerr=self.joined_table.get_column('uMgS21'),fmt='k-o')
+        ax2.set_title('Magnitude S21')
+        ax3.errorbar(self.joined_table.get_column('Frequency'),self.joined_table.get_column('argS21'),
+             yerr=self.joined_table.get_column('uAgS21'),fmt='ro')
+        ax3.set_title('Phase S21')
+        ax4.errorbar(self.joined_table.get_column('Frequency'),self.joined_table.get_column('magS22'),
+             yerr=self.joined_table.get_column('uMgS22'),fmt='k-o')
+        ax4.set_title('Magnitude S22')
+        ax5.errorbar(self.joined_table.get_column('Frequency'),self.joined_table.get_column('argS22'),
+             yerr=self.joined_table.get_column('uAgS22'),fmt='ro')
+        ax5.set_title('Phase S22')
+        plt.tight_layout()
+        plt.show()
 
 class PowerCalrep():
     """PowerCalrep is a model that holds data output by analyzing several datafiles using the HPBasic program
@@ -667,7 +730,7 @@ class PowerCalrep():
                     if index==0:
                         self.tables.append(PowerModel(self.file_names[index]))
                     elif index==1:
-                        self.tables.append(OnePortModel(self.file_names[index]))
+                        self.tables.append(OnePortCalrepModel(self.file_names[index]))
             else:
                 try:
                     root_name_pattern=re.compile('(?P<root_name>\w+)[abc].txt',re.IGNORECASE)
@@ -678,7 +741,7 @@ class PowerCalrep():
                     self.tables=[]
                     for index,table in enumerate(self.table_names):
                         if index==0:
-                            self.tables.append(OnePortModel(self.file_names[index]))
+                            self.tables.append(OnePortCalrepModel(self.file_names[index]))
                         elif index==1:
                             self.tables.append(PowerModel(self.file_names[index]))
                 except:
@@ -736,7 +799,7 @@ class PowerCalrep():
                 options["column_types"]=column_types
                 self.tables[index]=parse_lines(self.tables[index],**options)
                 table_options={"data":self.tables[index]}
-                self.tables[index]=OnePortModel(None,**table_options)
+                self.tables[index]=OnePortCalrepModel(None,**table_options)
             elif index==2:
                 column_types=['float' for i in range(len(POWER_COLUMN_NAMES))]
                 options={"row_pattern":self.power_row_pattern,"column_names":POWER_COLUMN_NAMES,"output":"list_list"}
@@ -748,6 +811,23 @@ class PowerCalrep():
 
         self.tables[1].header=self.tables[0]
         self.joined_table=ascii_data_table_join("Frequency",self.tables[1],self.tables[2])
+    def show(self):
+        fig, axes = plt.subplots(nrows=2, ncols=2)
+        ax0, ax1, ax2, ax3 = axes.flat
+        ax0.errorbar(self.joined_table.get_column('Frequency'),self.joined_table.get_column('mag'),
+                     yerr=self.joined_table.get_column('uMg'),fmt='k--')
+        ax0.set_title('Magnitude S11')
+        ax1.errorbar(self.joined_table.get_column('Frequency'),self.joined_table.get_column('arg'),
+                     yerr=self.joined_table.get_column('uAg'),fmt='ro')
+        ax1.set_title('Phase S11')
+        ax2.errorbar(self.joined_table.get_column('Frequency'),self.joined_table.get_column('Efficiency'),
+                     yerr=self.joined_table.get_column('uEg'),fmt='k--')
+        ax2.set_title('Effective Efficiency')
+        ax3.errorbar(self.joined_table.get_column('Frequency'),self.joined_table.get_column('Calibration_Factor'),
+                     yerr=self.joined_table.get_column('uCg'),fmt='ro')
+        ax3.set_title('Calibration Factor')
+        plt.tight_layout()
+        plt.show()
 
 
 class JBSparameter(AsciiDataTable):
@@ -824,24 +904,24 @@ class RobotData():
 
 #-----------------------------------------------------------------------------
 # Module Scripts
-def test_OnePortModel(file_path_1='700437.txt',file_path_2="700437.asc"):
+def test_OnePortCalrepModel(file_path_1='700437.txt',file_path_2="700437.asc"):
     os.chdir(TESTS_DIRECTORY)
     print(" Import of {0} results in:".format(file_path_1))
-    new_table_1=OnePortModel(file_path=file_path_1)
+    new_table_1=OnePortCalrepModel(file_path=file_path_1)
     print new_table_1
     print("-"*80)
     print("\n")
     print(" Import of {0} results in:".format(file_path_2))
-    new_table_2=OnePortModel(file_path=file_path_2)
+    new_table_2=OnePortCalrepModel(file_path=file_path_2)
     print new_table_2
     print("{0} results in {1}:".format('new_table_1.get_column("Frequency")',new_table_1.get_column("Frequency")))
     print new_table_1.get_options()
 
-def test_OnePortModel_Ctable(file_path_1='700437.txt'):
-    """Tests the OnePortModel on ctables from 2 port """
+def test_OnePortCalrepModel_Ctable(file_path_1='700437.txt'):
+    """Tests the OnePortCalrepModel on ctables from 2 port """
     os.chdir(TESTS_DIRECTORY)
     print(" Import of {0} results in:".format(file_path_1))
-    new_table_1=OnePortModel(file_path=file_path_1,**{"row_end_token":",\n"})
+    new_table_1=OnePortCalrepModel(file_path=file_path_1,**{"row_end_token":",\n"})
     print new_table_1
     print("-"*80)
     print("\n")
@@ -886,10 +966,10 @@ def test_JBSparameter(file_path="ftest6_L1_g5_HF_air"):
     print new_table.get_frequency_units()
     print new_table.get_header_string()
 
-def test_TwoPortCalrep(file_name="922729a.txt"):
-    """Tests the TwoPortCalrep model type"""
+def test_TwoPortCalrepModel(file_name="922729a.txt"):
+    """Tests the TwoPortCalrepModel model type"""
     os.chdir(TESTS_DIRECTORY)
-    new_two_port=TwoPortCalrep(file_name)
+    new_two_port=TwoPortCalrepModel(file_name)
     for table in new_two_port.tables:
         print table
     print new_two_port.joined_table
@@ -900,7 +980,7 @@ def test_TwoPortCalrep(file_name="922729a.txt"):
     new_two_port.joined_table.save()
 
 def test_PowerCalrep(file_name="700196.asc"):
-    """Tests the TwoPortCalrep model type"""
+    """Tests the TwoPortCalrepModel model type"""
     os.chdir(TESTS_DIRECTORY)
     new_power=PowerCalrep(file_name)
     for table in new_power.tables:
@@ -911,14 +991,14 @@ def test_PowerCalrep(file_name="700196.asc"):
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
-    #test_OnePortModel()
-    #test_OnePortModel_Ctable(file_path_1='922729c.txt')
+    #test_OnePortCalrepModel()
+    #test_OnePortCalrepModel_Ctable(file_path_1='922729c.txt')
     #test_OnePortRawModel()
     #test_OnePortRawModel('OnePortRawTestFile_002.txt')
     #test_TwoPortRawModel()
     #test_PowerRawModel()
     #test_JBSparameter()
     #test_JBSparameter('QuartzRefExample_L1_g10_HF')
-    #test_TwoPortCalrep()
-    test_TwoPortCalrep('N205RV.asc')
-    #test_PowerCalrep()
+    #test_TwoPortCalrepModel()
+    #test_TwoPortCalrepModel('N205RV.asc')
+    test_PowerCalrep()
