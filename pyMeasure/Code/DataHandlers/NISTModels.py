@@ -162,7 +162,7 @@ class OnePortCalrepModel(AsciiDataTable):
         ax1.set_title('Phase S11')
         plt.show()
 
-class PowerCalrepModel(AsciiDataTable):
+class PowerModel(AsciiDataTable):
     def __init__(self,file_path,**options):
         "Intializes the PowerModel Class, it is assumed that the file is of  table type"
         # This is a general pattern for adding a lot of options
@@ -293,6 +293,7 @@ class OnePortRawModel(AsciiDataTable):
         self.path=file_path
         self.structure_metadata()
 
+
     def __read_and_fix__(self,file_path=None):
         """Inputs in the raw OnePortRaw file and fixes any problems with delimiters,etc."""
         lines=[]
@@ -315,8 +316,11 @@ class OnePortRawModel(AsciiDataTable):
               "Number_Frequencies","Start_Frequency",
               "Device_Description","Device_Id"]
         self.metadata={}
-        for index,key in enumerate(keys):
-            self.metadata[key]=self.header[index]
+        if self.header is None:
+            pass
+        else:
+            for index,key in enumerate(keys):
+                self.metadata[key]=self.header[index]
     def show(self):
         fig, (ax0, ax1) = plt.subplots(nrows=2, sharex=True)
         ax0.plot(self.get_column('Frequency'),self.get_column('magS11'),'k--')
@@ -705,7 +709,7 @@ class TwoPortCalrepModel():
         plt.tight_layout()
         plt.show()
 
-class PowerCalrep():
+class PowerCalrepModel():
     """PowerCalrep is a model that holds data output by analyzing several datafiles using the HPBasic program
     Calrep. The data is stored in 2 tables: a S11 table, and a power table. The data is in linear
     magnitude and angle in degrees. There are 2 types of files, one is a single file with .asc extension
@@ -811,6 +815,7 @@ class PowerCalrep():
 
         self.tables[1].header=self.tables[0]
         self.joined_table=ascii_data_table_join("Frequency",self.tables[1],self.tables[2])
+
     def show(self):
         fig, axes = plt.subplots(nrows=2, ncols=2)
         ax0, ax1, ax2, ax3 = axes.flat
@@ -938,18 +943,21 @@ def test_OnePortRawModel(file_path='OnePortRawTestFile.txt'):
     print new_table_1.metadata
     print new_table_1.column_names
     print('index' in new_table_1.column_names )
+    new_table_1.show()
 
 def test_TwoPortRawModel(file_path='TestFileTwoPortRaw.txt'):
     os.chdir(TESTS_DIRECTORY)
     print(" Import of {0} results in:".format(file_path))
     new_table_1=TwoPortRawModel(file_path=file_path)
     print new_table_1
+    new_table_1.show()
 
 def test_PowerRawModel(file_path='TestFilePowerRaw.txt'):
     os.chdir(TESTS_DIRECTORY)
     print(" Import of {0} results in:".format(file_path))
     new_table_1=PowerRawModel(file_path=file_path)
     print new_table_1
+    #new_table_1.show()
 
 def test_JBSparameter(file_path="ftest6_L1_g5_HF_air"):
     """Tests the JBSparameter class"""
@@ -979,13 +987,15 @@ def test_TwoPortCalrepModel(file_name="922729a.txt"):
     new_two_port.joined_table.column_names=None
     new_two_port.joined_table.save()
 
-def test_PowerCalrep(file_name="700196.asc"):
+def test_PowerCalrepModel(file_name="700196.asc"):
     """Tests the TwoPortCalrepModel model type"""
     os.chdir(TESTS_DIRECTORY)
-    new_power=PowerCalrep(file_name)
+    new_power=PowerCalrepModel(file_name)
     for table in new_power.tables:
         print table
     print new_power.joined_table
+    new_power.show()
+
 
 
 #-----------------------------------------------------------------------------
@@ -1001,4 +1011,4 @@ if __name__ == '__main__':
     #test_JBSparameter('QuartzRefExample_L1_g10_HF')
     #test_TwoPortCalrepModel()
     #test_TwoPortCalrepModel('N205RV.asc')
-    test_PowerCalrep()
+    test_PowerCalrepModel()
