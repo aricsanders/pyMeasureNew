@@ -32,6 +32,7 @@ def average_one_port_sparameters(table_list,**options):
     """Returns a table that is the average of the Sparameters in table list. The new table will have all the unique
     frequency values contained in all of the tables. Tables must be in Real-Imaginary format or magnitude-angle format
     do not try to average db-angle format. """
+    #This will work on any table that the data is stored in data, need to add a sparameter version
     defaults={"frequency_selector":0,"frequency_column_name":"Frequency"}
     average_options={}
     for key,value in defaults.iteritems():

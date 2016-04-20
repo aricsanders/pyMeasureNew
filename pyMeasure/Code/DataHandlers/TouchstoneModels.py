@@ -274,11 +274,14 @@ class S1PV1():
         out_lines[self.options["option_line_line"]]=self.option_line
         # populate the line comments
         comment_lines=[]
+        inline_comments=[]
         if self.comments != None:
             for comment in self.comments:
                 if comment[2] == 0:
                     out_lines[comment[1]]="!"+comment[0]
                     comment_lines.append(comment[1])
+                else:
+                    inline_comments.append(comment)
         # now start writting data at first empty line after the option line
         for index,line in enumerate(out_lines):
             if index==self.options["option_line_line"]:
@@ -291,7 +294,8 @@ class S1PV1():
                 out_lines[index]=self.options["sparameter_row_formatter_string"].format(
                     delimiter=self.options["data_delimiter"],
                     *self.sparameter_data[index-self.options["sparameter_begin_line"]])
-
+        for comment in inline_comments:
+            out_lines=insert_inline_comment(out_lines,comment)
         return string_list_collapse(out_lines)
 
     def __str__(self):
@@ -636,11 +640,14 @@ class S2PV1():
         out_lines[self.options["option_line_line"]]=self.option_line
         # populate the line comments
         comment_lines=[]
+        inline_comments=[]
         if self.comments != None:
             for comment in self.comments:
                 if comment[2] == 0:
                     out_lines[comment[1]]="!"+comment[0]
                     comment_lines.append(comment[1])
+                else:
+                    inline_comments.append(comment)
         # now start writting data at first empty line after the option line
         for index,line in enumerate(out_lines):
             if index==self.options["option_line_line"]:
@@ -659,6 +666,8 @@ class S2PV1():
                 #print (index-self.options["noiseparameter_begin_line"])
                 out_lines[index]=self.options["nosieparameter_row_formatter_string"].format(
                     delimiter=self.options["data_delimiter"],*self.noiseparameter_data[index-self.options["noiseparameter_begin_line"]])
+        for comment in inline_comments:
+            out_lines=insert_inline_comment(out_lines,comment)
         return string_list_collapse(out_lines)
 
     def __str__(self):
@@ -993,7 +1002,7 @@ if __name__ == '__main__':
     #test_S1PV1()
     #test_option_string()
     #test_s2pv1()
-    #test_s2pv1('TwoPortTouchstoneTestFile.s2p')
+    test_s2pv1('TwoPortTouchstoneTestFile.s2p')
     #test_change_format()
     #test_change_format('TwoPortTouchstoneTestFile.s2p')
-    test_change_format('20160301_30ft_cable_0.s2p')
+    #test_change_format('20160301_30ft_cable_0.s2p')
