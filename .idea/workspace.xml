@@ -2,16 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4139f2fc-c578-4782-b083-7284792a834c" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/Tests/ODBC.accdb" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/Tests/ODBC1.accdb" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/Tests/ODBC2.accdb" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/Tests/ODBC_Backup.accdb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../pyMeasure/.idea/pyMeasure.iml" afterPath="$PROJECT_DIR$/../pyMeasure/.idea/pyMeasure.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../pyMeasure/Code/Development/xray_python.py" afterPath="$PROJECT_DIR$/../pyMeasure/Code/Development/xray_python.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/pyMeasureNew.iml" afterPath="$PROJECT_DIR$/.idea/pyMeasureNew.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GraphModels.py" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GraphModels.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../test_site/.idea/test_site.iml" afterPath="$PROJECT_DIR$/../test_site/.idea/test_site.iml" />
     </list>
     <ignored path="pyMeasureNew.iws" />
@@ -787,12 +780,6 @@
       <option name="number" value="Default" />
       <updated>1456039207125</updated>
     </task>
-    <task id="LOCAL-00044" summary="Added an example of a network graph">
-      <created>1458453916138</created>
-      <option name="number" value="00044" />
-      <option name="project" value="LOCAL" />
-      <updated>1458453916139</updated>
-    </task>
     <task id="LOCAL-00045" summary="Added an example of a svg with links">
       <created>1458453980735</created>
       <option name="number" value="00045" />
@@ -1081,7 +1068,13 @@
       <option name="project" value="LOCAL" />
       <updated>1460683905723</updated>
     </task>
-    <option name="localTasksCounter" value="93" />
+    <task id="LOCAL-00093" summary="Fixed metadata fro raw models, access db tests">
+      <created>1461225823795</created>
+      <option name="number" value="00093" />
+      <option name="project" value="LOCAL" />
+      <updated>1461225823798</updated>
+    </task>
+    <option name="localTasksCounter" value="94" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -1090,6 +1083,7 @@
     <layout>
       <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.29984176" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32956383" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.4022617" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -1097,7 +1091,6 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -1141,7 +1134,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_COMMIT_MESSAGE_SPELLING" value="false" />
-    <MESSAGE value="Added Ascii Data table" />
     <MESSAGE value="Added Ascii Data table to XML transformations" />
     <MESSAGE value="Added new plotly example" />
     <MESSAGE value="Added row_begin and row_end token functionaility" />
@@ -1166,7 +1158,8 @@
     <MESSAGE value="MathJax Example" />
     <MESSAGE value="MUFModels" />
     <MESSAGE value="New table processing" />
-    <option name="LAST_COMMIT_MESSAGE" value="New table processing" />
+    <MESSAGE value="Fixed metadata fro raw models, access db tests" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed metadata fro raw models, access db tests" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
