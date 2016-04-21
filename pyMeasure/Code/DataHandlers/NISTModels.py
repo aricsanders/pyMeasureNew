@@ -320,7 +320,7 @@ class OnePortRawModel(AsciiDataTable):
             pass
         else:
             for index,key in enumerate(keys):
-                self.metadata[key]=self.header[index]
+                self.metadata[key]=self.header[index].replace(" ","")
     def show(self):
         fig, (ax0, ax1) = plt.subplots(nrows=2, sharex=True)
         ax0.plot(self.get_column('Frequency'),self.get_column('magS11'),'k--')
@@ -418,7 +418,7 @@ class TwoPortRawModel(AsciiDataTable):
               "Device_Description","Device_Id"]
         self.metadata={}
         for index,key in enumerate(keys):
-            self.metadata[key]=self.header[index]
+            self.metadata[key]=self.header[index].replace(" ","")
     def show(self):
         fig, axes = plt.subplots(nrows=3, ncols=2)
         ax0, ax1, ax2, ax3, ax4, ax5 = axes.flat
@@ -524,7 +524,7 @@ class PowerRawModel(AsciiDataTable):
               "Device_Description","Device_Id"]
         self.metadata={}
         for index,key in enumerate(keys):
-            self.metadata[key]=self.header[index]
+            self.metadata[key]=self.header[index].replace(" ","")
 
 class TwoPortCalrepModel():
     """TwoPortCalrepModel is a model that holds data output by analyzing several datafiles using the HPBasic program

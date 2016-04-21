@@ -257,14 +257,14 @@ class Graph():
     def get_path(self,first_node,last_node):
         """Returns the first path found between first node and last node"""
         edge_pattern=re.compile('edge_(?P<begin_node>\w+)_(?P<end_node>\w+)_(?P<iterator>\w+)')
-        exit_paths=new_graph.get_exiting_edges(first_node)
-        next_nodes=new_graph.get_exiting_nodes(first_node)
+        exit_paths=self.get_exiting_edges(first_node)
+        next_nodes=self.get_exiting_nodes(first_node)
         #be careful here using the wrong assignment statement breaks this function
         possible_paths=[]
         for exit_path in exit_paths:
             possible_paths.append([exit_path])
         #print("{0} is {1}".format('possible_paths',possible_paths))
-        for i in range(len(new_graph.node_names)):
+        for i in range(len(self.node_names)):
             for index,path in enumerate(possible_paths):
                 last_edge=path[-1]
                 match=re.match(edge_pattern,last_edge)
@@ -275,8 +275,8 @@ class Graph():
                     #print("The path found is {0}".format(path))
                     return path
                 next_possible_paths=[]
-                next_edges=new_graph.get_exiting_edges(end_node)
-                next_nodes=new_graph.get_exiting_nodes(end_node)
+                next_edges=self.get_exiting_edges(end_node)
+                next_nodes=self.get_exiting_nodes(end_node)
                 #print("{0} is {1}".format('next_edges',next_edges))
                 for index,next_edge in enumerate(next_edges):
                     #be careful here using the wrong assignment statement breaks this function
