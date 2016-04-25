@@ -51,8 +51,10 @@ ONE_PORT_COLUMN_NAMES=["Frequency", "mag", "uMb", "uMa", "uMd", "uMg", "arg",
 #Note there are 2 power models!!! one with 4 error terms and one with 3
 POWER_COLUMN_NAMES=['Frequency','Efficiency','uEb', 'uEa','uEd','uEg',
                     'Calibration_Factor','uCb','uCa','uCd','uCg']
+
 POWER_3TERM_COLUMN_NAMES=['Frequency','Efficiency','uEs', 'uEc','uEe',
                     'Calibration_Factor','uCs','uCc','uCe']
+POWER_COLUMN_NAMES=POWER_3TERM_COLUMN_NAMES
 CONVERT_S21=True
 #-----------------------------------------------------------------------------
 # Module Functions
@@ -128,9 +130,10 @@ class OnePortCalrepModel(AsciiDataTable):
         table_type=self.path.split(".")[-1]
         in_file=open(self.path,'r')
         for line in in_file:
-            if not re.match('[\s]+(?!\w+)',line):
+            #if not re.match('[\s]+(?!\w+)',line):
                 #print line
-                lines.append(line)
+            lines.append(line)
+        in_file.close()
         # Handle the cases in which it is the comma delimited table
         if re.match('txt',table_type,re.IGNORECASE):
             lines=strip_tokens(lines,*[self.options['data_begin_token'],
@@ -143,15 +146,21 @@ class OnePortCalrepModel(AsciiDataTable):
             #print self.options["data"]
             root_name_pattern=re.compile('(?P<root_name>\w+)[abc].txt',re.IGNORECASE)
             root_name_match=re.search(root_name_pattern,self.path)
-            root_name=root_name_match.groupdict()["root_name"]
+            if root_name_match:
+                root_name=root_name_match.groupdict()["root_name"]
+            else:
+                root_name=self.path.split('.')[0]
             self.options["header"]=["Device_Id = {0}".format(root_name)]
+
         elif re.match("asc",table_type,re.IGNORECASE):
             self.lines=lines
-            data_begin_line=self.find_line(" TABLE")+2
+            data_begin_line=self.find_line("TABLE")+2
+            # TODO: Replace with parse lines, it ignores blank lines
             data=np.loadtxt(self.path,skiprows=data_begin_line)
             self.options["data"]=data.tolist()
-            self.options["header"]=lines[:self.find_line(" TABLE")]
+            self.options["header"]=lines[:self.find_line("TABLE")]
             #print("The {0} variable is {1}".format('data.tolist()',data.tolist()))
+
     def show(self):
         fig, (ax0, ax1) = plt.subplots(nrows=2, sharex=True)
         ax0.errorbar(self.get_column('Frequency'),self.get_column('mag'),
@@ -197,13 +206,12 @@ class PowerModel(AsciiDataTable):
             self.__read_and_fix__()
         #build the row_formatting string, the original files have 4 decimals of precision for freq/gamma and 2 for Phase
         row_formatter=""
-        for i in range(11):
-            if i<6:
+        for i in range(len(POWER_COLUMN_NAMES)):
+            if i<len(POWER_COLUMN_NAMES)-1:
                 row_formatter=row_formatter+"{"+str(i)+":.4f}{delimiter}"
-            elif i==10:
-                row_formatter=row_formatter+"{"+str(i)+":.2f}"
-            else:
-                row_formatter=row_formatter+"{"+str(i)+":.2f}{delimiter}"
+            elif i==len(POWER_COLUMN_NAMES)-1:
+                row_formatter=row_formatter+"{"+str(i)+":.4f}"
+
         self.options["row_formatter_string"]=row_formatter
         AsciiDataTable.__init__(self,None,**self.options)
         if file_path is not None:
@@ -219,6 +227,7 @@ class PowerModel(AsciiDataTable):
                 #print line
                 lines.append(line)
         # Handle the cases in which it is the comma delimited table
+        # Does this need to be parse lines or numpy.loadtxt?
         if re.match('txt',table_type,re.IGNORECASE):
             lines=strip_tokens(lines,*[self.options['data_begin_token'],
                                                     self.options['data_end_token']])
@@ -622,13 +631,13 @@ class TwoPortCalrepModel():
                 header_begin_line=0
                 header_end_line=begin_line-2
                 table_1_begin_line=begin_line+3
-                table_1_end_line=begin_lines[index+1]-1
+                table_1_end_line=begin_lines[index+1]#-1
                 self.table_line_numbers.append([header_begin_line,header_end_line])
                 self.table_line_numbers.append([table_1_begin_line,table_1_end_line])
 
             elif index>0 and index<(len(begin_lines)-1):
                 table_begin_line=begin_line+3
-                table_end_line=begin_lines[index+1]-1
+                table_end_line=begin_lines[index+1]#-1
                 self.table_line_numbers.append([table_begin_line,table_end_line])
 
             elif index==(len(begin_lines)-1):
@@ -645,11 +654,11 @@ class TwoPortCalrepModel():
                 # we can just remove end lines
                 self.tables[index]=strip_all_line_tokens(self.tables[index],begin_token=None,end_token='\n')
             else:
-
                 column_types=['float' for i in range(len(ONE_PORT_COLUMN_NAMES))]
                 options={"row_pattern":self.row_pattern,"column_names":ONE_PORT_COLUMN_NAMES,"output":"list_list"}
                 options["column_types"]=column_types
                 self.tables[index]=parse_lines(self.tables[index],**options)
+
         # need to put S21 mag into linear magnitude
         if CONVERT_S21:
             for row_number,row in enumerate(self.tables[3]):
@@ -684,8 +693,10 @@ class TwoPortCalrepModel():
             self.tables[1].options[key]=value
         self.joined_table=ascii_data_table_join("Frequency",self.tables[1],self.tables[3])
         self.joined_table=ascii_data_table_join("Frequency",self.joined_table,self.tables[2])
+
     def __str__(self):
         return self.joined_table.build_string()
+
     def show(self):
         fig, axes = plt.subplots(nrows=3, ncols=2)
         ax0, ax1, ax2, ax3, ax4, ax5 = axes.flat
@@ -776,17 +787,18 @@ class PowerCalrepModel():
         for index,begin_line in enumerate(begin_lines):
             if index == 0:
                 header_begin_line=0
-                header_end_line=begin_line-2
-                table_1_begin_line=begin_line+3
-                table_1_end_line=begin_lines[index+1]-1
+                header_end_line=begin_line-1
+                table_1_begin_line=begin_line+1
+                table_1_end_line=begin_lines[index+1]
                 self.table_line_numbers.append([header_begin_line,header_end_line])
                 self.table_line_numbers.append([table_1_begin_line,table_1_end_line])
             elif index>0 and index<(len(begin_lines)-1):
-                table_begin_line=begin_line+3
-                table_end_line=begin_lines[index+1]-1
+                table_begin_line=begin_line+2
+                print("{0} is {1}".format('begin_line',begin_line))
+                table_end_line=begin_lines[index+1]
                 self.table_line_numbers.append([table_begin_line,table_end_line])
             elif index==(len(begin_lines)-1):
-                table_begin_line=begin_line+3
+                table_begin_line=begin_line+1
                 table_end_line=None
                 self.table_line_numbers.append([table_begin_line,table_end_line])
         self.tables=[]
@@ -806,6 +818,7 @@ class PowerCalrepModel():
                 table_options={"data":self.tables[index]}
                 self.tables[index]=OnePortCalrepModel(None,**table_options)
             elif index==2:
+                # Here we need to test for the type of power model (how many columns)
                 column_types=['float' for i in range(len(POWER_COLUMN_NAMES))]
                 options={"row_pattern":self.power_row_pattern,"column_names":POWER_COLUMN_NAMES,"output":"list_list"}
                 options["column_types"]=column_types
@@ -813,9 +826,13 @@ class PowerCalrepModel():
                 table_options={"data":self.tables[index]}
                 self.tables[index]=PowerModel(None,**table_options)
 
-
+        # for table in self.tables:
+        #     print table
+        #print("Length of table 1 is {0}, Length of table 2 is {1}".format(len(self.tables[1].data),len(self.tables[2].data)))
         self.tables[1].header=self.tables[0]
         self.joined_table=ascii_data_table_join("Frequency",self.tables[1],self.tables[2])
+    def __str__(self):
+        return self.joined_table.build_string()
 
     def show(self):
         fig, axes = plt.subplots(nrows=2, ncols=2)
@@ -827,10 +844,10 @@ class PowerCalrepModel():
                      yerr=self.joined_table.get_column('uAg'),fmt='ro')
         ax1.set_title('Phase S11')
         ax2.errorbar(self.joined_table.get_column('Frequency'),self.joined_table.get_column('Efficiency'),
-                     yerr=self.joined_table.get_column('uEg'),fmt='k--')
+                     yerr=self.joined_table.get_column('uEe'),fmt='k--')
         ax2.set_title('Effective Efficiency')
         ax3.errorbar(self.joined_table.get_column('Frequency'),self.joined_table.get_column('Calibration_Factor'),
-                     yerr=self.joined_table.get_column('uCg'),fmt='ro')
+                     yerr=self.joined_table.get_column('uCe'),fmt='ro')
         ax3.set_title('Calibration Factor')
         plt.tight_layout()
         plt.show()
@@ -910,6 +927,30 @@ class RobotData():
 
 #-----------------------------------------------------------------------------
 # Module Scripts
+def convert_all_two_ports_script(top_directory=None,output_directory=None):
+    """Script reads all file names in all sub directories looking for ones that end in c, and tries to open
+    file_name.asc and save it in the output directory"""
+    TOP_DIRECTORY=r'C:\Share\ascii.dut'
+    # This pattern will find any names that have c in them
+    TWO_PORT_PATTERN=re.compile('(?P<two_port_name>\w+)c',re.IGNORECASE)
+    # now we test the os.walk function
+    # This has a memory leak I am not sure but I suspect it is jupyter's fault
+    for root,directory,file_names in os.walk(TOP_DIRECTORY):
+        #print file_names
+        for file_name in file_names:
+            file_name=file_name.split('.')[0]
+            match=re.search(TWO_PORT_PATTERN,file_name)
+            try:
+                if match:
+                    asc_file_name=match.groupdict()["two_port_name"]+".asc"
+                    print asc_file_name
+                    if asc_file_name in ['de.asc','00.asc','dir.asc','IL.asc',"L2.asc","L1.asc"]:raise
+                    converted_file=TwoPortCalrepModel(os.path.join(root,asc_file_name))
+                    #print converted_file.joined_table.header
+                    del converted_file
+            except:
+                pass
+
 def test_OnePortCalrepModel(file_path_1='700437.txt',file_path_2="700437.asc"):
     os.chdir(TESTS_DIRECTORY)
     print(" Import of {0} results in:".format(file_path_1))
@@ -922,6 +963,8 @@ def test_OnePortCalrepModel(file_path_1='700437.txt',file_path_2="700437.asc"):
     print new_table_2
     print("{0} results in {1}:".format('new_table_1.get_column("Frequency")',new_table_1.get_column("Frequency")))
     print new_table_1.get_options()
+    print new_table_1.data[-1]
+    new_table_1.show()
 
 def test_OnePortCalrepModel_Ctable(file_path_1='700437.txt'):
     """Tests the OnePortCalrepModel on ctables from 2 port """
@@ -931,6 +974,7 @@ def test_OnePortCalrepModel_Ctable(file_path_1='700437.txt'):
     print new_table_1
     print("-"*80)
     print("\n")
+    new_table_1.show()
 
 
 def test_OnePortRawModel(file_path='OnePortRawTestFile.txt'):
@@ -988,13 +1032,14 @@ def test_TwoPortCalrepModel(file_name="922729a.txt"):
     new_two_port.joined_table.column_names=None
     new_two_port.joined_table.save()
 
-def test_PowerCalrepModel(file_name="700196.asc"):
+def test_PowerCalrepModel(file_name="700083.asc"):
     """Tests the TwoPortCalrepModel model type"""
     os.chdir(TESTS_DIRECTORY)
     new_power=PowerCalrepModel(file_name)
     for table in new_power.tables:
         print table
     print new_power.joined_table
+    print new_power.joined_table.data[-1]
     new_power.show()
 
 
@@ -1003,6 +1048,7 @@ def test_PowerCalrepModel(file_name="700196.asc"):
 # Module Runner
 if __name__ == '__main__':
     #test_OnePortCalrepModel()
+    test_OnePortCalrepModel('700437.asc')
     #test_OnePortCalrepModel_Ctable(file_path_1='922729c.txt')
     #test_OnePortRawModel()
     #test_OnePortRawModel('OnePortRawTestFile_002.txt')
@@ -1012,4 +1058,5 @@ if __name__ == '__main__':
     #test_JBSparameter('QuartzRefExample_L1_g10_HF')
     #test_TwoPortCalrepModel()
     #test_TwoPortCalrepModel('N205RV.asc')
-    test_PowerCalrepModel()
+    #test_PowerCalrepModel()
+    #convert_all_two_ports_script()

@@ -2,9 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4139f2fc-c578-4782-b083-7284792a834c" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/Tests/700083.ASC" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/Tests/700083a.txt" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/Tests/700083b.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/.ipynb_checkpoints/Two_Port_Calrep_DUT_Converter_20160424_001-checkpoint.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/.ipynb_checkpoints/Two_Port_Calrep_DUT_Converter_20160424_001-checkpoint.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/Two_Port_Calrep_DUT_Converter_20160424_001.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/Two_Port_Calrep_DUT_Converter_20160424_001.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../pyMeasure/.idea/pyMeasure.iml" afterPath="$PROJECT_DIR$/../pyMeasure/.idea/pyMeasure.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../pyMeasure/Code/Development/xray_python.py" afterPath="$PROJECT_DIR$/../pyMeasure/Code/Development/xray_python.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../test_site/.idea/test_site.iml" afterPath="$PROJECT_DIR$/../test_site/.idea/test_site.iml" />
     </list>
     <ignored path="pyMeasureNew.iws" />
@@ -29,8 +36,50 @@
       <file leaf-file-name="NISTModels.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6812866">
-              <caret line="524" column="24" selection-start-line="524" selection-start-column="24" selection-end-line="524" selection-end-column="24" />
+            <state vertical-scroll-proportion="0.8896104">
+              <caret line="286" column="60" selection-start-line="286" selection-start-column="60" selection-end-line="286" selection-end-column="60" />
+              <folding>
+                <element signature="e#499#508#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GeneralModels.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="295" column="59" selection-start-line="295" selection-start-column="59" selection-end-line="295" selection-end-column="59" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../test_site/Test_Site/Test_Site/templates/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="file_template.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../test_site/Test_Site/Test_Site/templates/file_template.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="8" column="19" selection-start-line="8" selection-start-column="19" selection-end-line="8" selection-end-column="19" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../test_site/Test_Site/Test_App/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="125" column="29" selection-start-line="125" selection-start-column="29" selection-end-line="125" selection-end-column="29" />
               <folding />
             </state>
           </provider>
@@ -88,61 +137,6 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="IPythonPanel.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pyMeasure/Code/FrontEnds/IPythonPanel.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="30" column="54" selection-start-line="30" selection-start-column="54" selection-end-line="30" selection-end-column="54" />
-              <folding>
-                <element signature="e#1139#1149#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="xray_python.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../pyMeasure/Code/Development/xray_python.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="363" column="35" selection-start-line="363" selection-start-column="0" selection-end-line="364" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="GeneralModels.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="491" column="0" selection-start-line="491" selection-start-column="0" selection-end-line="491" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TouchstoneModels.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/TouchstoneModels.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="633" column="13" selection-start-line="633" selection-start-column="13" selection-end-line="633" selection-end-column="13" />
-              <folding>
-                <marker date="1461117227345" expanded="false" signature="598:632" placeholder="import ..." />
-                <marker date="1461117227345" expanded="true" signature="3254:4135" placeholder="..." />
-                <marker date="1461117227345" expanded="true" signature="4173:5294" placeholder="..." />
-                <marker date="1461117227345" expanded="true" signature="5363:5978" placeholder="..." />
-                <marker date="1461117227345" expanded="true" signature="5368:5599" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
-                <marker date="1461117227345" expanded="true" signature="6040:6455" placeholder="..." />
-                <marker date="1461117227345" expanded="true" signature="6566:13639" placeholder="..." />
-                <marker date="1461117227345" expanded="true" signature="6571:6880" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
-                <marker date="1461117227345" expanded="true" signature="6929:9537" placeholder="..." />
-                <marker date="1461117227345" expanded="true" signature="6938:7359" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
-                <marker date="1461117227345" expanded="true" signature="9570:12953" placeholder="..." />
-                <marker date="1461117227345" expanded="true" signature="9579:9914" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
     </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
@@ -187,7 +181,6 @@
         <option value="$PROJECT_DIR$/../html-examples/Download_Example_20160401_002.html" />
         <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/XSL/S2P_DB_STYLE.xsl" />
         <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/XSL/S2P_MA_STYLE.xsl" />
-        <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py" />
         <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/XSL/ONE_PORT_STYLE.xsl" />
         <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/XSL/TWO_PORT_CALREP_STYLE.xsl" />
         <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/Translations.py" />
@@ -197,13 +190,16 @@
         <option value="$PROJECT_DIR$/pyMeasure/Code/FrontEnds/IPythonPanel.py" />
         <option value="$PROJECT_DIR$/../pyMeasure/Code/Development/xray_python.py" />
         <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GraphModels.py" />
+        <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py" />
         <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="width" value="1280" />
-    <option name="height" value="728" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1382" />
+    <option name="height" value="744" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <OptionsSetting value="true" id="Add" />
@@ -230,8 +226,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -328,126 +324,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasure" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasureNew" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasure" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Instruments" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasureNew" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasure" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Code" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasureNew" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasure" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Code" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="FrontEnds" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasureNew" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasure" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Code" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Development" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasureNew" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasure" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Code" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="DataHandlers" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasureNew" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasure" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Code" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="BackEnds" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasureNew" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Jupyter-Notebooks" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasureNew" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="pyMeasureNew" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -503,28 +379,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="DataHandlers" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasureNew" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasureNew" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasure" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Code" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Analysis" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -544,7 +398,7 @@
       <recent name="C:\Users\sandersa\PyCharm Projects\html-examples" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.xray_python">
+  <component name="RunManager" selected="Python.NISTModels">
     <configuration default="false" name="NISTModels" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -558,23 +412,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="pyMeasureNew" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="GraphModels" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="pyMeasureNew" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GraphModels.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -626,6 +463,23 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="pyMeasure" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../pyMeasure/Code/Development/xray_python.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="GeneralModels" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="pyMeasureNew" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -754,18 +608,18 @@
     </configuration>
     <list size="5">
       <item index="0" class="java.lang.String" itemvalue="Python.NISTModels" />
-      <item index="1" class="java.lang.String" itemvalue="Python.GraphModels" />
-      <item index="2" class="java.lang.String" itemvalue="Python.HelpUtils" />
-      <item index="3" class="java.lang.String" itemvalue="Python.IPythonPanel" />
-      <item index="4" class="java.lang.String" itemvalue="Python.xray_python" />
+      <item index="1" class="java.lang.String" itemvalue="Python.HelpUtils" />
+      <item index="2" class="java.lang.String" itemvalue="Python.IPythonPanel" />
+      <item index="3" class="java.lang.String" itemvalue="Python.xray_python" />
+      <item index="4" class="java.lang.String" itemvalue="Python.GeneralModels" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.xray_python" />
-        <item index="1" class="java.lang.String" itemvalue="Python.IPythonPanel" />
-        <item index="2" class="java.lang.String" itemvalue="Python.HelpUtils" />
-        <item index="3" class="java.lang.String" itemvalue="Python.NISTModels" />
-        <item index="4" class="java.lang.String" itemvalue="Python.GraphModels" />
+        <item index="0" class="java.lang.String" itemvalue="Python.NISTModels" />
+        <item index="1" class="java.lang.String" itemvalue="Python.GeneralModels" />
+        <item index="2" class="java.lang.String" itemvalue="Python.xray_python" />
+        <item index="3" class="java.lang.String" itemvalue="Python.IPythonPanel" />
+        <item index="4" class="java.lang.String" itemvalue="Python.HelpUtils" />
       </list>
     </recent_temporary>
   </component>
@@ -779,24 +633,6 @@
       <created>1456039207125</created>
       <option name="number" value="Default" />
       <updated>1456039207125</updated>
-    </task>
-    <task id="LOCAL-00045" summary="Added an example of a svg with links">
-      <created>1458453980735</created>
-      <option name="number" value="00045" />
-      <option name="project" value="LOCAL" />
-      <updated>1458453980735</updated>
-    </task>
-    <task id="LOCAL-00046" summary="Added DjangoUtils">
-      <created>1458542241244</created>
-      <option name="number" value="00046" />
-      <option name="project" value="LOCAL" />
-      <updated>1458542241244</updated>
-    </task>
-    <task id="LOCAL-00047" summary="New Network example">
-      <created>1458542282861</created>
-      <option name="number" value="00047" />
-      <option name="project" value="LOCAL" />
-      <updated>1458542282861</updated>
     </task>
     <task id="LOCAL-00048" summary="Examples of svg formation">
       <created>1458542323627</created>
@@ -1074,31 +910,49 @@
       <option name="project" value="LOCAL" />
       <updated>1461225823798</updated>
     </task>
-    <option name="localTasksCounter" value="94" />
+    <task id="LOCAL-00094" summary="Fixed metadata fro raw models, access db tests">
+      <created>1461225835271</created>
+      <option name="number" value="00094" />
+      <option name="project" value="LOCAL" />
+      <updated>1461225835271</updated>
+    </task>
+    <task id="LOCAL-00095" summary="Check Standard">
+      <created>1461225957094</created>
+      <option name="number" value="00095" />
+      <option name="project" value="LOCAL" />
+      <updated>1461225957094</updated>
+    </task>
+    <task id="LOCAL-00096" summary="Check Standard">
+      <created>1461546973208</created>
+      <option name="number" value="00096" />
+      <option name="project" value="LOCAL" />
+      <updated>1461546973209</updated>
+    </task>
+    <option name="localTasksCounter" value="97" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1280" height="728" extended-state="0" />
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.29984176" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2774524" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.47086614" sideWeight="0.50292826" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32956383" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.4022617" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24683544" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4022617" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.47086614" sideWeight="0.49707174" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24670571" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27786753" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32913387" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -1134,7 +988,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_COMMIT_MESSAGE_SPELLING" value="false" />
-    <MESSAGE value="Added Ascii Data table to XML transformations" />
     <MESSAGE value="Added new plotly example" />
     <MESSAGE value="Added row_begin and row_end token functionaility" />
     <MESSAGE value="Data Files in Tests Folder" />
@@ -1159,18 +1012,19 @@
     <MESSAGE value="MUFModels" />
     <MESSAGE value="New table processing" />
     <MESSAGE value="Fixed metadata fro raw models, access db tests" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed metadata fro raw models, access db tests" />
+    <MESSAGE value="Check Standard" />
+    <option name="LAST_COMMIT_MESSAGE" value="Check Standard" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py</url>
-          <line>1727</line>
+          <line>1742</line>
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py</url>
-          <line>155</line>
+          <line>164</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>
@@ -1389,31 +1243,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../test_site/Test_Site/Test_Site/templates/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-11.846154">
-          <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../test_site/Test_Site/Test_Site/templates/file_view.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="2.4615386">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../test_site/Test_Site/Test_Site/templates/file_template.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="10.884615">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../test_site/Test_Site/Test_App/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="20" column="11" selection-start-line="20" selection-start-column="11" selection-end-line="20" selection-end-column="11" />
         </state>
       </provider>
     </entry>
@@ -1442,7 +1275,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="241" column="0" selection-start-line="241" selection-start-column="0" selection-end-line="241" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1450,7 +1282,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="17" column="7" selection-start-line="17" selection-start-column="7" selection-end-line="17" selection-end-column="7" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1458,7 +1289,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="80" column="67" selection-start-line="80" selection-start-column="67" selection-end-line="80" selection-end-column="67" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1466,7 +1296,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1474,9 +1303,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="30" column="54" selection-start-line="30" selection-start-column="54" selection-end-line="30" selection-end-column="54" />
-          <folding>
-            <element signature="e#1139#1149#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1484,15 +1310,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="363" column="35" selection-start-line="363" selection-start-column="0" selection-end-line="364" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="491" column="0" selection-start-line="491" selection-start-column="0" selection-end-line="491" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1500,20 +1317,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="633" column="13" selection-start-line="633" selection-start-column="13" selection-end-line="633" selection-end-column="13" />
-          <folding>
-            <marker date="1461117227345" expanded="false" signature="598:632" placeholder="import ..." />
-            <marker date="1461117227345" expanded="true" signature="3254:4135" placeholder="..." />
-            <marker date="1461117227345" expanded="true" signature="4173:5294" placeholder="..." />
-            <marker date="1461117227345" expanded="true" signature="5363:5978" placeholder="..." />
-            <marker date="1461117227345" expanded="true" signature="5368:5599" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
-            <marker date="1461117227345" expanded="true" signature="6040:6455" placeholder="..." />
-            <marker date="1461117227345" expanded="true" signature="6566:13639" placeholder="..." />
-            <marker date="1461117227345" expanded="true" signature="6571:6880" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
-            <marker date="1461117227345" expanded="true" signature="6929:9537" placeholder="..." />
-            <marker date="1461117227345" expanded="true" signature="6938:7359" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
-            <marker date="1461117227345" expanded="true" signature="9570:12953" placeholder="..." />
-            <marker date="1461117227345" expanded="true" signature="9579:9914" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1559,11 +1363,45 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/../test_site/Test_Site/Test_Site/templates/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../test_site/Test_Site/Test_Site/templates/file_template.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="8" column="19" selection-start-line="8" selection-start-column="19" selection-end-line="8" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../test_site/Test_Site/Test_App/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="125" column="29" selection-start-line="125" selection-start-column="29" selection-end-line="125" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="295" column="59" selection-start-line="295" selection-start-column="59" selection-end-line="295" selection-end-column="59" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6812866">
-          <caret line="524" column="24" selection-start-line="524" selection-start-column="24" selection-end-line="524" selection-end-column="24" />
-          <folding />
+        <state vertical-scroll-proportion="0.8896104">
+          <caret line="286" column="60" selection-start-line="286" selection-start-column="60" selection-end-line="286" selection-end-column="60" />
+          <folding>
+            <element signature="e#499#508#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

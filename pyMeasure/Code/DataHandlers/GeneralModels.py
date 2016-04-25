@@ -232,6 +232,8 @@ def strip_line_tokens(string,begin_token=None,end_token=None):
     """Strips a begin and end token if present from an inputted string, meant to remove line_comments"""
     check_arg_type(string,StringType)
     string_out=string
+    if begin_token is None and end_token is None:
+        return string_out
     try:
         match_string=""
         if begin_token is not None:
@@ -240,7 +242,10 @@ def strip_line_tokens(string,begin_token=None,end_token=None):
         if end_token is not None:
             match_string=match_string+end_token
         match=re.match(match_string,string)
-        string_out=match.groupdict()['data']
+        if match:
+            string_out=match.groupdict()['data']
+        elif string in ['\n']:
+            return ''
     except:
         print("strip_line_tokens failed to strip {0},{1} from {2}".format(begin_token,end_token,string))
         pass
@@ -289,7 +294,8 @@ def convert_row(row_list_strings,column_types=None):
 
     if column_types is None or len(row_list_strings) != len(column_types):
         print("Convert row could not convert {0} using {1}".format(row_list_strings,column_types))
-        return row_list_strings
+        raise TypeConversionError("Convert row could not convert {0} using {1}".format(row_list_strings,column_types))
+        #return row_list_strings
     else:
         out_row=row_list_strings
         for index,column_type in enumerate(column_types):
@@ -422,8 +428,8 @@ def parse_lines(string_list,**options):
     elif parse_options["output"] in ['dict_list']:
         return out_dict_list
     elif parse_options["output"] in ['numpy']:
-        # Todo: Add the conversion to numpy array
-        return out_list
+        return np.array(out_list)
+
     elif parse_options["output"] in ['pandas']:
         # Todo: Add the conversion to pandas
         return out_list
@@ -432,6 +438,8 @@ def ascii_data_table_join(column_selector,table_1,table_2):
     """Given a column selector (name or zero based index) and
     two tables a data_table with extra columns is returned. The options from table 1 are inherited
     headers and footers are added, if the tables have a diffferent number of rows problems may occur"""
+    if len(table_1.data) != len(table_2.data):
+        raise DataDimensionError('The dim {0} is not equal to {1}'.format(len(table_1.data),len(table_2.data)))
     if table_1.header is None and table_2.header is None:
         header=None
     elif table_1.header is None:
@@ -496,6 +504,13 @@ def ascii_data_table_join(column_selector,table_1,table_2):
 
 #-----------------------------------------------------------------------------
 # Module Classes
+class DataDimensionError(Exception):
+    """An error associated with a mismatch in data dimensions"""
+    pass
+class TypeConversionError(Exception):
+    """An error in the conversion of rows with provided types"""
+    pass
+
 class AsciiDataTable():
     """ An AsciiDatable is a generalized model of a data table with optional header,
     column names,rectangular array of data, and footer """
@@ -701,7 +716,7 @@ class AsciiDataTable():
     def find_line(self,begin_token):
         """Finds the first line that has begin token in it"""
         for index,line in enumerate(self.lines):
-            if re.search(begin_token,line):
+            if re.search(begin_token,line,re.IGNORECASE):
                 return index
 
     def update_import_options(self,import_table):
