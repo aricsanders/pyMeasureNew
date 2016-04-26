@@ -49,12 +49,29 @@ except:
 ONE_PORT_COLUMN_NAMES=["Frequency", "mag", "uMb", "uMa", "uMd", "uMg", "arg",
                                     "uAb", "uAa", "uAd", "uAg"]
 #Note there are 2 power models!!! one with 4 error terms and one with 3
-POWER_COLUMN_NAMES=['Frequency','Efficiency','uEb', 'uEa','uEd','uEg',
+POWER_4TERM_COLUMN_NAMES=['Frequency','Efficiency','uEb', 'uEa','uEd','uEg',
                     'Calibration_Factor','uCb','uCa','uCd','uCg']
-
+POWER_4TERM_COLUMN_DESCRIPTIONS={"Frequency": "Frequency in GHz",
+                                           "Efficiency":"Effective Efficiency",
+                                           "uEs": "Uncertainty in efficiency due to standards",
+                                           "uEc": "Uncertainty in efficiency for repeated connects",
+                                           "uEe": "Total uncertainty in Efficiency",
+                                           "Calibration_Factor": "Effective efficiency modified by reflection coefficient",
+                                           "uCs": "Uncertainty in calibration factor due to standards",
+                                           "uCc": "Uncertainty in calibration factor for repeated connects",
+                                           "uCe": "Total uncertainty in calibration factor"}
 POWER_3TERM_COLUMN_NAMES=['Frequency','Efficiency','uEs', 'uEc','uEe',
                     'Calibration_Factor','uCs','uCc','uCe']
-POWER_COLUMN_NAMES=POWER_3TERM_COLUMN_NAMES
+POWER_3TERM_COLUMN_DESCRIPTIONS={"Frequency": "Frequency in GHz",
+                                           "Efficiency":"Effective Efficiency",
+                                           "uEs": "Uncertainty in efficiency due to standards",
+                                           "uEc": "Uncertainty in efficiency for repeated connects",
+                                           "uEe": "Total uncertainty in Efficiency",
+                                           "Calibration_Factor": "Effective efficiency modified by reflection coefficient",
+                                           "uCs": "Uncertainty in calibration factor due to standards",
+                                           "uCc": "Uncertainty in calibration factor for repeated connects",
+                                           "uCe": "Total uncertainty in calibration factor"}
+#POWER_COLUMN_NAMES=POWER_3TERM_COLUMN_NAMES
 CONVERT_S21=True
 #-----------------------------------------------------------------------------
 # Module Functions
@@ -177,18 +194,8 @@ class PowerModel(AsciiDataTable):
         # This is a general pattern for adding a lot of options
         defaults= {"data_delimiter": ",", "column_names_delimiter": ",", "specific_descriptor": 'One_Port',
                    "general_descriptor": 'Power', "extension": 'txt', "comment_begin": "#", "comment_end": "\n",
-                   "column_types": ['float' for i in range(len(POWER_COLUMN_NAMES))],
-                   "column_descriptions": {"Frequency": "Frequency in GHz",
-                                           "Efficiency":"Effective Efficiency",
-                                           "uEs": "Uncertainty in efficiency due to standards",
-                                           "uEc": "Uncertainty in efficiency for repeated connects",
-                                           "uEe": "Total uncertainty in Efficiency",
-                                           "Calibration_Factor": "Effective efficiency modified by reflection coefficient",
-                                           "uCs": "Uncertainty in calibration factor due to standards",
-                                           "uCc": "Uncertainty in calibration factor for repeated connects",
-                                           "uCe": "Total uncertainty in calibration factor"},
                    "header": None,
-                   "column_names":POWER_COLUMN_NAMES, "column_names_end_token": "\n", "data": None,
+                   "column_names":None, "column_names_end_token": "\n", "data": None,
                    "row_formatter_string": None, "data_table_element_separator": None,"row_begin_token":None,
                    "row_end_token":None,"escape_character":None,
                    "data_begin_token":None,"data_end_token":None}
@@ -202,23 +209,24 @@ class PowerModel(AsciiDataTable):
             for command in alias(self):
                 exec(command)
         if file_path is not None:
+            self.power_4term_row_pattern=make_row_match_string(POWER_4TERM_COLUMN_NAMES)
+            self.power_3term_row_pattern=make_row_match_string(POWER_3TERM_COLUMN_NAMES)
             self.path=file_path
             self.__read_and_fix__()
         #build the row_formatting string, the original files have 4 decimals of precision for freq/gamma and 2 for Phase
         row_formatter=""
-        for i in range(len(POWER_COLUMN_NAMES)):
-            if i<len(POWER_COLUMN_NAMES)-1:
+        for i in range(len(self.options["column_names"])):
+            if i<len(self.options["column_names"])-1:
                 row_formatter=row_formatter+"{"+str(i)+":.4f}{delimiter}"
-            elif i==len(POWER_COLUMN_NAMES)-1:
+            elif i==len(self.options["column_names"])-1:
                 row_formatter=row_formatter+"{"+str(i)+":.4f}"
-
         self.options["row_formatter_string"]=row_formatter
         AsciiDataTable.__init__(self,None,**self.options)
         if file_path is not None:
             self.path=file_path
 
     def __read_and_fix__(self):
-        """Reads in a 1 port ascii file and fixes any issues with inconsistent delimiters, etc"""
+        """Reads in a power ascii file and fixes any issues with inconsistent delimiters, etc"""
         lines=[]
         table_type=self.path.split(".")[-1]
         in_file=open(self.path,'r')
@@ -235,12 +243,23 @@ class PowerModel(AsciiDataTable):
                                             end_token=self.options["row_end_token"])
             self.options["data"]=split_all_rows(self.options["data"],delimiter=self.options["data_delimiter"],
                                      escape_character=self.options["escape_character"])
+            print("{0} is {1}".format("len(self.options['data'][0])",len(self.options['data'][0])))
+            if len(self.options['data'][0])==9:
+                self.power_pattern=self.power_3term_row_pattern
+                self.options["column_names"]=POWER_3TERM_COLUMN_NAMES
+                self.options["column_descriptions"]=POWER_3TERM_COLUMN_DESCRIPTIONS
+            elif len(self.options['data'][0])==11:
+                self.power_pattern=self.power_4term_row_pattern
+                self.options["column_names"]=POWER_4TERM_COLUMN_NAMES
+                self.options["column_descriptions"]=POWER_4TERM_COLUMN_DESCRIPTIONS
+            self.options["column_types"]= ['float' for i in range(len(self.options["column_names"]))]
             self.options["data"]=convert_all_rows(self.options["data"],self.options["column_types"])
             #print self.options["data"]
             root_name_pattern=re.compile('(?P<root_name>\w+)[abc].txt',re.IGNORECASE)
             root_name_match=re.search(root_name_pattern,self.path)
             root_name=root_name_match.groupdict()["root_name"]
             self.options["header"]=["Device_Id = {0}".format(root_name)]
+
 
 
 class OnePortRawModel(AsciiDataTable):
@@ -729,14 +748,22 @@ class PowerCalrepModel():
 
     def __init__(self,file_path=None,**options):
         """Intializes the PowerCalrep class, if a file path is specified it opens and reads the file"""
+        defaults= {}
+        self.options={}
+        for key,value in defaults.iteritems():
+            self.options[key]=value
+        for key,value in options.iteritems():
+            self.options[key]=value
         if file_path is None:
             pass
         elif re.match('asc',file_path.split(".")[-1],re.IGNORECASE):
             self.table_names=['header','S11','Efficiency']
             self.row_pattern=make_row_match_string(ONE_PORT_COLUMN_NAMES)
-            self.power_row_pattern=make_row_match_string(POWER_COLUMN_NAMES)
+            self.power_4term_row_pattern=make_row_match_string(POWER_4TERM_COLUMN_NAMES)
+            self.power_3term_row_pattern=make_row_match_string(POWER_3TERM_COLUMN_NAMES)
             self.path=file_path
             self.__read_and_fix__()
+
         elif re.match('txt',file_path.split(".")[-1],re.IGNORECASE) or type(file_path) is ListType:
             self.table_names=['S11','Efficiency']
             if type(file_path) is ListType:
@@ -765,12 +792,13 @@ class PowerCalrepModel():
                           "tables are all in the same directory".format(file_path))
                     raise
 
-            for index,table in enumerate(self.tables):
-                for column_number,column in enumerate(table.column_names):
-                    if column is not "Frequency":
-                        table.column_names[column_number]=self.table_names[index]+"_"+column
+            # for index,table in enumerate(self.tables):
+            #     for column_number,column in enumerate(table.column_names):
+            #         if column is not "Frequency":
+            #             table.column_names[column_number]=self.table_names[index]+"_"+column
 
             self.joined_table=ascii_data_table_join("Frequency",self.tables[0],self.tables[1])
+            #print self.joined_table
 
     def __read_and_fix__(self):
         in_file=open(self.path,'r')
@@ -819,11 +847,21 @@ class PowerCalrepModel():
                 self.tables[index]=OnePortCalrepModel(None,**table_options)
             elif index==2:
                 # Here we need to test for the type of power model (how many columns)
-                column_types=['float' for i in range(len(POWER_COLUMN_NAMES))]
-                options={"row_pattern":self.power_row_pattern,"column_names":POWER_COLUMN_NAMES,"output":"list_list"}
-                options["column_types"]=column_types
-                self.tables[index]=parse_lines(self.tables[index],**options)
-                table_options={"data":self.tables[index]}
+                test_row=self.tables[index][2]
+                if re.match(self.power_3term_row_pattern,test_row) and re.match(self.power_4term_row_pattern,test_row):
+                    self.options["column_names"]=POWER_4TERM_COLUMN_NAMES
+                    self.power_row_pattern=self.power_4term_row_pattern
+                elif re.match(self.power_3term_row_pattern,test_row):
+                    self.options["column_names"]=POWER_3TERM_COLUMN_NAMES
+                    self.power_row_pattern=self.power_3term_row_pattern
+                else:
+                    raise ValueError("Power Table Does Not Conform")
+                column_types=['float' for i in range(len(self.options["column_names"]))]
+                table_options={"row_pattern":self.power_row_pattern,"column_names":self.options["column_names"],
+                         "output":"list_list"}
+                table_options["column_types"]=column_types
+                self.tables[index]=parse_lines(self.tables[index],**table_options)
+                table_options["data"]=self.tables[index]
                 self.tables[index]=PowerModel(None,**table_options)
 
         # for table in self.tables:
@@ -831,6 +869,7 @@ class PowerCalrepModel():
         #print("Length of table 1 is {0}, Length of table 2 is {1}".format(len(self.tables[1].data),len(self.tables[2].data)))
         self.tables[1].header=self.tables[0]
         self.joined_table=ascii_data_table_join("Frequency",self.tables[1],self.tables[2])
+
     def __str__(self):
         return self.joined_table.build_string()
 
@@ -1039,7 +1078,7 @@ def test_PowerCalrepModel(file_name="700083.asc"):
     for table in new_power.tables:
         print table
     print new_power.joined_table
-    print new_power.joined_table.data[-1]
+    #print new_power.joined_table.data[-1]
     new_power.show()
 
 
@@ -1048,7 +1087,7 @@ def test_PowerCalrepModel(file_name="700083.asc"):
 # Module Runner
 if __name__ == '__main__':
     #test_OnePortCalrepModel()
-    test_OnePortCalrepModel('700437.asc')
+    #test_OnePortCalrepModel('700437.asc')
     #test_OnePortCalrepModel_Ctable(file_path_1='922729c.txt')
     #test_OnePortRawModel()
     #test_OnePortRawModel('OnePortRawTestFile_002.txt')
@@ -1059,4 +1098,5 @@ if __name__ == '__main__':
     #test_TwoPortCalrepModel()
     #test_TwoPortCalrepModel('N205RV.asc')
     #test_PowerCalrepModel()
+    test_PowerCalrepModel('700083b.txt')
     #convert_all_two_ports_script()
