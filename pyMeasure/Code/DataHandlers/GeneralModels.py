@@ -291,8 +291,10 @@ def split_all_rows(row_list,delimiter=None,escape_character=None):
 def convert_row(row_list_strings,column_types=None):
     """Converts a row list of strings to native
     python types using a column types list"""
+    if column_types is None:
+        column_types=['str' for value in row_list_strings]
 
-    if column_types is None or len(row_list_strings) != len(column_types):
+    if len(row_list_strings) != len(column_types):
         print("Convert row could not convert {0} using {1}".format(row_list_strings,column_types))
         raise TypeConversionError("Convert row could not convert {0} using {1}".format(row_list_strings,column_types))
         #return row_list_strings

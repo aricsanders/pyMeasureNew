@@ -331,7 +331,11 @@ class OnePortRawModel(AsciiDataTable):
             if re.match("!!",line):
                 data_begin_line=index+1
         self.lines=lines
-        data=split_all_rows(lines[data_begin_line:],delimiter=", ")
+        in_file.close()
+        parse_options={"row_end_token":'\n',
+                       "row_pattern":make_row_match_string(self.options["column_names"]),
+                       "column_names":self.options["column_names"],"column_types":self.options["column_types"]}
+        data=parse_lines(lines[data_begin_line:],**parse_options)
         self.options["data"]=data
         self.options["header"]=lines[:data_begin_line-1]
 
@@ -340,7 +344,7 @@ class OnePortRawModel(AsciiDataTable):
         """Returns a dictionary of key,value pairs extracted from the header"""
         keys=["System_Id","System_Letter","Connector_Type_Calibration","Connector_Type_Measurement",
               "Measurement_Type","Measurement_Date","Measurement_Time","Program_Used","Program_Revision","Operator",
-              "Calibration_Name","calibration_date","Port_Used","Number_Connects","Number_Repeats","Nbs",
+              "Calibration_Name","Calibration_Date","Port_Used","Number_Connects","Number_Repeats","Nbs",
               "Number_Frequencies","Start_Frequency",
               "Device_Description","Device_Id"]
         self.metadata={}
@@ -348,12 +352,14 @@ class OnePortRawModel(AsciiDataTable):
             pass
         else:
             for index,key in enumerate(keys):
-                self.metadata[key]=self.header[index].replace(" ","")
+                self.metadata[key]=self.header[index].rstrip().lstrip()
     def show(self):
         fig, (ax0, ax1) = plt.subplots(nrows=2, sharex=True)
         ax0.plot(self.get_column('Frequency'),self.get_column('magS11'),'k--')
+        ax0.plot(self.get_column('Frequency'),self.get_column('magS22'),'k--')
         ax0.set_title('Magnitude S11')
         ax1.plot(self.get_column('Frequency'),self.get_column('argS11'),'ro')
+        ax1.plot(self.get_column('Frequency'),self.get_column('argS22'),'ro')
         ax1.set_title('Phase S11')
         plt.show()
 
@@ -430,9 +436,18 @@ class TwoPortRawModel(AsciiDataTable):
             if re.search("!!",line):
                 data_begin_line=index+1
         self.lines=lines
-        parse_options={"delimiter":", ","row_end_token":'\n'}
+        in_file.close()
+        parse_options={"row_end_token":'\n',
+                       "row_pattern":make_row_match_string(self.options["column_names"]),
+                       "column_names":self.options["column_names"],"column_types":self.options["column_types"]}
         data=parse_lines(lines[data_begin_line:],**parse_options)
         self.options["data"]=data
+        if CONVERT_S21:
+            for row_index,row in enumerate(self.options["data"]):
+                db_value=row[5]
+                mag_value=10.**(-1*db_value/20.)
+                self.options["data"][row_index][5]=mag_value
+
         self.options["header"]=lines[:data_begin_line-1]
         #print data
 
@@ -441,12 +456,12 @@ class TwoPortRawModel(AsciiDataTable):
         """Returns a dictionary of key,value pairs extracted from the header"""
         keys=["System_Id","System_Letter","Connector_Type_Calibration","Connector_Type_Measurement",
               "Measurement_Type","Measurement_Date","Measurement_Time","Program_Used","Program_Revision","Operator",
-              "Calibration_Name","calibration_date","Port_Used","Number_Connects","Number_Repeats","Nbs",
+              "Calibration_Name","Calibration_Date","Port_Used","Number_Connects","Number_Repeats","Nbs",
               "Number_Frequencies","Start_Frequency",
               "Device_Description","Device_Id"]
         self.metadata={}
         for index,key in enumerate(keys):
-            self.metadata[key]=self.header[index].replace(" ","")
+            self.metadata[key]=self.header[index].rstrip().lstrip()
     def show(self):
         fig, axes = plt.subplots(nrows=3, ncols=2)
         ax0, ax1, ax2, ax3, ax4, ax5 = axes.flat
@@ -456,6 +471,130 @@ class TwoPortRawModel(AsciiDataTable):
         ax1.set_title('Phase S11')
         ax2.plot(self.get_column('Frequency'),self.get_column('magS21'),'k-o')
         ax2.set_title('Magnitude S21 in dB')
+        ax3.plot(self.get_column('Frequency'),self.get_column('argS21'),'ro')
+        ax3.set_title('Phase S21')
+        ax4.plot(self.get_column('Frequency'),self.get_column('magS22'),'k-o')
+        ax4.set_title('Magnitude S22')
+        ax5.plot(self.get_column('Frequency'),self.get_column('argS22'),'ro')
+        ax5.set_title('Phase S22')
+        plt.tight_layout()
+        plt.show()
+class TwoPortNRRawModel(AsciiDataTable):
+    """ Class that deals with the TwoPort Raw Files after conversion to Ascii using Ron Ginley's converter.
+    These files typically have header information seperated from data by !!
+    Header format is:
+    Line 1:		Spid$ - identification of type of system used
+    Line 2:		Systemletter$ - letter name indicating which system was used
+    Line 3:		Conncal$ - connector type from the system calibration
+    Line 4:		Connectors$ - connector type used for the measurement
+    Line 5:		Meastype$ - type of measurement (basically 1-port, 2-port or power)
+    Line 6:		Datea$ - date of measurement
+    Line 7:		Timea$ - time of measurement
+    Line 8:		Programm$ - name of program used
+    Line 9:		Rev$ - program revision
+    Line 10:	Opr$ - operator
+    Line 11:	Cfile$ - calibration name
+    Line 12:	Cdate$ - calibration date
+    Line 13:	Sport - identification of which port or direction was used for measurement
+    Line 14:	Numconnects ? number of disconnect/reconnect cycles
+    Line 15:	Numrepeats ? number of repeat measurements for each connect (usually 1)
+    Line 16:	Nbs ? not sure
+    Line 17:	Nfreq ? number of frequencies
+    Line 18:	Startfreq ? data row pointer for bdat files
+    Line 19:	Devicedescript$ - description of device being measured or of test being done
+    Line 20:	Devicenum$ - Identifying number for device ? used for file names
+    """
+    def __init__(self,file_path=None,**options):
+        """Initializes the TwoPortRaw class, if a file_path is specified opens an existing file, else creates an
+        empty container"""
+        defaults= {"data_delimiter": ",", "column_names_delimiter": ",", "specific_descriptor": 'Two_Port_NR_Raw',
+                   "general_descriptor": 'Sparameter', "extension": 'txt', "comment_begin": "#", "comment_end": "\n",
+                   "column_types": ['float','int','int','float','float','float','float',
+                                    'float','float','float','float'],
+                   "column_descriptions": {"Frequency":"Frequency in GHz",
+                                           "Direction":"Direction of connects, may be unused",
+                                           "Connect":"Connect number", "magS11":"Linear magnitude for S11",
+                                           "argS11":"Phase in degrees for S11",
+                                           "magS12":"Linear magnitude for S21",
+                                           "argS12":"Phase in degrees for S21",
+                                           "magS21":"Linear magnitude for S21",
+                                           "argS21":"Phase in degrees for S21",
+                                           "magS22":"Linear magnitude for S22",
+                                           "argS22":"Phase in degrees for S22"},
+                   "header": None,
+                   "column_names": ["Frequency","Direction","Connect", "magS11",
+                                    "argS11","magS12","argS12","magS21","argS21","magS22","argS22"],
+                   "column_names_end_token": "\n", "data": None,
+                   'row_formatter_string': "{0:.5f}{delimiter}{1}{delimiter}{2}"
+                                           "{delimiter}{3:.4f}{delimiter}{4:.2f}{delimiter}"
+                                           "{5:.4f}{delimiter}{6:.2f}{delimiter}"
+                                           "{7:.4f}{delimiter}{8:.2f}{delimiter}"
+                                           "{9:.4f}{delimiter}{10:.2f}",
+                   "data_table_element_separator": None}
+        self.options={}
+        for key,value in defaults.iteritems():
+            self.options[key]=value
+        for key,value in options.iteritems():
+            self.options[key]=value
+        # Define Method Aliases if they are available
+        if METHOD_ALIASES:
+            for command in alias(self):
+                exec(command)
+        if file_path is not None:
+            self.__read_and_fix__(file_path)
+
+        AsciiDataTable.__init__(self,None,**self.options)
+        self.path=file_path
+        self.structure_metadata()
+
+    def __read_and_fix__(self,file_path=None):
+        """Inputs in the raw OnePortRaw file and fixes any problems with delimiters,etc."""
+        lines=[]
+        in_file=open(file_path,'r')
+        for index,line in enumerate(in_file):
+            lines.append(line)
+            if re.search("!!",line):
+                data_begin_line=index+1
+        self.lines=lines
+        in_file.close()
+        parse_options={"row_end_token":'\n',
+                       "row_pattern":make_row_match_string(self.options["column_names"]),
+                       "column_names":self.options["column_names"],"column_types":self.options["column_types"]}
+        data=parse_lines(lines[data_begin_line:],**parse_options)
+        self.options["data"]=data
+        if CONVERT_S21:
+            for row_index,row in enumerate(self.options["data"]):
+                db_value_S21=row[7]
+                mag_value_S21=10.**(-1*db_value_S21/20.)
+                db_value_S12=row[5]
+                mag_value_S12=10.**(-1*db_value_S12/20.)
+                self.options["data"][row_index][5]=mag_value_S12
+                self.options["data"][row_index][7]=mag_value_S21
+        self.options["header"]=lines[:data_begin_line-1]
+        #print data
+
+
+    def structure_metadata(self):
+        """Returns a dictionary of key,value pairs extracted from the header"""
+        keys=["System_Id","System_Letter","Connector_Type_Calibration","Connector_Type_Measurement",
+              "Measurement_Type","Measurement_Date","Measurement_Time","Program_Used","Program_Revision","Operator",
+              "Calibration_Name","Calibration_Date","Port_Used","Number_Connects","Number_Repeats","Nbs",
+              "Number_Frequencies","Start_Frequency",
+              "Device_Description","Device_Id"]
+        self.metadata={}
+        for index,key in enumerate(keys):
+            self.metadata[key]=self.header[index].rstrip().lstrip()
+    def show(self):
+        fig, axes = plt.subplots(nrows=3, ncols=2)
+        ax0, ax1, ax2, ax3, ax4, ax5 = axes.flat
+        ax0.plot(self.get_column('Frequency'),self.get_column('magS11'),'k-o')
+        ax0.set_title('Magnitude S11')
+        ax1.plot(self.get_column('Frequency'),self.get_column('argS11'),'ro')
+        ax1.set_title('Phase S11')
+        ax2.plot(self.get_column('Frequency'),self.get_column('magS12'),'b-o')
+        ax3.plot(self.get_column('Frequency'),self.get_column('argS12'),'bo')
+        ax2.plot(self.get_column('Frequency'),self.get_column('magS21'),'k-o')
+        ax2.set_title('Magnitude S21')
         ax3.plot(self.get_column('Frequency'),self.get_column('argS21'),'ro')
         ax3.set_title('Phase S21')
         ax4.plot(self.get_column('Frequency'),self.get_column('magS22'),'k-o')
@@ -536,7 +675,10 @@ class PowerRawModel(AsciiDataTable):
             if re.search("!!",line):
                 data_begin_line=index+1
         self.lines=lines
-        parse_options={"delimiter":", ","row_end_token":'\n'}
+        in_file.close()
+        parse_options={"row_end_token":'\n',
+                       "row_pattern":make_row_match_string(self.options["column_names"],delimiter_pattern='[\s|(),]+'),
+                       "column_names":self.options["column_names"],"column_types":self.options["column_types"]}
         data=parse_lines(lines[data_begin_line:],**parse_options)
         self.options["data"]=data
         self.options["header"]=lines[:data_begin_line-1]
@@ -547,12 +689,12 @@ class PowerRawModel(AsciiDataTable):
         """Returns a dictionary of key,value pairs extracted from the header"""
         keys=["System_Id","System_Letter","Connector_Type_Calibration","Connector_Type_Measurement",
               "Measurement_Type","Measurement_Date","Measurement_Time","Program_Used","Program_Revision","Operator",
-              "Calibration_Name","calibration_date","Port_Used","Number_Connects","Number_Repeats","Nbs",
+              "Calibration_Name","Calibration_Date","Port_Used","Number_Connects","Number_Repeats","Nbs",
               "Number_Frequencies","Start_Frequency",
               "Device_Description","Device_Id"]
         self.metadata={}
         for index,key in enumerate(keys):
-            self.metadata[key]=self.header[index].replace(" ","")
+            self.metadata[key]=self.header[index].rstrip().lstrip()
 
 class TwoPortCalrepModel():
     """TwoPortCalrepModel is a model that holds data output by analyzing several datafiles using the HPBasic program
@@ -932,10 +1074,11 @@ class JBSparameter(AsciiDataTable):
 
         if file_path is not None:
             column_name_line=0
-            in_file=open(file_path)
+            in_file=open(file_path,'r')
             for line in in_file:
                 if line[0] is '#':
                     column_name_line+=1
+            in_file.close()
             self.options["header_end_line"]=column_name_line-1
             self.options["column_names_begin_line"]=column_name_line-1
             self.options["column_names_end_line"]=column_name_line
@@ -1065,11 +1208,11 @@ def test_TwoPortCalrepModel(file_name="922729a.txt"):
     for table in new_two_port.tables:
         print table
     print new_two_port.joined_table
-    new_two_port.joined_table.save()
+    #new_two_port.joined_table.save()
     new_two_port.joined_table.path='N205RV.txt'
     new_two_port.joined_table.header=None
     new_two_port.joined_table.column_names=None
-    new_two_port.joined_table.save()
+    #new_two_port.joined_table.save()
 
 def test_PowerCalrepModel(file_name="700083.asc"):
     """Tests the TwoPortCalrepModel model type"""
@@ -1091,12 +1234,12 @@ if __name__ == '__main__':
     #test_OnePortCalrepModel_Ctable(file_path_1='922729c.txt')
     #test_OnePortRawModel()
     #test_OnePortRawModel('OnePortRawTestFile_002.txt')
-    #test_TwoPortRawModel()
+    test_TwoPortRawModel()
     #test_PowerRawModel()
     #test_JBSparameter()
     #test_JBSparameter('QuartzRefExample_L1_g10_HF')
     #test_TwoPortCalrepModel()
     #test_TwoPortCalrepModel('N205RV.asc')
     #test_PowerCalrepModel()
-    test_PowerCalrepModel('700083b.txt')
+    #test_PowerCalrepModel('700083b.txt')
     #convert_all_two_ports_script()

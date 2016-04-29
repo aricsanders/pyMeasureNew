@@ -2,11 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4139f2fc-c578-4782-b083-7284792a834c" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/.ipynb_checkpoints/Two_Port_Calrep_DUT_Converter_20160424_001-checkpoint.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/.ipynb_checkpoints/Two_Port_Calrep_DUT_Converter_20160424_001-checkpoint.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/Two_Port_Calrep_DUT_Converter_20160424_001.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/Two_Port_Calrep_DUT_Converter_20160424_001.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../pyMeasure/.idea/pyMeasure.iml" afterPath="$PROJECT_DIR$/../pyMeasure/.idea/pyMeasure.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../pyMeasure/Code/Development/xray_python.py" afterPath="$PROJECT_DIR$/../pyMeasure/Code/Development/xray_python.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../test_site/.idea/test_site.iml" afterPath="$PROJECT_DIR$/../test_site/.idea/test_site.iml" />
     </list>
@@ -29,14 +28,12 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="NISTModels.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py">
+      <file leaf-file-name="TestFileTwoPortRaw.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/Tests/TestFileTwoPortRaw.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.8688946">
-              <caret line="1080" column="5" selection-start-line="1080" selection-start-column="5" selection-end-line="1080" selection-end-column="5" />
-              <folding>
-                <element signature="e#499#508#0" expanded="true" />
-              </folding>
+            <state vertical-scroll-proportion="0.0">
+              <caret line="31" column="60" selection-start-line="31" selection-start-column="60" selection-end-line="31" selection-end-column="60" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -45,7 +42,7 @@
         <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="1551" column="0" selection-start-line="1551" selection-start-column="0" selection-end-line="1551" selection-end-column="0" />
+              <caret line="241" column="33" selection-start-line="241" selection-start-column="33" selection-end-line="241" selection-end-column="33" />
               <folding />
             </state>
           </provider>
@@ -85,7 +82,7 @@
         <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/TouchstoneModels.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="111" column="4" selection-start-line="111" selection-start-column="4" selection-end-line="111" selection-end-column="4" />
+              <caret line="123" column="0" selection-start-line="123" selection-start-column="0" selection-end-line="123" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -103,6 +100,40 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="NISTModels.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="691" column="47" selection-start-line="691" selection-start-column="47" selection-end-line="691" selection-end-column="47" />
+              <folding>
+                <element signature="e#499#508#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Summer_Note_Example_201603162016_001.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../html-examples/Summer_Note_Example_201603162016_001.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-9.730769">
+              <caret line="27" column="9" selection-start-line="27" selection-start-column="9" selection-end-line="27" selection-end-column="9" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Summer_Note_Iframe_Example_20160428_001.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/../html-examples/Summer_Note_Iframe_Example_20160428_001.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.53168046">
+              <caret line="19" column="91" selection-start-line="19" selection-start-column="91" selection-end-line="19" selection-end-column="91" />
+              <folding>
+                <element signature="n#style#0;n#iframe#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
     </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
@@ -114,7 +145,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../html-examples" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -158,6 +189,7 @@
         <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GraphModels.py" />
         <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py" />
         <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py" />
+        <option value="$PROJECT_DIR$/../html-examples/Summer_Note_Iframe_Example_20160428_001.html" />
       </list>
     </option>
   </component>
@@ -192,96 +224,12 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
             <PATH_ELEMENT>
               <option name="myItemId" value="pyMeasureNew" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasureNew" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test_site" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasureNew" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test_site" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Test_Site" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasureNew" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test_site" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Test_Site" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Test_Site" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasureNew" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test_site" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Test_Site" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Test_Site" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="templates" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasureNew" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test_site" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Test_Site" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Test_App" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -350,6 +298,8 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -360,8 +310,8 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\sandersa\PyCharm Projects\pyMeasureNew\pyMeasure\Code\DataHandlers\XSL" />
       <recent name="C:\Users\sandersa\PyCharm Projects\html-examples" />
+      <recent name="C:\Users\sandersa\PyCharm Projects\pyMeasureNew\pyMeasure\Code\DataHandlers\XSL" />
     </key>
   </component>
   <component name="RunManager" selected="Python.NISTModels">
@@ -599,30 +549,6 @@
       <created>1456039207125</created>
       <option name="number" value="Default" />
       <updated>1456039207125</updated>
-    </task>
-    <task id="LOCAL-00049" summary="more building functions">
-      <created>1458544825987</created>
-      <option name="number" value="00049" />
-      <option name="project" value="LOCAL" />
-      <updated>1458544825987</updated>
-    </task>
-    <task id="LOCAL-00050" summary="AbstractDjangoModel work">
-      <created>1458717631301</created>
-      <option name="number" value="00050" />
-      <option name="project" value="LOCAL" />
-      <updated>1458717631301</updated>
-    </task>
-    <task id="LOCAL-00051" summary="Bijective Network addition">
-      <created>1458720193280</created>
-      <option name="number" value="00051" />
-      <option name="project" value="LOCAL" />
-      <updated>1458720193280</updated>
-    </task>
-    <task id="LOCAL-00052" summary="AbstractDjangoModels">
-      <created>1458720226394</created>
-      <option name="number" value="00052" />
-      <option name="project" value="LOCAL" />
-      <updated>1458720226394</updated>
     </task>
     <task id="LOCAL-00053" summary="JBSparameter">
       <created>1458801370702</created>
@@ -894,7 +820,31 @@
       <option name="project" value="LOCAL" />
       <updated>1461617484348</updated>
     </task>
-    <option name="localTasksCounter" value="98" />
+    <task id="LOCAL-00098" summary="Added more calrep handling functionality to compensate for different data types">
+      <created>1461657846764</created>
+      <option name="number" value="00098" />
+      <option name="project" value="LOCAL" />
+      <updated>1461657846764</updated>
+    </task>
+    <task id="LOCAL-00099" summary="Added more calrep handling functionality to compensate for different data types">
+      <created>1461657883288</created>
+      <option name="number" value="00099" />
+      <option name="project" value="LOCAL" />
+      <updated>1461657883289</updated>
+    </task>
+    <task id="LOCAL-00100" summary="Added iframe example using jupyter">
+      <created>1461934925166</created>
+      <option name="number" value="00100" />
+      <option name="project" value="LOCAL" />
+      <updated>1461934925170</updated>
+    </task>
+    <task id="LOCAL-00101" summary="Added conversion scripts, need to be cleaned up!">
+      <created>1461934976728</created>
+      <option name="number" value="00101" />
+      <option name="project" value="LOCAL" />
+      <updated>1461934976728</updated>
+    </task>
+    <option name="localTasksCounter" value="102" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -904,10 +854,10 @@
       <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2774524" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34330708" sideWeight="0.1068814" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34330708" sideWeight="0.11200586" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32956383" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4022617" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34330708" sideWeight="0.8931186" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4015748" sideWeight="0.49707174" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34330708" sideWeight="0.88799417" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24670571" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -954,8 +904,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_COMMIT_MESSAGE_SPELLING" value="false" />
-    <MESSAGE value="Added row_begin and row_end token functionaility" />
-    <MESSAGE value="Data Files in Tests Folder" />
     <MESSAGE value="One Port Raw and One Port files, plus added save_HTML() to XMLBase" />
     <MESSAGE value="Added ability to handle context in Data_Description of XMLDataTable" />
     <MESSAGE value="Added S2P version1 parser" />
@@ -979,14 +927,16 @@
     <MESSAGE value="Fixed metadata fro raw models, access db tests" />
     <MESSAGE value="Check Standard" />
     <MESSAGE value="Added more calrep handling functionality to compensate for different data types" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added more calrep handling functionality to compensate for different data types" />
+    <MESSAGE value="Added iframe example using jupyter" />
+    <MESSAGE value="Added conversion scripts, need to be cleaned up!" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added conversion scripts, need to be cleaned up!" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py</url>
-          <line>1742</line>
+          <line>1744</line>
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py</url>
@@ -999,27 +949,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../html-examples/MathJax_Example_20160331_001.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.8461539">
-          <caret line="47" column="0" selection-start-line="47" selection-start-column="0" selection-end-line="47" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../html-examples/Summer_Note_Example_201603162016_001.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.8076925">
-          <caret line="27" column="9" selection-start-line="27" selection-start-column="9" selection-end-line="27" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../test_site/Test_Site/Test_Site/templates/canvas_template2.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="25.961538">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../html-examples/Literally_Canvas_Example_20160316_001.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-7.5384617">
@@ -1262,7 +1191,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="316" column="75" selection-start-line="316" selection-start-column="75" selection-end-line="316" selection-end-column="75" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1270,7 +1198,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1278,7 +1205,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1286,7 +1212,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1328,7 +1253,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1336,9 +1260,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#64#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1346,16 +1267,21 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="283" column="43" selection-start-line="283" selection-start-column="43" selection-end-line="283" selection-end-column="43" />
-          <folding>
-            <element signature="e#0#64#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/TouchstoneModels.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="111" column="4" selection-start-line="111" selection-start-column="4" selection-end-line="111" selection-end-column="4" />
+          <caret line="123" column="0" selection-start-line="123" selection-start-column="0" selection-end-line="123" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/Tests/TestFileTwoPortRaw.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="31" column="60" selection-start-line="31" selection-start-column="60" selection-end-line="31" selection-end-column="60" />
           <folding />
         </state>
       </provider>
@@ -1363,17 +1289,35 @@
     <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="1551" column="0" selection-start-line="1551" selection-start-column="0" selection-end-line="1551" selection-end-column="0" />
+          <caret line="241" column="33" selection-start-line="241" selection-start-column="33" selection-end-line="241" selection-end-column="33" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8688946">
-          <caret line="1080" column="5" selection-start-line="1080" selection-start-column="5" selection-end-line="1080" selection-end-column="5" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="691" column="47" selection-start-line="691" selection-start-column="47" selection-end-line="691" selection-end-column="47" />
           <folding>
             <element signature="e#499#508#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../html-examples/Summer_Note_Example_201603162016_001.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-9.730769">
+          <caret line="27" column="9" selection-start-line="27" selection-start-column="9" selection-end-line="27" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../html-examples/Summer_Note_Iframe_Example_20160428_001.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.53168046">
+          <caret line="19" column="91" selection-start-line="19" selection-start-column="91" selection-end-line="19" selection-end-column="91" />
+          <folding>
+            <element signature="n#style#0;n#iframe#0;n#body#0;n#html#0;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>
