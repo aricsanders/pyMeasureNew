@@ -1677,7 +1677,11 @@ class AsciiDataTableCollection():
             out_string_list.append(table.build_string())
         out_string=string_list_collapse(out_string_list,self.options["table_delimiter"])
         return out_string
-
+class ECPVModel():
+    """ECPVmodel is a class that deals with Entity-Context-Property-Value models. An ECPV model is a model
+     for providing a description of an entity. It can be thought of a virtual file system, in which its members
+     have metadata describing them stored for analysis and manipulation"""
+    pass
 #-----------------------------------------------------------------------------
 # Module Scripts
 def test_AsciiDataTable():

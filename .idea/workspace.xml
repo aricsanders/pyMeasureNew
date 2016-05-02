@@ -2,6 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4139f2fc-c578-4782-b083-7284792a834c" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/Check_Standard_20160420_001.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/Check_Standard_20160420_001.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/Convert_All_ASC_files_20160425_001.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/Convert_All_ASC_files_20160425_001.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/Convert_All_Raw_SParameter_Power_20160427_001.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/Convert_All_Raw_SParameter_Power_20160427_001.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../pyMeasure/.idea/pyMeasure.iml" afterPath="$PROJECT_DIR$/../pyMeasure/.idea/pyMeasure.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../pyMeasure/Code/Development/xray_python.py" afterPath="$PROJECT_DIR$/../pyMeasure/Code/Development/xray_python.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
@@ -42,27 +45,7 @@
         <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="241" column="33" selection-start-line="241" selection-start-column="33" selection-end-line="241" selection-end-column="33" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../test_site/Test_Site/Test_Site/templates/index.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="file_template.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../test_site/Test_Site/Test_Site/templates/file_template.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="8" column="19" selection-start-line="8" selection-start-column="19" selection-end-line="8" selection-end-column="19" />
+              <caret line="1675" column="50" selection-start-line="1675" selection-start-column="50" selection-end-line="1675" selection-end-column="50" />
               <folding />
             </state>
           </provider>
@@ -100,11 +83,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="NISTModels.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="NISTModels.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="691" column="47" selection-start-line="691" selection-start-column="47" selection-end-line="691" selection-end-column="47" />
+            <state vertical-scroll-proportion="0.6940874">
+              <caret line="128" column="35" selection-start-line="128" selection-start-column="35" selection-end-line="128" selection-end-column="35" />
               <folding>
                 <element signature="e#499#508#0" expanded="true" />
               </folding>
@@ -112,21 +95,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Summer_Note_Example_201603162016_001.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../html-examples/Summer_Note_Example_201603162016_001.html">
+      <file leaf-file-name="__init__.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pyMeasure/__init__.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-9.730769">
-              <caret line="27" column="9" selection-start-line="27" selection-start-column="9" selection-end-line="27" selection-end-column="9" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Summer_Note_Iframe_Example_20160428_001.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Summer_Note_Iframe_Example_20160428_001.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../html-examples/Summer_Note_Iframe_Example_20160428_001.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.53168046">
-              <caret line="19" column="91" selection-start-line="19" selection-start-column="91" selection-end-line="19" selection-end-column="91" />
+            <state vertical-scroll-proportion="-10.038462">
+              <caret line="23" column="41" selection-start-line="23" selection-start-column="41" selection-end-line="23" selection-end-column="41" />
               <folding>
                 <element signature="n#style#0;n#iframe#0;n#body#0;n#html#0;n#!!top" expanded="true" />
               </folding>
@@ -145,7 +128,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../html-examples" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -187,9 +170,9 @@
         <option value="$PROJECT_DIR$/pyMeasure/Code/FrontEnds/IPythonPanel.py" />
         <option value="$PROJECT_DIR$/../pyMeasure/Code/Development/xray_python.py" />
         <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GraphModels.py" />
+        <option value="$PROJECT_DIR$/../html-examples/Summer_Note_Iframe_Example_20160428_001.html" />
         <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py" />
         <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py" />
-        <option value="$PROJECT_DIR$/../html-examples/Summer_Note_Iframe_Example_20160428_001.html" />
       </list>
     </option>
   </component>
@@ -550,12 +533,6 @@
       <option name="number" value="Default" />
       <updated>1456039207125</updated>
     </task>
-    <task id="LOCAL-00053" summary="JBSparameter">
-      <created>1458801370702</created>
-      <option name="number" value="00053" />
-      <option name="project" value="LOCAL" />
-      <updated>1458801370702</updated>
-    </task>
     <task id="LOCAL-00054" summary="JBSparameter">
       <created>1458803287410</created>
       <option name="number" value="00054" />
@@ -844,7 +821,13 @@
       <option name="project" value="LOCAL" />
       <updated>1461934976728</updated>
     </task>
-    <option name="localTasksCounter" value="102" />
+    <task id="LOCAL-00102" summary="Added row pattern handling to NISTModels *Raw and better metadata handling">
+      <created>1461935051963</created>
+      <option name="number" value="00102" />
+      <option name="project" value="LOCAL" />
+      <updated>1461935051963</updated>
+    </task>
+    <option name="localTasksCounter" value="103" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -904,7 +887,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_COMMIT_MESSAGE_SPELLING" value="false" />
-    <MESSAGE value="One Port Raw and One Port files, plus added save_HTML() to XMLBase" />
     <MESSAGE value="Added ability to handle context in Data_Description of XMLDataTable" />
     <MESSAGE value="Added S2P version1 parser" />
     <MESSAGE value="Added S2P functionality and check that it reads and prints files" />
@@ -929,18 +911,19 @@
     <MESSAGE value="Added more calrep handling functionality to compensate for different data types" />
     <MESSAGE value="Added iframe example using jupyter" />
     <MESSAGE value="Added conversion scripts, need to be cleaned up!" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added conversion scripts, need to be cleaned up!" />
+    <MESSAGE value="Added row pattern handling to NISTModels *Raw and better metadata handling" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added row pattern handling to NISTModels *Raw and better metadata handling" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py</url>
-          <line>1744</line>
+          <line>1748</line>
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py</url>
-          <line>181</line>
+          <line>182</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>
@@ -949,13 +932,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../html-examples/Literally_Canvas_Example_20160316_001.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.5384617">
-          <caret line="20" column="9" selection-start-line="20" selection-start-column="9" selection-end-line="20" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../html-examples/Literally_Canvas_Example_20160316_002.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="24.384615">
@@ -1225,22 +1201,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../test_site/Test_Site/Test_Site/templates/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../test_site/Test_Site/Test_Site/templates/file_template.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="8" column="19" selection-start-line="8" selection-start-column="19" selection-end-line="8" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../test_site/Test_Site/Test_App/views.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1286,38 +1246,62 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/../html-examples/Summer_Note_Iframe_Example_20160428_001.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-10.038462">
+          <caret line="23" column="41" selection-start-line="23" selection-start-column="41" selection-end-line="23" selection-end-column="41" />
+          <folding>
+            <element signature="n#style#0;n#iframe#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../test_site/Test_Site/Test_Site/templates/file_template.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.046831954">
+          <caret line="8" column="19" selection-start-line="8" selection-start-column="19" selection-end-line="8" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../test_site/Test_Site/Test_Site/templates/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.046831954">
+          <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="241" column="33" selection-start-line="241" selection-start-column="33" selection-end-line="241" selection-end-column="33" />
+          <caret line="1675" column="50" selection-start-line="1675" selection-start-column="50" selection-end-line="1675" selection-end-column="50" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../html-examples/Summer_Note_Example_201603162016_001.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33333334">
+          <caret line="9" column="2" selection-start-line="9" selection-start-column="2" selection-end-line="9" selection-end-column="2" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyMeasure/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="691" column="47" selection-start-line="691" selection-start-column="47" selection-end-line="691" selection-end-column="47" />
+        <state vertical-scroll-proportion="0.6940874">
+          <caret line="128" column="35" selection-start-line="128" selection-start-column="35" selection-end-line="128" selection-end-column="35" />
           <folding>
             <element signature="e#499#508#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../html-examples/Summer_Note_Example_201603162016_001.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.730769">
-          <caret line="27" column="9" selection-start-line="27" selection-start-column="9" selection-end-line="27" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../html-examples/Summer_Note_Iframe_Example_20160428_001.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.53168046">
-          <caret line="19" column="91" selection-start-line="19" selection-start-column="91" selection-end-line="19" selection-end-column="91" />
-          <folding>
-            <element signature="n#style#0;n#iframe#0;n#body#0;n#html#0;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>

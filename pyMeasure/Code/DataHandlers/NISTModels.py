@@ -51,6 +51,7 @@ ONE_PORT_COLUMN_NAMES=["Frequency", "mag", "uMb", "uMa", "uMd", "uMg", "arg",
 #Note there are 2 power models!!! one with 4 error terms and one with 3
 POWER_4TERM_COLUMN_NAMES=['Frequency','Efficiency','uEb', 'uEa','uEd','uEg',
                     'Calibration_Factor','uCb','uCa','uCd','uCg']
+#todo: change this description to reflect the column names
 POWER_4TERM_COLUMN_DESCRIPTIONS={"Frequency": "Frequency in GHz",
                                            "Efficiency":"Effective Efficiency",
                                            "uEs": "Uncertainty in efficiency due to standards",
