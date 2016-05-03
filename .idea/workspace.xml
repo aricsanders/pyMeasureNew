@@ -2,14 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4139f2fc-c578-4782-b083-7284792a834c" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/Check_Standard_20160420_001.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/Check_Standard_20160420_001.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/Convert_All_ASC_files_20160425_001.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/Convert_All_ASC_files_20160425_001.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/Convert_All_Raw_SParameter_Power_20160427_001.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/Convert_All_Raw_SParameter_Power_20160427_001.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/.ipynb_checkpoints/Convert_All_Raw_SParameter_Power_20160427_001-checkpoint.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/.ipynb_checkpoints/Convert_All_Raw_SParameter_Power_20160427_001-checkpoint.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../pyMeasure/.idea/pyMeasure.iml" afterPath="$PROJECT_DIR$/../pyMeasure/.idea/pyMeasure.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../pyMeasure/Code/Development/xray_python.py" afterPath="$PROJECT_DIR$/../pyMeasure/Code/Development/xray_python.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../test_site/.idea/test_site.iml" afterPath="$PROJECT_DIR$/../test_site/.idea/test_site.iml" />
     </list>
     <ignored path="pyMeasureNew.iws" />
@@ -41,11 +38,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="GeneralModels.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="GeneralModels.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="1675" column="50" selection-start-line="1675" selection-start-column="50" selection-end-line="1675" selection-end-column="50" />
+            <state vertical-scroll-proportion="0.7737789">
+              <caret line="1468" column="29" selection-start-line="1468" selection-start-column="29" selection-end-line="1468" selection-end-column="29" />
               <folding />
             </state>
           </provider>
@@ -83,11 +80,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="NISTModels.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="NISTModels.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6940874">
-              <caret line="128" column="35" selection-start-line="128" selection-start-column="35" selection-end-line="128" selection-end-column="35" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="182" column="0" selection-start-line="182" selection-start-column="0" selection-end-line="182" selection-end-column="0" />
               <folding>
                 <element signature="e#499#508#0" expanded="true" />
               </folding>
@@ -171,8 +168,8 @@
         <option value="$PROJECT_DIR$/../pyMeasure/Code/Development/xray_python.py" />
         <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GraphModels.py" />
         <option value="$PROJECT_DIR$/../html-examples/Summer_Note_Iframe_Example_20160428_001.html" />
-        <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py" />
         <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py" />
+        <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py" />
       </list>
     </option>
   </component>
@@ -533,18 +530,6 @@
       <option name="number" value="Default" />
       <updated>1456039207125</updated>
     </task>
-    <task id="LOCAL-00054" summary="JBSparameter">
-      <created>1458803287410</created>
-      <option name="number" value="00054" />
-      <option name="project" value="LOCAL" />
-      <updated>1458803287410</updated>
-    </task>
-    <task id="LOCAL-00055" summary="JBSparameter">
-      <created>1458803311566</created>
-      <option name="number" value="00055" />
-      <option name="project" value="LOCAL" />
-      <updated>1458803311566</updated>
-    </task>
     <task id="LOCAL-00056" summary="New Examples">
       <created>1458885345031</created>
       <option name="number" value="00056" />
@@ -827,7 +812,19 @@
       <option name="project" value="LOCAL" />
       <updated>1461935051963</updated>
     </task>
-    <option name="localTasksCounter" value="103" />
+    <task id="LOCAL-00103" summary="Added row pattern handling to NISTModels *Raw and better metadata handling">
+      <created>1462192765943</created>
+      <option name="number" value="00103" />
+      <option name="project" value="LOCAL" />
+      <updated>1462192765943</updated>
+    </task>
+    <task id="LOCAL-00104" summary="Added row pattern handling to NISTModels *Raw and better metadata handling">
+      <created>1462192801772</created>
+      <option name="number" value="00104" />
+      <option name="project" value="LOCAL" />
+      <updated>1462192801772</updated>
+    </task>
+    <option name="localTasksCounter" value="105" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -919,7 +916,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py</url>
-          <line>1748</line>
+          <line>1749</line>
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py</url>
@@ -1272,14 +1269,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="1675" column="50" selection-start-line="1675" selection-start-column="50" selection-end-line="1675" selection-end-column="50" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../html-examples/Summer_Note_Example_201603162016_001.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33333334">
@@ -1298,11 +1287,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6940874">
-          <caret line="128" column="35" selection-start-line="128" selection-start-column="35" selection-end-line="128" selection-end-column="35" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="182" column="0" selection-start-line="182" selection-start-column="0" selection-end-line="182" selection-end-column="0" />
           <folding>
             <element signature="e#499#508#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/GeneralModels.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7737789">
+          <caret line="1468" column="29" selection-start-line="1468" selection-start-column="29" selection-end-line="1468" selection-end-column="29" />
+          <folding />
         </state>
       </provider>
     </entry>

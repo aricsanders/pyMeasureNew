@@ -1447,18 +1447,19 @@ class AsciiDataTable():
         spot in the preceding rows"""
         original_column_names=self.column_names[:]
         try:
-            self.column_names.append(column_name)
+            self.column_names=original_column_names+[column_name]
             if self.options["column_types"]:
-                self.options["column_types"]=self.options["column_types"].append(column_type)
+                old_column_types=self.options["column_types"][:]
+                self.options["column_types"]=old_column_types+[column_type]
             if len(column_data) == len(self.data):
-                for index,row in enumerate(self.data):
+                for index,row in enumerate(self.data[:]):
                     #print("{0} is {1}".format('self.data[index]',self.data[index]))
                     #print("{0} is {1}".format('row',row))
                     new_row=row[:]
                     new_row.append(column_data[index])
                     self.data[index]=new_row
             else:
-                for index,row in enumerate(self.data):
+                for index,row in enumerate(self.data[:]):
                     self.data[index]=row.append(self.options['empty_value'])
                     if column_data is not None:
                         for item in column_data:
