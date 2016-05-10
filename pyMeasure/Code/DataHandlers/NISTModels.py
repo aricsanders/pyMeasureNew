@@ -76,6 +76,60 @@ POWER_3TERM_COLUMN_DESCRIPTIONS={"Frequency": "Frequency in GHz",
 CONVERT_S21=True
 #-----------------------------------------------------------------------------
 # Module Functions
+def asc_type(file_contents):
+    """asc_type determines the type of asc file given it's contents, returns the class name of the appropriate model"""
+    if type(file_contents) is StringType:
+        contents=file_contents
+    elif type(file_contents) is ListType:
+        contents=string_list_collapse(file_contents)
+    else:
+        return None
+    if re.search('table 1',contents,re.IGNORECASE) and re.search('table 2',contents,re.IGNORECASE) and re.search('table 3',contents,re.IGNORECASE):
+        return 'TwoPortCalrepModel'
+    elif re.search('table 1',contents,re.IGNORECASE) and re.search('table 2',contents,re.IGNORECASE):
+        return 'PowerCalrepModel'
+    elif re.search('table 1',contents,re.IGNORECASE):
+        return 'OnePortCalrepModel'
+    else:
+        return None
+
+def raw_type(file_contents):
+    """Given the contents of a file in a list of lines or a single string returns the raw class name. It is assumed
+    that the type of file is the 5th line of the header"""
+    if type(file_contents) is StringType:
+        lines=file_contents.splitlines()
+    elif type(file_contents) is ListType:
+        lines=file_contents
+    #print("The value of {0} is {1}".format('lines[4]',lines[4]))
+    out=None
+    if re.search('1-port',lines[4],re.IGNORECASE):
+        out='OnePortRawModel'
+    elif re.search('2-port',lines[4],re.IGNORECASE) and not re.search('2-portNR',lines[4],re.IGNORECASE):
+        out='TwoPortRawModel'
+    elif re.search('2-portNR',lines[4],re.IGNORECASE):
+        out='TwoPortNRRawModel'
+    elif re.search('Thermistor|Dry Cal',lines[4],re.IGNORECASE):
+        out='PowerRawModel'
+    return out
+
+def sparameter_power_type(file_path):
+    """sparameter_power_type returns the class name of file given a file path"""
+    extension=file_path.split('.')[-1]
+    #print extension
+    in_file=open(file_path,'r')
+    lines=[]
+    for line in in_file:
+        lines.append(line)
+    in_file.close()
+    if re.match('asc',extension,re.IGNORECASE):
+        #print("The value of {0} is {1}".format('extension',extension))
+        # handle asc files
+        out=asc_type(lines)
+    elif re.match('[\w][\d]+_[\d]+',extension,re.IGNORECASE):
+        #print("The value of {0} is {1}".format('extension',extension))
+        out=raw_type(lines)
+    return out
+
 def calrep_to_benchmark(file_path):
     """Creates a benchmark list given a path to a calrep file, assumes column names are 2 lines after
     the occurrence of the last /"""
@@ -471,7 +525,7 @@ class TwoPortRawModel(AsciiDataTable):
         ax1.plot(self.get_column('Frequency'),self.get_column('argS11'),'ro')
         ax1.set_title('Phase S11')
         ax2.plot(self.get_column('Frequency'),self.get_column('magS21'),'k-o')
-        ax2.set_title('Magnitude S21 in dB')
+        ax2.set_title('Magnitude S21')
         ax3.plot(self.get_column('Frequency'),self.get_column('argS21'),'ro')
         ax3.set_title('Phase S21')
         ax4.plot(self.get_column('Frequency'),self.get_column('magS22'),'k-o')
@@ -1225,6 +1279,25 @@ def test_PowerCalrepModel(file_name="700083.asc"):
     #print new_power.joined_table.data[-1]
     new_power.show()
 
+def test_sparameter_power_type(file_list=None):
+    """Tests the sparameter_power_type function. Each file's type is determined and it is imported using
+     the appropriate model"""
+    os.chdir(TESTS_DIRECTORY)
+    if file_list is None:
+        file_list=[r'CTNP11.L36_062399','CTN106.D4_091799','CTN208.A1_011613','700083.ASC',
+                   '700437.asc','922729.asc']
+    else:
+        file_list=file_list
+    for file_name in file_list:
+        file_type=sparameter_power_type(file_name)
+        print(" The model of {0} is {1}".format(file_name,file_type))
+        try:
+            model=globals()[file_type]
+            table=model(file_name)
+            print table
+        except:
+            print("There was an error opening {0}".format(file_name))
+
 
 
 #-----------------------------------------------------------------------------
@@ -1235,7 +1308,7 @@ if __name__ == '__main__':
     #test_OnePortCalrepModel_Ctable(file_path_1='922729c.txt')
     #test_OnePortRawModel()
     #test_OnePortRawModel('OnePortRawTestFile_002.txt')
-    test_TwoPortRawModel()
+    #test_TwoPortRawModel()
     #test_PowerRawModel()
     #test_JBSparameter()
     #test_JBSparameter('QuartzRefExample_L1_g10_HF')
@@ -1244,3 +1317,4 @@ if __name__ == '__main__':
     #test_PowerCalrepModel()
     #test_PowerCalrepModel('700083b.txt')
     #convert_all_two_ports_script()
+    test_sparameter_power_type()
