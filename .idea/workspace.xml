@@ -2,13 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4139f2fc-c578-4782-b083-7284792a834c" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/.ipynb_checkpoints/Check_Standard_20160420_001-checkpoint.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/.ipynb_checkpoints/Check_Standard_20160420_001-checkpoint.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/.ipynb_checkpoints/Sparameter_Power_Data_Transformation_20160502_001-checkpoint.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/.ipynb_checkpoints/Sparameter_Power_Data_Transformation_20160502_001-checkpoint.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/Development_Stack_Installation_Jennifer_20160412.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/Development_Stack_Installation_Jennifer_20160412.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/Sparameter_Power_Data_Transformation_20160502_001.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/Sparameter_Power_Data_Transformation_20160502_001.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/CheckStandard_History_Comparision__Plot_20160509_001.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/CheckStandard_History_Comparision__Plot_20160509_001.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pyMeasure/__init__.py" afterPath="$PROJECT_DIR$/pyMeasure/__init__.py" />
     </list>
     <ignored path="pyMeasureNew.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -74,8 +69,8 @@
       <file leaf-file-name="NISTModels.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.33161953">
-              <caret line="420" column="6" selection-start-line="420" selection-start-column="6" selection-end-line="420" selection-end-column="6" />
+            <state vertical-scroll-proportion="0.7249357">
+              <caret line="159" column="88" selection-start-line="159" selection-start-column="88" selection-end-line="159" selection-end-column="88" />
               <folding>
                 <element signature="e#499#508#0" expanded="true" />
               </folding>
@@ -230,8 +225,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -270,7 +263,25 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="test_site" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Test_Site" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Test_App" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
               <option name="myItemId" value="pyMeasureNew" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Jupyter-Notebooks" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -283,13 +294,11 @@
               <option name="myItemId" value="pyMeasureNew" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyMeasure" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -540,18 +549,6 @@
       <created>1456039207125</created>
       <option name="number" value="Default" />
       <updated>1456039207125</updated>
-    </task>
-    <task id="LOCAL-00065" summary="S1PV1, and other models">
-      <created>1459210195511</created>
-      <option name="number" value="00065" />
-      <option name="project" value="LOCAL" />
-      <updated>1459210195511</updated>
-    </task>
-    <task id="LOCAL-00066" summary="S1PV1, and other models">
-      <created>1459237010137</created>
-      <option name="number" value="00066" />
-      <option name="project" value="LOCAL" />
-      <updated>1459237010138</updated>
     </task>
     <task id="LOCAL-00067" summary="S1PV1, and other models">
       <created>1459237774646</created>
@@ -835,7 +832,19 @@
       <option name="project" value="LOCAL" />
       <updated>1462758097059</updated>
     </task>
-    <option name="localTasksCounter" value="114" />
+    <task id="LOCAL-00114" summary="Export files to single csv">
+      <created>1462893904861</created>
+      <option name="number" value="00114" />
+      <option name="project" value="LOCAL" />
+      <updated>1462893904861</updated>
+    </task>
+    <task id="LOCAL-00115" summary="History finding scripts">
+      <created>1462893961740</created>
+      <option name="number" value="00115" />
+      <option name="project" value="LOCAL" />
+      <updated>1462893961740</updated>
+    </task>
+    <option name="localTasksCounter" value="116" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -895,7 +904,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_COMMIT_MESSAGE_SPELLING" value="false" />
-    <MESSAGE value="Added S2P functionality and check that it reads and prints files" />
     <MESSAGE value="Added an example of a network graph" />
     <MESSAGE value="Added an example of a svg with links" />
     <MESSAGE value="Added DjangoUtils" />
@@ -920,7 +928,8 @@
     <MESSAGE value="Added row pattern handling to NISTModels *Raw and better metadata handling" />
     <MESSAGE value="Fixed problem with add_column" />
     <MESSAGE value="Export files to single csv" />
-    <option name="LAST_COMMIT_MESSAGE" value="Export files to single csv" />
+    <MESSAGE value="History finding scripts" />
+    <option name="LAST_COMMIT_MESSAGE" value="History finding scripts" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -940,6 +949,14 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/../test_site/Test_Site/Test_Site/templates/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="34" column="44" selection-start-line="34" selection-start-column="21" selection-end-line="34" selection-end-column="44" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/XSL/S2P_MA_STYLE.xsl">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1302,8 +1319,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pyMeasure/Code/DataHandlers/NISTModels.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33161953">
-          <caret line="420" column="6" selection-start-line="420" selection-start-column="6" selection-end-line="420" selection-end-column="6" />
+        <state vertical-scroll-proportion="0.7249357">
+          <caret line="159" column="88" selection-start-line="159" selection-start-column="88" selection-end-line="159" selection-end-column="88" />
           <folding>
             <element signature="e#499#508#0" expanded="true" />
           </folding>
