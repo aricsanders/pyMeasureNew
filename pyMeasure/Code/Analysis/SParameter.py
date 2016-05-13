@@ -8,7 +8,9 @@
 """ Sparameter is a module with tools for analyzing Sparameter data """
 #-----------------------------------------------------------------------------
 # Standard Imports
-
+import os
+import re
+import datetime
 #-----------------------------------------------------------------------------
 # Third Party Imports
 try:
@@ -28,6 +30,11 @@ except:
     print("The module pyMeasure.Code.DataHandlers.NISTModels was not found,"
           "please put it on the python path")
     raise ImportError
+try:
+    import matplotlib.pyplot as plt
+except:
+    print("The module matplotlib was not found,"
+          "please put it on the python path")
 #-----------------------------------------------------------------------------
 # Module Constants
 
@@ -189,8 +196,17 @@ def raw_difference_frame(raw_model,mean_frame,**options):
     difference_data_frame=pandas.DataFrame(difference_list,columns=difference_options["column_names"])
     return difference_data_frame
 
-def raw_comparision_plot_with_residuals(raw_nist,mean_frame,difference_frame):
+def raw_comparision_plot_with_residuals(raw_nist,mean_frame,difference_frame,**options):
     """Creates a comparision plot given a RawModel object and a pandas.DataFrame mean frame and difference frame"""
+    defaults={"display_mean":True,
+              "display_difference":True,
+              "display_raw":True,
+              "display_legend":True}
+    comparison_plot_options={}
+    for key,value in defaults.iteritems():
+        comparison_plot_options[key]=value
+    for key,value in options.iteritems():
+        comparison_plot_options[key]=value
     column_names=mean_frame.columns.tolist()
     number_rows=len(column_names)/2
     fig, compare_axes = plt.subplots(nrows=number_rows, ncols=2, sharex='col',figsize=(8,6),dpi=80)
@@ -199,18 +215,22 @@ def raw_comparision_plot_with_residuals(raw_nist,mean_frame,difference_frame):
     for ax in compare_axes.flat:
         diff_axes.append(ax.twinx())
     #diff_axes=[diff_ax0,diff_ax1,diff_ax2,diff_ax3,diff_ax4,diff_ax5]
-    for index,ax in enumerate(diff_axes):
-        ax.plot(difference_frame['Frequency'].tolist(),difference_frame[column_names[index+1]].tolist(),'r-x')
-        ax.set_ylabel('Difference',color='red')
-        if re.search('mag',column_names[index+1]):
-            ax.set_ylim(-.02,.02)
-        #ax.legend_.remove()
+    if comparison_plot_options["display_difference"]:
+        for index,ax in enumerate(diff_axes):
+            ax.plot(difference_frame['Frequency'].tolist(),difference_frame[column_names[index+1]].tolist(),'r-x')
+            ax.set_ylabel('Difference',color='red')
+            if re.search('mag',column_names[index+1]):
+                ax.set_ylim(-.02,.02)
+            #ax.legend_.remove()
     for index, ax in enumerate(compare_axes.flat):
-        ax.plot(raw_nist.get_column('Frequency'),raw_nist.get_column(column_names[index+1]),
-                'k-o',label=measurement_date)
-        ax.plot(mean_frame['Frequency'].tolist(),mean_frame[column_names[index+1]].tolist(),'gs',label='Mean')
+        if comparison_plot_options["display_raw"]:
+            ax.plot(raw_nist.get_column('Frequency'),raw_nist.get_column(column_names[index+1]),
+                    'k-o',label=measurement_date)
+        if comparison_plot_options["display_mean"]:
+            ax.plot(mean_frame['Frequency'].tolist(),mean_frame[column_names[index+1]].tolist(),'gs',label='Mean')
         ax.set_title(column_names[index+1])
-        ax.legend(loc=1,fontsize='8')
+        if comparison_plot_options["display_legend"]:
+            ax.legend(loc=1,fontsize='8')
         #ax.xaxis.set_visible(False)
         if re.search('arg',column_names[index+1]):
             ax.set_ylabel('Phase(Degrees)',color='green')
@@ -220,7 +240,7 @@ def raw_comparision_plot_with_residuals(raw_nist,mean_frame,difference_frame):
     compare_axes.flat[-2].set_xlabel('Frequency(GHz)',color='k')
     compare_axes.flat[-1].set_xlabel('Frequency(GHz)',color='k')
     fig.subplots_adjust(hspace=0)
-    fig.suptitle(table.metadata["Device_Id"]+"\n",fontsize=18,fontweight='bold')
+    fig.suptitle(raw_nist.metadata["Device_Id"]+"\n",fontsize=18,fontweight='bold')
     plt.tight_layout()
     plt.show()
 #-----------------------------------------------------------------------------
@@ -244,9 +264,66 @@ def test_average_one_port_sparameters():
     ax1.set_title('Phase S11')
     plt.show()
     print out_table
+def test_comparison(input_file=None):
+    """test_comparision tests the raw_mean,difference and comparison plot functionality"""
+    # Data sources, to be replaced as project_files in Django
+    # Todo: These are not robust tests fix them?
+    TWO_PORT_NR_CHKSTD_CSV=r"C:\Share\Converted_Check_Standard\Two_Port_NR_Check_Standard.csv"
+    COMBINED_ONE_PORT_CHKSTD_CSV=r"C:\Share\Converted_Check_Standard\Combined_One_Port_Check_Standard.csv"
+    COMBINED_TWO_PORT_CHKSTD_CSV=r"C:\Share\Converted_Check_Standard\Combined_Two_Port_Check_Standard.csv"
+    COMBINED_POWER_CHKSTD_CSV=r"C:\Share\Converted_Check_Standard\Combined_Power_Check_Standard.csv"
+    ONE_PORT_CALREP_CSV=r"C:\Share\Converted_DUT\One_Port_DUT.csv"
+    TWO_PORT_CALREP_CSV=r"C:\Share\Converted_DUT\Two_Port_DUT.csv"
+    POWER_3TERM_CALREP_CSV=r"C:\Share\Converted_DUT\Power_3Term_DUT.csv"
+    POWER_4TERM_CALREP_CSV=r"C:\Share\Converted_DUT\Power_4Term_DUT.csv"
+    history_dict={'1-port':pandas.read_csv(COMBINED_ONE_PORT_CHKSTD_CSV),
+         '2-port':pandas.read_csv(COMBINED_TWO_PORT_CHKSTD_CSV),
+         '2-portNR':pandas.read_csv(TWO_PORT_NR_CHKSTD_CSV),'power':pandas.read_csv(COMBINED_POWER_CHKSTD_CSV)}
+    if input_file is None:
+        #input_file=r"C:\Share\Ck_Std_raw_ascii\C07207.D1_030298"
+        input_file=r"C:\Share\Ck_Std_raw_ascii\C07207.D9_042500"
+        #input_file=r"C:\Share\Ck_Std_raw_ascii\C07208.A10_081507"
+        #input_file=r"C:\Share\Ck_Std_raw_ascii\CTNP20.R1_032310"
+        #input_file=r"C:\Share\Ck_Std_raw_ascii\CN49.K2_050608"
+        #input_file=r"C:\Share\Ck_Std_raw_ascii\C22P13.H4_043015"
+        #input_file=r"C:\Share\Ck_Std_raw_ascii\C24N07.L1_070998"
+        #input_file=r"C:\Share\Ck_Std_raw_ascii\CTN208.A1_011613"
+    start_time=datetime.datetime.now()
+    file_model=sparameter_power_type(input_file)
+    model=globals()[file_model]
+    table=model(input_file)
+    #print table
+    #table.metadata["System_Id"]
+    options={"Device_Id":table.metadata["Device_Id"], "System_Id":table.metadata["System_Id"],"Measurement_Timestamp":None,
+                  "Connector_Type_Measurement":table.metadata["Connector_Type_Measurement"],
+                 "Measurement_Date":None,"Measurement_Time":None}
+    if re.search('2-port',table.metadata["Measurement_Type"],re.IGNORECASE) and not re.search('2-portNR',table.metadata["Measurement_Type"],re.IGNORECASE):
+        history_key='2-port'
+        options["column_names"]=['Frequency','magS11','argS11','magS21','argS21','magS22','argS22']
+    elif re.search('2-portNR',table.metadata["Measurement_Type"],re.IGNORECASE):
+        history_key='2-portNR'
+        options["column_names"]=['Frequency','magS11','argS11','magS12','argS12','magS21','argS21','magS22','argS22']
+    elif re.search('1-port',table.metadata["Measurement_Type"],re.IGNORECASE):
+        history_key='1-port'
+        options["column_names"]=['Frequency','magS11','argS11','magS22','argS22']
+    elif re.search('Dry Cal|Thermistor|power',table.metadata["Measurement_Type"],re.IGNORECASE):
+        history_key='power'
+        options["column_names"]=['Frequency','magS11','argS11','Efficiency','Calibration_Factor']
+    #print history[history_key][:5]
+    print history_key
+    mean_frame=mean_from_history(history_dict[history_key].copy(),**options)
+    #print mean_frame
+    difference_frame=raw_difference_frame(table,mean_frame)
+    #print difference_frame
+    stop_time=datetime.datetime.now()
+    plot_options={"display_difference":False,"display_mean":True,"display_raw":True,"display_legend":False}
+    raw_comparision_plot_with_residuals(table,mean_frame,difference_frame,**plot_options)
+    #stop_time=datetime.datetime.now()
+    diff=stop_time-start_time
+    print("It took {0} seconds to process".format(diff.total_seconds()))
 
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
-    test_average_one_port_sparameters()
-    
+    #test_average_one_port_sparameters()
+    test_comparison()

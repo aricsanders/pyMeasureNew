@@ -11,6 +11,7 @@
 # Standard Imports
 import os
 import fnmatch
+import datetime
 #-----------------------------------------------------------------------------
 # Third Party Imports
 try:
@@ -146,6 +147,68 @@ def calrep_to_benchmark(file_path):
     column_names=lines[columns_line].split(' ')
     data=lines[columns_line+1:None]
     return [header,column_names,data]
+
+def build_csv_from_raw(input_file_names_list,output_file_name,model_name):
+    """Build csv from raw  takes a list of file names conforming to model and builds a single csv.
+    It is intentioned to accept raw files from the sparameter power project that have been converted from bdat
+    using Ron Ginely's converter (modified calrep program). The output is a single csv file with metadata added
+    as extra columns (ie a denormalized table)"""
+    try:
+        # our current definition of metadata keys for all of the raw models
+        metadata_keys=["System_Id","System_Letter","Connector_Type_Calibration","Connector_Type_Measurement",
+              "Measurement_Type","Measurement_Date","Measurement_Time","Program_Used","Program_Revision","Operator",
+              "Calibration_Name","Calibration_Date","Port_Used","Number_Connects","Number_Repeats","Nbs",
+              "Number_Frequencies","Start_Frequency",
+              "Device_Description","Device_Id"]
+        # import the first file
+        model=globals()[model_name]
+        initial_file=model(input_file_names_list[0])
+        # Add the metadata columns and replace any commas with -
+        for column_name in metadata_keys:
+            initial_file.add_column(column_name=column_name,column_type='str',
+                            column_data=[initial_file.metadata[column_name].replace(',','-')
+                                         for row in initial_file.data])
+        # We also add a column at the end that is Measurement_Timestamp, that is
+        # Measurement_Time+Measurement_Date in isoformat
+        timestamp=initial_file.metadata["Measurement_Date"]+" "+initial_file.metadata["Measurement_Time"]
+        datetime_timestamp=datetime.datetime.strptime(timestamp,'%d %b %Y %H:%M:%S')
+        measurement_timestamp=datetime_timestamp.isoformat(' ')
+        initial_file.add_column(column_name="Measurement_Timestamp",column_type='str',
+                            column_data=[measurement_timestamp
+                                         for row in initial_file.data])
+        # now we save the intial file with its column names but not its header
+        initial_file.header=None
+        initial_file.save(output_file_name)
+
+        # Now we re-open this file in the append mode and read-in each new file and append it. This seems to work
+        # for very large data sets, where as keeping a single object in memory fails
+        out_file=open(output_file_name,'a')
+        # now we do the same thing over and over and add it to the out file
+        for file_name in input_file_names_list[1:]:
+
+            model=globals()[model_name]
+            parsed_file=model(file_name)
+            for column_name in metadata_keys:
+                parsed_file.add_column(column_name=column_name,column_type='str',
+                            column_data=[parsed_file.metadata[column_name].replace(',','-')
+                                         for row in parsed_file.data])
+            timestamp=parsed_file.metadata["Measurement_Date"]+" "+parsed_file.metadata["Measurement_Time"]
+            datetime_timestamp=datetime.datetime.strptime(timestamp,'%d %b %Y %H:%M:%S')
+            measurement_timestamp=datetime_timestamp.isoformat(' ')
+            parsed_file.add_column(column_name="Measurement_Timestamp",column_type='str',
+                            column_data=[measurement_timestamp
+                                         for row in parsed_file.data])
+            # add an endline before appending
+            out_file.write('\n')
+            # now we only want the data string
+            data=parsed_file.get_data_string()
+            out_file.write(data)
+        # close the file after  loop
+        out_file.close()
+    # Catch any errors
+    except:
+            raise
+
 #-----------------------------------------------------------------------------
 # Module Classes
 class OnePortCalrepModel(AsciiDataTable):

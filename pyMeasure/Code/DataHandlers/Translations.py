@@ -191,7 +191,7 @@ def test_AsciiDataTable_to_XMLDataTable(input_file="700437.asc"):
     and saves the result in the tests directory. The one port file should be the output
     of Calrep7.1 or similar."""
     os.chdir(TESTS_DIRECTORY)
-    one_port=OnePortModel(input_file)
+    one_port=OnePortRawModel(input_file)
     XML_one_port=AsciiDataTable_to_XMLDataTable(one_port)
     print XML_one_port
     XML_one_port.save()
