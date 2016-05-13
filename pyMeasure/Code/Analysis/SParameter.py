@@ -130,6 +130,99 @@ def two_port_mean_frame(device_id,system_id=None,history_data_frame=None):
         mean_array.append(row)
     mean_frame=pandas.DataFrame(mean_array,columns=column_names)
     return mean_frame
+def mean_from_history(history_frame,**options):
+    """mean_from_history creates a mean_frame given a full history frame (pandas.DataFrame object),
+    by setting options it selects column names
+    to output and input values to filter on. Returns a pandas.DataFrame object with column names = column_names,
+    and filtered by any of the following: "Device_Id","System_Id","Measurement_Timestamp",
+    "Connector_Type_Measurement", "Measurement_Date" or "Measurement_Time" """
+
+    defaults={"Device_Id":None, "System_Id":None,"Measurement_Timestamp":None,
+              "Connector_Type_Measurement":None,
+             "Measurement_Date":None,"Measurement_Time":None,
+              "column_names":['Frequency','magS11','argS11']}
+    mean_options={}
+    for key,value in defaults.iteritems():
+        mean_options[key]=value
+    for key,value in options.iteritems():
+            mean_options[key]=value
+
+    filters=["Device_Id","System_Id","Measurement_Timestamp","Connector_Type_Measurement",
+             "Measurement_Date","Measurement_Time"]
+    temp_frame=history_frame.copy()
+    for index,filter_type in enumerate(filters):
+        if mean_options[filter_type] is not None:
+            temp_frame=temp_frame[temp_frame[filter_type]==mean_options[filter_type]]
+#     temp_frame=temp_frame[temp_frame["Device_Id"]==mean_options["Device_Id"]]
+#     temp_frame=temp_frame[temp_frame["System_Id"]==mean_options["System_Id"]]
+    unique_frequency_list=temp_frame["Frequency"].unique()
+    mean_array=[]
+    for index,freq in enumerate(unique_frequency_list):
+        row=[]
+        for column in mean_options["column_names"]:
+            values=np.mean(temp_frame[temp_frame["Frequency"]==unique_frequency_list[index]][column].as_matrix())
+            mean_value=np.mean(values)
+            row.append(mean_value)
+        mean_array.append(row)
+    mean_frame=pandas.DataFrame(mean_array,columns=mean_options["column_names"])
+    return mean_frame
+
+def raw_difference_frame(raw_model,mean_frame,**options):
+    """Creates a difference pandas.DataFrame given a raw NIST model and a mean pandas.DataFrame"""
+    defaults={"column_names":mean_frame.columns.tolist()}
+    difference_options={}
+    for key,value in defaults.iteritems():
+        difference_options[key]=value
+    for key,value in options.iteritems():
+        difference_options[key]=value
+    difference_list=[]
+    for row in raw_model.data[:]:
+        #print row[0]
+        mean_row=mean_frame[abs(mean_frame["Frequency"]-row[0])<abs(.01)].as_matrix()
+        #print mean_row
+        try:
+            mean_row=mean_row[0]
+            difference_row=[row[i+2]-mean_row[i] for i in range(1,len(mean_row))]
+            difference_row.insert(0,row[0])
+            difference_list.append(difference_row)
+        except:pass
+    difference_data_frame=pandas.DataFrame(difference_list,columns=difference_options["column_names"])
+    return difference_data_frame
+
+def raw_comparision_plot_with_residuals(raw_nist,mean_frame,difference_frame):
+    """Creates a comparision plot given a RawModel object and a pandas.DataFrame mean frame and difference frame"""
+    column_names=mean_frame.columns.tolist()
+    number_rows=len(column_names)/2
+    fig, compare_axes = plt.subplots(nrows=number_rows, ncols=2, sharex='col',figsize=(8,6),dpi=80)
+    measurement_date=raw_nist.metadata["Measurement_Date"]
+    diff_axes=[]
+    for ax in compare_axes.flat:
+        diff_axes.append(ax.twinx())
+    #diff_axes=[diff_ax0,diff_ax1,diff_ax2,diff_ax3,diff_ax4,diff_ax5]
+    for index,ax in enumerate(diff_axes):
+        ax.plot(difference_frame['Frequency'].tolist(),difference_frame[column_names[index+1]].tolist(),'r-x')
+        ax.set_ylabel('Difference',color='red')
+        if re.search('mag',column_names[index+1]):
+            ax.set_ylim(-.02,.02)
+        #ax.legend_.remove()
+    for index, ax in enumerate(compare_axes.flat):
+        ax.plot(raw_nist.get_column('Frequency'),raw_nist.get_column(column_names[index+1]),
+                'k-o',label=measurement_date)
+        ax.plot(mean_frame['Frequency'].tolist(),mean_frame[column_names[index+1]].tolist(),'gs',label='Mean')
+        ax.set_title(column_names[index+1])
+        ax.legend(loc=1,fontsize='8')
+        #ax.xaxis.set_visible(False)
+        if re.search('arg',column_names[index+1]):
+            ax.set_ylabel('Phase(Degrees)',color='green')
+        elif re.search('mag',column_names[index+1]):
+            ax.set_ylabel(r'|${\Gamma} $|',color='green')
+        #ax.sharex(diff_axes[index])
+    compare_axes.flat[-2].set_xlabel('Frequency(GHz)',color='k')
+    compare_axes.flat[-1].set_xlabel('Frequency(GHz)',color='k')
+    fig.subplots_adjust(hspace=0)
+    fig.suptitle(table.metadata["Device_Id"]+"\n",fontsize=18,fontweight='bold')
+    plt.tight_layout()
+    plt.show()
 #-----------------------------------------------------------------------------
 # Module Classes
 
