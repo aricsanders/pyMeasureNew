@@ -74,7 +74,10 @@ POWER_3TERM_COLUMN_DESCRIPTIONS={"Frequency": "Frequency in GHz",
                                            "uCc": "Uncertainty in calibration factor for repeated connects",
                                            "uCe": "Total uncertainty in calibration factor"}
 #POWER_COLUMN_NAMES=POWER_3TERM_COLUMN_NAMES
+# Constant that determines if S21 is in db-angle or mag-angle format true is in mag-angle
 CONVERT_S21=True
+# Constant that determines if 1-port raw files have S11 and S22 or just S11
+COMBINE_S11_S22=True
 #-----------------------------------------------------------------------------
 # Module Functions
 def asc_type(file_contents):
@@ -428,13 +431,21 @@ class OnePortRawModel(AsciiDataTable):
             self.options[key]=value
         for key,value in options.iteritems():
             self.options[key]=value
+
         # Define Method Aliases if they are available
         if METHOD_ALIASES:
             for command in alias(self):
                 exec(command)
         if file_path is not None:
             self.__read_and_fix__(file_path)
-
+        if COMBINE_S11_S22:
+            self.options['row_formatter_string']= "{0:.5f}{delimiter}{1}{delimiter}{2}{delimiter}{3:.4f}{delimiter}{4:.2f}"
+            self.options["column_types"]= ['float','int','int','float','float']
+            self.options["column_names"]=["Frequency","Direction","Connect", "mag","arg"]
+            self.options["column_descriptions"]= {"Frequency":"Frequency in GHz",
+                                           "Direction":"Direction of connects, may be unused",
+                                           "Connect":"Connect number", "mag":"Linear magnitude",
+                                           "arg":"Phase in degrees"}
         AsciiDataTable.__init__(self,None,**self.options)
         self.path=file_path
         self.structure_metadata()
@@ -456,6 +467,13 @@ class OnePortRawModel(AsciiDataTable):
         data=parse_lines(lines[data_begin_line:],**parse_options)
         self.options["data"]=data
         self.options["header"]=lines[:data_begin_line-1]
+        if COMBINE_S11_S22:
+            new_data=[]
+            for index,row in enumerate(self.options["data"][:]):
+                new_row=[row[0],row[1],row[2],row[3]+row[5],row[4]+row[6]]
+                new_data.append(new_row)
+            self.options["data"]=new_data
+
 
 
     def structure_metadata(self):
@@ -473,11 +491,15 @@ class OnePortRawModel(AsciiDataTable):
                 self.metadata[key]=self.header[index].rstrip().lstrip()
     def show(self):
         fig, (ax0, ax1) = plt.subplots(nrows=2, sharex=True)
-        ax0.plot(self.get_column('Frequency'),self.get_column('magS11'),'k--')
-        ax0.plot(self.get_column('Frequency'),self.get_column('magS22'),'k--')
+        if COMBINE_S11_S22:
+            ax0.plot(self.get_column('Frequency'),self.get_column('mag'),'k--')
+            ax1.plot(self.get_column('Frequency'),self.get_column('arg'),'ro')
+        else:
+            ax0.plot(self.get_column('Frequency'),self.get_column('magS11'),'k--')
+            ax0.plot(self.get_column('Frequency'),self.get_column('magS22'),'k--')
+            ax1.plot(self.get_column('Frequency'),self.get_column('argS11'),'ro')
+            ax1.plot(self.get_column('Frequency'),self.get_column('argS22'),'ro')
         ax0.set_title('Magnitude S11')
-        ax1.plot(self.get_column('Frequency'),self.get_column('argS11'),'ro')
-        ax1.plot(self.get_column('Frequency'),self.get_column('argS22'),'ro')
         ax1.set_title('Phase S11')
         plt.show()
 
@@ -1369,8 +1391,8 @@ if __name__ == '__main__':
     #test_OnePortCalrepModel()
     #test_OnePortCalrepModel('700437.asc')
     #test_OnePortCalrepModel_Ctable(file_path_1='922729c.txt')
-    #test_OnePortRawModel()
-    #test_OnePortRawModel('OnePortRawTestFile_002.txt')
+    test_OnePortRawModel()
+    test_OnePortRawModel('OnePortRawTestFile_002.txt')
     #test_TwoPortRawModel()
     #test_PowerRawModel()
     #test_JBSparameter()
@@ -1380,4 +1402,4 @@ if __name__ == '__main__':
     #test_PowerCalrepModel()
     #test_PowerCalrepModel('700083b.txt')
     #convert_all_two_ports_script()
-    test_sparameter_power_type()
+    #test_sparameter_power_type()

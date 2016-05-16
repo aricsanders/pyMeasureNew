@@ -305,7 +305,10 @@ def test_comparison(input_file=None):
         options["column_names"]=['Frequency','magS11','argS11','magS12','argS12','magS21','argS21','magS22','argS22']
     elif re.search('1-port',table.metadata["Measurement_Type"],re.IGNORECASE):
         history_key='1-port'
-        options["column_names"]=['Frequency','magS11','argS11','magS22','argS22']
+        if COMBINE_S11_S22:
+             options["column_names"]=['Frequency','mag','arg']
+        else:
+            options["column_names"]=['Frequency','magS11','argS11','magS22','argS22']
     elif re.search('Dry Cal|Thermistor|power',table.metadata["Measurement_Type"],re.IGNORECASE):
         history_key='power'
         options["column_names"]=['Frequency','magS11','argS11','Efficiency','Calibration_Factor']
