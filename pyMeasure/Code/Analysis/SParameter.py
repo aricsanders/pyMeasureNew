@@ -38,8 +38,52 @@ except:
 #-----------------------------------------------------------------------------
 # Module Constants
 
+# Does this belong in tests or a Data folder
+ONE_PORT_DUT=os.path.join(os.path.dirname(os.path.realpath(__file__)),'Tests')
 #-----------------------------------------------------------------------------
 # Module Functions
+def one_port_robin_comparision_plot(input_asc_file,input_res_file,**options):
+    """one_port_robin_comparision_plot plots a one port.asc file against a given .res file,
+    use device_history=True in options to show device history"""
+    defaults={"device_history":False,"mag_res":False}
+    plot_options={}
+    for key,value in defaults.iteritems():
+        plot_options[key]=value
+    for key,value in options.iteritems():
+        plot_options[key]=value
+    history=np.loadtxt(input_res_file,skiprows=1)
+    column_names=["Frequency",'mag','arg','magS11N','argS11N','UmagS11N','UargS11N']
+    options={"data":history.tolist(),"column_names":column_names,"column_types":['float' for column in column_names]}
+    history_table=AsciiDataTable(None,**options)
+    table=OnePortCalrepModel(input_asc_file)
+    if plot_options["device_history"]:
+        history_frame=pandas.read_csv(ONE_PORT_DUT)
+        device_history=history_frame[history_frame["Device_Id"]==table.header[0].rstrip().lstrip()]
+    fig, (ax0, ax1) = plt.subplots(nrows=2, sharex=True)
+
+    ax0.errorbar(history_table.get_column('Frequency'),history_table.get_column('magS11N'),fmt='k--',
+                yerr=history_table.get_column('UmagS11N'),label="History")
+    ax0.errorbar(table.get_column('Frequency'),table.get_column('mag'),
+        yerr=table.get_column('uMg'),fmt='ro',label="Current Measurement",alpha=.3)
+    if plot_options["device_history"]:
+        ax0.errorbar(device_history['Frequency'].tolist(),device_history['mag'].tolist(),fmt='bs',
+                    yerr=device_history['uMg'].tolist(),label="From .asc", alpha=.5)
+    if plot_options["mag_res"]:
+        ax0.errorbar(history_table.get_column('Frequency'),history_table.get_column('mag'),fmt='gx',
+                    yerr=history_table.get_column('UmagS11N'),label="From mag in res")
+    ax0.set_title('Magnitude S11')
+
+    ax1.errorbar(history_table.get_column('Frequency'),history_table.get_column('arg'),fmt='k--',
+                yerr=history_table.get_column('UargS11N'),label="history")
+    ax1.errorbar(table.get_column('Frequency'),table.get_column('arg'),
+                 yerr=table.get_column('uAg'),fmt='ro',label="Current Measurement",alpha=.3)
+    if plot_options["device_history"]:
+        ax1.errorbar(device_history['Frequency'].tolist(),device_history['arg'].tolist(),fmt='bs',
+                    yerr=device_history['uAg'].tolist(),label="From .asc", alpha=.5)
+    ax1.set_title('Phase S11')
+    ax0.legend(loc='lower left', shadow=True)
+    plt.show()
+
 def average_one_port_sparameters(table_list,**options):
     """Returns a table that is the average of the Sparameters in table list. The new table will have all the unique
     frequency values contained in all of the tables. Tables must be in Real-Imaginary format or magnitude-angle format
