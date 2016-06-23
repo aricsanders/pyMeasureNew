@@ -294,8 +294,13 @@ class S1PV1():
                 out_lines[index]=self.options["sparameter_row_formatter_string"].format(
                     delimiter=self.options["data_delimiter"],
                     *self.sparameter_data[index-self.options["sparameter_begin_line"]])
-        for comment in inline_comments:
-            out_lines=insert_inline_comment(out_lines,comment)
+        if inline_comments:
+            for comment in inline_comments:
+                out_lines=insert_inline_comment(out_lines,comment=comment[0],
+                                                line_number=comment[1],
+                                                string_position=comment[2],
+                                                begin_token=self.options["inline_comment_begin"],
+                                                end_token="")
         return string_list_collapse(out_lines)
 
     def __str__(self):
@@ -513,7 +518,9 @@ class S2PV1():
                   "sparameter_complex":[],
                   "comments":[],
                   "path":None,
-                  "column_units":None
+                  "column_units":None,
+                  "inline_comment_begin":"!",
+                  "inline_comment_end":""
                   }
         self.options={}
         for key,value in defaults.iteritems():
@@ -635,9 +642,10 @@ class S2PV1():
             number_line_comments=[str(comment[2]) for comment in self.comments].count('0')
         #print number_line_comments
         number_lines=1+number_line_comments+len(self.sparameter_data)+len(self.noiseparameter_data)
-        #print number_lines
+        #print("{0} is {1}".format('number_lines',number_lines))
         out_lines=["" for i in range(number_lines)]
         out_lines[self.options["option_line_line"]]=self.option_line
+        #print("{0} is {1}".format('out_lines',out_lines))
         # populate the line comments
         comment_lines=[]
         inline_comments=[]
@@ -648,6 +656,7 @@ class S2PV1():
                     comment_lines.append(comment[1])
                 else:
                     inline_comments.append(comment)
+        #print("{0} is {1}".format('out_lines',out_lines))
         # now start writting data at first empty line after the option line
         for index,line in enumerate(out_lines):
             if index==self.options["option_line_line"]:
@@ -666,8 +675,16 @@ class S2PV1():
                 #print (index-self.options["noiseparameter_begin_line"])
                 out_lines[index]=self.options["nosieparameter_row_formatter_string"].format(
                     delimiter=self.options["data_delimiter"],*self.noiseparameter_data[index-self.options["noiseparameter_begin_line"]])
-        for comment in inline_comments:
-            out_lines=insert_inline_comment(out_lines,comment)
+        #print("{0} is {1}".format('out_lines',out_lines))
+        #print("{0} is {1}".format('inline_comments',inline_comments))
+        if inline_comments:
+            for comment in inline_comments:
+                out_lines=insert_inline_comment(out_lines,comment=comment[0],
+                                                line_number=comment[1],
+                                                string_position=comment[2],
+                                                begin_token=self.options["inline_comment_begin"],
+                                                end_token="")
+        #print("{0} is {1}".format('out_lines', out_lines))
         return string_list_collapse(out_lines)
 
     def __str__(self):
@@ -961,6 +978,7 @@ def test_s2pv1(file_path="thru.s2p"):
     """Tests the s2pv1 class"""
     os.chdir(TESTS_DIRECTORY)
     new_table=S2PV1(file_path)
+    print new_table
     print("The Table as read in with line numbers is")
     for index,line in enumerate(new_table.lines):
         print("{0} {1}".format(index,line))

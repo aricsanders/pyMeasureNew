@@ -61,6 +61,8 @@ def check_arg_type(arg,arg_type):
 def string_list_collapse(list_of_strings,string_delimiter='\n'):
     """ Makes a list of strings a single string"""
     check_arg_type(list_of_strings,ListType)
+    if list_of_strings is None:
+        return
     if string_delimiter is None:
         string_delimiter=""
     out_string=''
@@ -70,7 +72,6 @@ def string_list_collapse(list_of_strings,string_delimiter='\n'):
         else:
             out_string=out_string+item+string_delimiter
     return out_string
-
 def list_to_string(row_list,data_delimiter=None,row_formatter_string=None,begin=None,end=None):
     """Given a list of values returns a string, if row_formatter is specifed
      it uses it as a template, else uses data delimiter. Inserts data_delimiter between each list element. An optional
