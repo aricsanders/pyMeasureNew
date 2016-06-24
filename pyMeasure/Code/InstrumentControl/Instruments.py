@@ -34,10 +34,9 @@ except:
     pass 
 try:
     #raise
-    import pyMeasure.Code.DataHandlers.Instruments
-    import pyMeasure.Code.DataHandlers.States
-    InstrumentSheet=pyMeasure.Code.DataHandlers.Instruments.InstrumentSheet
-    InstrumentState=pyMeasure.Code.DataHandlers.States.InstrumentState
+    import pyMeasure.Code.DataHandlers.XMLModels
+    InstrumentSheet=pyMeasure.Code.DataHandlers.XMLModels.InstrumentSheet
+    InstrumentState=pyMeasure.Code.DataHandlers.XMLModels.InstrumentState
     DATA_SHEETS=1
     #print dir(pyMeasure)
 except:
@@ -60,14 +59,8 @@ ACTIVE_COMPONENTS=[PIL_AVAILABLE,DATA_SHEETS,METHOD_ALIASES]
 INSTRUMENT_TYPES=['GPIB','COMM','OCEAN_OPTICS','MIGHTEX','LABJACK']
 INSTRUMENTS_DEFINED=[]
 #TODO Make PYMEASURE_ROOT be read from the settings folder
-PYMEASURE_ROOT=r'C:\Documents and Settings\sandersa\My Documents\Share\pyMeasure'
-# The directions  to the ocean optics drivers
-OMNIDRIVER_CLASS_PATH="C:/Program Files/Ocean Optics/OmniDriverSPAM/OOI_HOME/\
-OmniDriver.jar"
-OCEAN_OPTICS_WRAPPER_PACKAGE='com.oceanoptics.omnidriver.api.wrapper'
+PYMEASURE_ROOT=r'C:\Users\sandersa\PyCharm Projects\pyMeasure'
 
-# RESOLUTION_LIST[TImageControl.Resolution] gives the resolution in pixels
-MIGHTEX_RESOLUTION_LIST=[[32,32],[64,64],[160,120],[320,240],[640,480],[800,600],[1024,768],[1280,1024]]
 #-------------------------------------------------------------------------------
 # Module Functions
 
@@ -280,7 +273,7 @@ def test_VisaInstrument():
 
 if __name__ == '__main__':
     #test_IV()
-    #test_find_description()
-    test_VisaInstrument()
+    test_find_description()
+    #test_VisaInstrument()
     #user_terminate=raw_input("Please Press Any key To Finish:")
     
