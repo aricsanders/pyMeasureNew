@@ -9,6 +9,7 @@
 
 import wx
 import wx.html
+import re
 
 class LinkError(Exception):
     pass
@@ -24,11 +25,11 @@ class HTMLWindow(wx.html.HtmlWindow):
                 passdlg = wx.TextEntryDialog(self, 'Edit Value', 'Value', 
                 'test')
                 try:
-                    if dlg.ShowModal() == wx.ID_OK:
-                        result = dlg.GetValue()
+                    if passdlg.ShowModal() == wx.ID_OK:
+                        result = passdlg.GetValue()
                             # Your code
                 finally:
-                    dlg.Destroy()
+                    passdlg.Destroy()
             else:
                 raise LinkError
         except LinkError:
