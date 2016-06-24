@@ -48,12 +48,12 @@ import wx.stc
 import wx.py.introspect
 
 from Boa import Preferences, Utils
-from Boa.Preferences import keyDefs
-from Boa.Views import StyledTextCtrls
-from Boa.Models import EditorHelper
+from Preferences import keyDefs
+from Views import StyledTextCtrls
+from Models import EditorHelper
 
-from Boa.ExternalLib.PythonInterpreter import PythonInterpreter
-from Boa.ExternalLib import Signature
+from ExternalLib.PythonInterpreter import PythonInterpreter
+from ExternalLib import Signature
 
 
 echo = True
@@ -133,7 +133,7 @@ class ShellEditor(wx.stc.StyledTextCtrl,
             copyright = sys.copyright
         else:
             copyright = p2c
-        import Boa.__version__ as __version__
+        import __version__ as __version__
         self.AddText('# Python %s\n# wxPython %s, Boa Constructor %s\n# %s'%(
               sys.version, wx.__version__, __version__.version, copyright))
         #return so it looks right
