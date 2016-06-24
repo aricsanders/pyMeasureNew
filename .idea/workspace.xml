@@ -2,10 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4139f2fc-c578-4782-b083-7284792a834c" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/Development_Stack_Installation_Example_20160130_01.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/Development_Stack_Installation_Example_20160130_01.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/Fix_Meas_File_Paths_20160328_001.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/Fix_Meas_File_Paths_20160328_001.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/Sparameter_Power_FileFormats_20160412_001.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/Sparameter_Power_FileFormats_20160412_001.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../pyMeasure/.idea/pyMeasure.iml" afterPath="$PROJECT_DIR$/../pyMeasure/.idea/pyMeasure.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/pyMeasureNew.iml" afterPath="$PROJECT_DIR$/.idea/pyMeasureNew.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pyMeasure/Code/FrontEnds/HTMLPanel.py" afterPath="$PROJECT_DIR$/pyMeasure/Code/FrontEnds/HTMLPanel.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pyMeasure/Code/FrontEnds/ShellPanel.py" afterPath="$PROJECT_DIR$/pyMeasure/Code/FrontEnds/ShellPanel.py" />
     </list>
     <ignored path="pyMeasureNew.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -26,11 +31,33 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="ShellPanel.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ShellPanel.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pyMeasure/Code/FrontEnds/ShellPanel.py">
           <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.24064171">
+              <caret line="133" column="13" selection-start-line="133" selection-start-column="13" selection-end-line="133" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="EditorHelper.py" pinned="false" current-in-tab="false">
+        <entry file="file://C:/Anaconda2/Lib/site-packages/boa/Models/EditorHelper.py">
+          <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="143" column="0" selection-start-line="143" selection-start-column="0" selection-end-line="143" selection-end-column="0" />
+              <caret line="12" column="24" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="24" />
+              <folding>
+                <element signature="e#461#498#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="StyledTextCtrls.py" pinned="false" current-in-tab="false">
+        <entry file="file://C:/Anaconda2/Lib/site-packages/boa/Views/StyledTextCtrls.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -80,11 +107,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="HTMLPanel.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="HTMLPanel.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pyMeasure/Code/FrontEnds/HTMLPanel.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.37037036">
-              <caret line="15" column="35" selection-start-line="15" selection-start-column="25" selection-end-line="15" selection-end-column="35" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="46" column="27" selection-start-line="46" selection-start-column="27" selection-end-line="46" selection-end-column="27" />
               <folding>
                 <element signature="e#370#379#0" expanded="true" />
               </folding>
@@ -92,41 +119,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="EditorHelper.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../boa/Models/EditorHelper.py">
+      <file leaf-file-name="GeneralInterfaceFrame.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../pyMeasure/Code/FrontEnds/GeneralInterfaceFrame.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-7.0">
-              <caret line="13" column="33" selection-start-line="13" selection-start-column="33" selection-end-line="13" selection-end-column="33" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="StyledTextCtrls.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../boa/Views/StyledTextCtrls.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-7.296296">
-              <caret line="25" column="21" selection-start-line="25" selection-start-column="21" selection-end-line="25" selection-end-column="21" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Boa.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../boa/Boa.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-5.160714">
-              <caret line="268" column="63" selection-start-line="268" selection-start-column="63" selection-end-line="268" selection-end-column="63" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Preferences.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../boa/Preferences.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-10.703704">
-              <caret line="17" column="25" selection-start-line="17" selection-start-column="25" selection-end-line="17" selection-end-column="25" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -148,8 +145,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/pyMeasure/Code/FrontEnds/StyledTextCtrlPanel.py" />
-        <option value="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/XSL/S2P_STYLE.xsl" />
         <option value="$PROJECT_DIR$/../html-examples/Literally_Canvas_Example_20160316_003.html" />
         <option value="$PROJECT_DIR$/../html-examples/Literally_Canvas_Example_20160316_004.html" />
         <option value="$PROJECT_DIR$/../html-examples/css/dashboard.css" />
@@ -197,16 +192,16 @@
         <option value="$PROJECT_DIR$/../boa/Boa.py" />
         <option value="$PROJECT_DIR$/../boa/Views/StyledTextCtrls.py" />
         <option value="$PROJECT_DIR$/../boa/Models/EditorHelper.py" />
-        <option value="$PROJECT_DIR$/pyMeasure/Code/FrontEnds/ShellPanel.py" />
         <option value="$PROJECT_DIR$/pyMeasure/Code/FrontEnds/HTMLPanel.py" />
+        <option value="C:/Anaconda2/Lib/site-packages/boa/Models/EditorHelper.py" />
+        <option value="C:/Anaconda2/Lib/site-packages/boa/Views/StyledTextCtrls.py" />
+        <option value="$PROJECT_DIR$/pyMeasure/Code/FrontEnds/ShellPanel.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="1696" />
-    <option name="height" value="1026" />
+    <option name="width" value="1355" />
+    <option name="height" value="728" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <OptionsSetting value="true" id="Add" />
@@ -233,7 +228,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -397,6 +391,7 @@
         </subPane>
       </pane>
       <pane id="Scope" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -412,7 +407,7 @@
       <recent name="C:\Users\sandersa\PyCharm Projects\pyMeasureNew\pyMeasure\Code\DataHandlers\XSL" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.HTMLPanel">
+  <component name="RunManager" selected="Python.ShellPanel">
     <configuration default="false" name="HTMLPanel" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -426,6 +421,57 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="pyMeasureNew" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pyMeasure/Code/FrontEnds/HTMLPanel.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="GeneralInterfaceFrame" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../pyMeasure/Code/FrontEnds" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="pyMeasure" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../pyMeasure/Code/FrontEnds/GeneralInterfaceFrame.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="ShellPanel" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/pyMeasure/Code/FrontEnds" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="pyMeasureNew" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pyMeasure/Code/FrontEnds/ShellPanel.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="StyledTextCtrls" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="C:/Anaconda2/Lib/site-packages/boa/Views" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="mysite" />
+      <option name="SCRIPT_NAME" value="C:/Anaconda2/Lib/site-packages/boa/Views/StyledTextCtrls.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -552,12 +598,18 @@
       <option name="USE_KEYWORD" value="false" />
       <method />
     </configuration>
-    <list size="1">
+    <list size="4">
       <item index="0" class="java.lang.String" itemvalue="Python.HTMLPanel" />
+      <item index="1" class="java.lang.String" itemvalue="Python.GeneralInterfaceFrame" />
+      <item index="2" class="java.lang.String" itemvalue="Python.ShellPanel" />
+      <item index="3" class="java.lang.String" itemvalue="Python.StyledTextCtrls" />
     </list>
     <recent_temporary>
-      <list size="1">
-        <item index="0" class="java.lang.String" itemvalue="Python.HTMLPanel" />
+      <list size="4">
+        <item index="0" class="java.lang.String" itemvalue="Python.ShellPanel" />
+        <item index="1" class="java.lang.String" itemvalue="Python.StyledTextCtrls" />
+        <item index="2" class="java.lang.String" itemvalue="Python.GeneralInterfaceFrame" />
+        <item index="3" class="java.lang.String" itemvalue="Python.HTMLPanel" />
       </list>
     </recent_temporary>
   </component>
@@ -870,21 +922,21 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1696" height="1026" extended-state="6" />
+    <frame x="0" y="0" width="1355" height="728" extended-state="0" />
     <editor active="false" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2827381" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28230023" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32956383" sideWeight="0.4911111" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.35114503" sideWeight="0.14940476" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.35056543" sideWeight="0.15907393" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32956383" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39803708" sideWeight="0.4625" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.35114503" sideWeight="0.85059524" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.35056543" sideWeight="0.84092605" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24666667" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32956383" sideWeight="0.4911111" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -976,6 +1028,16 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/pyMeasure/Code/FrontEnds/HTMLPanel.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#370#379#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/../pyMeasure/Code/Development/xray_python.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1188,7 +1250,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="47" column="25" selection-start-line="47" selection-start-column="25" selection-end-line="47" selection-end-column="25" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1203,7 +1264,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="10" column="62" selection-start-line="10" selection-start-column="62" selection-end-line="10" selection-end-column="62" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1211,7 +1271,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="6" column="47" selection-start-line="6" selection-start-column="47" selection-end-line="6" selection-end-column="47" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1219,7 +1278,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="11" column="26" selection-start-line="11" selection-start-column="26" selection-end-line="11" selection-end-column="26" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1227,7 +1285,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="11" column="2" selection-start-line="11" selection-start-column="2" selection-end-line="11" selection-end-column="2" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1235,7 +1292,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="19" column="34" selection-start-line="19" selection-start-column="34" selection-end-line="19" selection-end-column="34" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1279,46 +1335,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../boa/Preferences.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-10.703704">
-          <caret line="17" column="25" selection-start-line="17" selection-start-column="25" selection-end-line="17" selection-end-column="25" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../boa/Boa.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.160714">
-          <caret line="268" column="63" selection-start-line="268" selection-start-column="63" selection-end-line="268" selection-end-column="63" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../boa/Views/StyledTextCtrls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.296296">
-          <caret line="25" column="21" selection-start-line="25" selection-start-column="21" selection-end-line="25" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../boa/Models/EditorHelper.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.0">
-          <caret line="13" column="33" selection-start-line="13" selection-start-column="33" selection-end-line="13" selection-end-column="33" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pyMeasure/Code/FrontEnds/ShellPanel.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="143" column="0" selection-start-line="143" selection-start-column="0" selection-end-line="143" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../pyMeasure/Code/Development/AdvancedInterfaceFrame.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1357,11 +1373,45 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pyMeasure/Code/FrontEnds/HTMLPanel.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.37037036">
-          <caret line="15" column="35" selection-start-line="15" selection-start-column="25" selection-end-line="15" selection-end-column="35" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="46" column="27" selection-start-line="46" selection-start-column="27" selection-end-line="46" selection-end-column="27" />
           <folding>
             <element signature="e#370#379#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../pyMeasure/Code/FrontEnds/GeneralInterfaceFrame.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Anaconda2/Lib/site-packages/boa/Models/EditorHelper.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="12" column="24" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="24" />
+          <folding>
+            <element signature="e#461#498#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Anaconda2/Lib/site-packages/boa/Views/StyledTextCtrls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyMeasure/Code/FrontEnds/ShellPanel.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.24064171">
+          <caret line="133" column="13" selection-start-line="133" selection-start-column="13" selection-end-line="133" selection-end-column="13" />
+          <folding />
         </state>
       </provider>
     </entry>
