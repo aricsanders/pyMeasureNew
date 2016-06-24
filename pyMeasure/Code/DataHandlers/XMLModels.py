@@ -18,7 +18,7 @@ import datetime
 import urlparse                                    # To form proper URLs
 import socket                                      # To determine IPs and Hosts
 from types import *                                # For Data Type testing
-
+import fnmatch
 #-----------------------------------------------------------------------------
 # Third Party Imports
 # For XLST transformations of the data
@@ -63,13 +63,17 @@ except:
     pass
 #-----------------------------------------------------------------------------
 # Module Constants
+PYMEASURE_ROOT=r'C:\Users\sandersa\PyCharm Projects\pyMeasure'
+INSTRUMENT_SHEETS=fnmatch.filter(os.listdir(os.path.join(
+PYMEASURE_ROOT,'Instruments')),'*.xml')
 XSLT_REPOSITORY='../XSL'
 TESTS_DIRECTORY=os.path.join(os.path.dirname(os.path.realpath(__file__)),'Tests')
 DRIVER_FILE_EXTENSIONS=['sys','SYS','drv','DRV']
-NODE_TYPE_DICTIONARY={'1':'ELEMENT_NODE', '2':'ATTRIBUTE_NODE', '3':'TEXT_NODE',
-    '4':'CDATA_SECTION_NODE', '6':'ENTITY_NODE', '7':'PROCESSING_INSTRUCTION_NODE',
-    '8':'COMMENT_NODE','9':'DOCUMENT_NODE','10':'DOCUMENT_TYPE_NODE',
-    '12':'NOTATION_NODE'}
+
+NODE_TYPE_DICTIONARY={'ELEMENT_NODE':1, 'ATTRIBUTE_NODE':2, 'TEXT_NODE':3, \
+'CDATA_SECTION_NODE':4,'ENTITY_NODE':6, 'PROCESSING_INSTRUCTION_NODE':7, \
+'COMMENT_NODE':8,'DOCUMENT_NODE':9,'DOCUMENT_TYPE_NODE':10,\
+'NOTATION_NODE':12}
 #-----------------------------------------------------------------------------
 # Module Functions
 def dictionary_to_xml(dictionary=None,char_between='\n'):
@@ -132,6 +136,57 @@ def condition_URL(URL):
     if not (parsed_URL[0] in ['file','http','ftp']):
         parsed_URL=urlparse.urlparse('file:'+URL.replace('\\','/'))
     return str(urlparse.urlunparse(parsed_URL).replace('///',''))
+def determine_instrument_type_from_string(string):
+    """ Given a string returns the instrument type"""
+
+    if type(string) in StringTypes:
+         # Start with the easy ones
+         for instrument_type in INSTRUMENT_TYPES:
+            match= re.compile(instrument_type,re.IGNORECASE)
+            if re.search(match,string):
+                return instrument_type
+         # Now read in all the Instrument sheets and look for a match
+         # Returning the Name in the Instrument_Type Tag
+         instrument_folder=os.path.join(PYMEASURE_ROOT,'Instruments')
+         for instrument_sheet in os.listdir(instrument_folder):
+             path=os.path.join(PYMEASURE_ROOT,'Instruments',instrument_sheet)
+             if os.path.isfile(path):
+                f=open(path,'r')
+                text=f.read()
+                if re.search(string,text):
+                    tag_match=re.search(
+                    '<Instrument_Type>(?P<instrument_type>\w+)</Instrument_Type>',
+                    text)
+                    try:
+                        return tag_match.group('instrument_type')
+                    except:pass
+    else:
+        return None
+
+def determine_instrument_type(object):
+    """Tries to return an instrument type given an address, name, serial #
+     or class instance"""
+    # attributes that normally have the type hidden in there
+    # should be in the order of likelyhood
+    attritbute_names=['instrument_type','address','serial','Id']
+    # Check to see if it is a string and then go through the possibilities
+    if type(object) in StringTypes:
+        return determine_instrument_type_from_string(object)
+    # If it is a object or class look around in normal names looking for a string
+    # to process
+    elif type(object)==InstanceType or ClassType:
+        for attribute in attritbute_names:
+            try:
+                if attribute in dir(object):
+                    string=eval('object.%s'%attribute)
+                    answer=determine_instrument_type_from_string(string)
+                    if answer is None:pass
+                    else: return answer
+            except AttributeError:
+                try:
+                    string=object.__class__.__name__
+                    return determine_instrument_type_from_string(string)
+                except: pass
 #-----------------------------------------------------------------------------
 # Module Classes
 class XMLBase():
@@ -1072,6 +1127,168 @@ class Metadata(XMLBase):
     def print_current_node(self):
         """ Prints the current node """
         print self.current_node.toxml()
+
+class InstrumentSheet(XMLBase):
+    """ Class that handles the xml instrument sheet"""
+    def __init__(self,file_path=None,**options): #instrument_name=None):
+        """ Intializes the InstrumentSheet Class"""
+        #if the file path is not supplied create a new instrument sheet
+        #using the supplied instrument_name
+        defaults={"root":"Instrument_Sheet",
+                  "style_sheet":os.path.join(PYMEASURE_ROOT,'Settings/XSL Backup/DEFAULT_INSTRUMENT_STYLE.xsl').replace('\\','/'),
+                  "specific_descriptor":'Instrument',
+                  "general_descriptor":'Description',
+                  "directory":None,
+                  "extension":'xml'
+                  }
+        self.options={}
+        for key,value in defaults.iteritems():
+            self.options[key]=value
+        for key,value in options.iteritems():
+            self.options[key]=value
+
+
+        XMLBase.__init__(self,file_path,**self.options)
+        self.root=self.document.documentElement
+        # Now use the xml to declare some attributes
+        specific_description=self.document.getElementsByTagName('Specific_Information')
+        for information_node in specific_description:
+            if information_node.nodeType is NODE_TYPE_DICTIONARY['ELEMENT_NODE']:
+                for node in information_node.childNodes:
+                    if node.nodeType is NODE_TYPE_DICTIONARY['ELEMENT_NODE']:
+                        if node.childNodes:
+                            tag_name=node.tagName
+                            text_value=node.childNodes[0].data
+                            if not text_value in [None,'']:
+                                string='self.%s="%s"'%(tag_name.lower(),text_value)
+                                #print string
+                                exec('%s'%string)
+         #Commands
+        self.commands=[]
+        commands=self.document.getElementsByTagName('Commands')[0]
+        for command in commands.childNodes:
+            if command.nodeType is NODE_TYPE_DICTIONARY['ELEMENT_NODE']:
+                self.commands.append(command.getAttribute('Command'))
+        # Define Method Aliases if they are available
+        if METHOD_ALIASES:
+            #print 'True'
+            for command in alias(self):
+                exec(command)
+        try:
+            self.image=self.get_image_path()
+        except:
+            pass
+
+    ##TODO: Add a edit entry method
+    def add_entry(self,tag_name,text=None,description='Specific',**attribute_dictionary):
+        """ Adds an entry to the instrument sheet."""
+        specific_match=re.compile('Specific',re.IGNORECASE)
+        general_match=re.compile('General',re.IGNORECASE)
+        if re.search(specific_match,description):
+            description_node=self.document.getElementsByTagName('Specific_Information')[0]
+        elif re.search(general_match,description):
+            description_node=self.document.getElementsByTagName('General_Information')[0]
+        new_entry=self.document.createElement(tag_name)
+        if not text is None:
+            text_node=self.document.createTextNode(tag_name)
+            new_entry.appendChild(text_node)
+        for key,value in attribute_dictionary.iteritems():
+            new_attribute=self.document.creatAttribute(key)
+            new_entry.setAttributeNode(new_attribute)
+            new_entry.setAttribute(key,str(value))
+        description_node.appendChild(new_entry)
+
+    def get_query_dictionary(self):
+        """ Returns a set:query dictionary if there is a State_Commands element"""
+        try:
+            state_commands=self.document.getElementsByTagName('State_Commands')[0]
+            state_query_dictionary=dict([(str(node.getAttribute('Set')
+            ),str(node.getAttribute('Query')))
+            for node in state_commands.childNodes if node.nodeType is \
+            NODE_TYPE_DICTIONARY['ELEMENT_NODE']])
+            return state_query_dictionary
+        except:
+            raise
+            #return None
+    def get_image_path(self):
+        """Tries to return the image path, requires image to be in
+        <Image href="http://132.163.53.152:8080/home_media/img/Fischione_1040.jpg"/> format"""
+        # Take the first thing called Image
+        image_node=self.document.getElementsByTagName('Image')[0]
+        image_path=image_node.getAttribute('href')
+        return image_path
+
+class InstrumentState(XMLBase):
+    """ An instrument state is an XML file with instrument setting information"""
+    def __init__(self,file_path=None,**options):
+        """ Intialize the InstrumentState class"""
+        defaults={"root":"Instrument_State",
+                  "style_sheet":os.path.join(PYMEASURE_ROOT,'Settings/XSL Backup/DEFAULT_INSTRUMENT_STYLE.xsl').replace('\\','/'),
+                  "specific_descriptor":'Instrument',
+                  "general_descriptor":'State',
+                  "directory":None,
+                  "extension":'xml',
+                  "date":"now",
+                  "State_Dictionary":None
+                  }
+        self.options={}
+        for key,value in defaults.iteritems():
+            self.options[key]=value
+        for key,value in options.iteritems():
+            self.options[key]=value
+
+
+        XMLBase.__init__(self,file_path,**self.options)
+        state_node=self.document.createElement('State')
+        self.document.documentElement.appendChild(state_node)
+        if self.options["date"] in ['now']:
+            # Add the Date attribute, this is the time when the state was created
+            date=datetime.datetime.utcnow().isoformat()
+            Date_attribute=self.document.createAttribute('Date')
+            state_node.setAttributeNode(Date_attribute)
+            state_node.setAttribute('Date',str(date))
+        if self.options["state_dictionary"]:
+            for key,value in self.options["state_dictionary"].iteritems():
+                new_entry=self.document.createElement('Tuple')
+                set_attribute=self.document.createAttribute('Set')
+                value_attribute=self.document.createAttribute('Value')
+                new_entry.setAttributeNode(set_attribute)
+                new_entry.setAttributeNode(value_attribute)
+                new_entry.setAttribute('Set',key)
+                new_entry.setAttribute('Value',str(value))
+                state_node.appendChild(new_entry)
+        # this is not the most direct way to define it but it is the most robust I think
+        self.state_node=self.document.getElementsByTagName('State')[0]
+        self.state_dictionary=dict([(str(node.getAttribute('Set')),
+        node.getAttribute('Value')) for node in \
+        self.state_node.getElementsByTagName('Tuple')])
+
+    def add_state_description(self,description):
+        """Adds the tag named State_Description and its information"""
+        try:
+            new_element=''
+            if type(description) is DictionaryType:
+                for key,value in description.iteritems():
+                    # This hanldes Tag:Text dictionaries
+                    if re.search('Description',key):
+                        new_element=self.document.createElement(key)
+                        for tag,element_text in value.iteritems():
+                            new_tag=self.document.createElement(tag)
+                            new_text=self.document.createTextNode(element_text)
+                            new_tag.appendChild(new_text)
+                            new_element.appendChild(new_tag)
+            elif type(description) is StringType:
+                new_element=self.document.createElement('State_Description')
+                new_text=self.document.createTextNode(str(description))
+                new_element.appendChild(new_text)
+            elif type(description) is InstanceType:
+                new_element=description
+            #first_child=self.document.documentElement.firstChild
+
+            self.document.documentElement.insertBefore(new_element,self.document.documentElement.childNodes[0])
+        except:
+            raise
+
 #-----------------------------------------------------------------------------
 # Module Scripts
 def test_XMLModel(test_new=True,test_existing=False):
@@ -1341,6 +1558,19 @@ def metadata_robot(file_registry=None,metadata=None):
             value=str(python_metadata['Python_Docstring']))
         except:pass
     metadata_file.save()
+
+def test_InstrumentSheet():
+    """ A test of the InstrumentSheet class"""
+    instrument_sheet=InstrumentSheet(os.path.join(PYMEASURE_ROOT,'Instruments',INSTRUMENT_SHEETS[0]))
+    tags=instrument_sheet.document.getElementsByTagName('Instrument_Type')
+    value=[node.childNodes[0].data for node in tags]
+    print value
+    print dir(instrument_sheet)
+    print instrument_sheet.get_image_path()
+    print instrument_sheet.commands
+    print str(instrument_sheet.to_HTML())
+    instrument_sheet.show()
+
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__=='__main__':
@@ -1356,4 +1586,5 @@ if __name__=='__main__':
     #test_get_attribute_names()
     #test_FileRegister()
     #test_Metadata()
-    metadata_robot()
+    #metadata_robot()
+    test_InstrumentSheet()

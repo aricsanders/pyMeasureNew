@@ -11,5 +11,6 @@
     <orderEntry type="module" module-name="test_site" />
     <orderEntry type="module" module-name="pyMeasure" />
     <orderEntry type="module" module-name="boa" />
+    <orderEntry type="module" module-name="boa" />
   </component>
 </module>
