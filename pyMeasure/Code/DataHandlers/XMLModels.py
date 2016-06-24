@@ -537,9 +537,14 @@ class ChangeXMLLog(XMLLog):
         self.add_description(description)
 class EndOfDayXMLLog(XMLLog):
     """ A XMLLog for storing notes about daily activities"""
-    def __init__(self,path=None):
-        options={"style_sheet":os.path.join(XSLT_REPOSITORY,'DEFAULT_STYLE.xsl').replace('\\','/')}
-        XMLLog.__init__(self,path,**options)
+    def __init__(self,path=None,**options):
+        defaults={"style_sheet":os.path.join(XSLT_REPOSITORY,'DEFAULT_END_OF_DAY_LOG_STYLE.xsl').replace('\\','/')}
+        self.options={}
+        for key,value in defaults.iteritems():
+            self.options[key]=value
+        for key,value in options.iteritems():
+            self.options[key]=value
+        XMLLog.__init__(self,path,**self.options)
         if path is None:
             self.add_EndOfDayXMLLog_description()
         self.information_tags=['Actions','Who_Did','Who_Suggested','Why','Conclusion','Data_Location']

@@ -2,6 +2,7 @@
 #This is needs to be updated. It is Ryan's program that I have turned into a dialog.
 # 
 
+#Todo:FIx this !!! it is broken
 import wx
 import wx.stc
 import wx.richtext
@@ -218,7 +219,7 @@ class EndOfDayDialog(wx.Dialog):
         if file_dia.ShowModal()==wx.ID_OK:
             self.temp_file=file_dia.GetPath()
         self.log_file=normpath(self.temp_file)
-        file_dia.Destroy()
+        #file_dia.Destroy()
         self.file_disp2.Value=" ".join(self.log_file)
             
     def OnClear_fileButton(self, event):
@@ -226,21 +227,30 @@ class EndOfDayDialog(wx.Dialog):
         self.file_disp.Value="Current File List:\n" + "\n".join(self.file_list)
         
     def XML_processing(self,xml_file):
-        log=pyMeasure.Code.DataHandlers.XMLModels.EndOfDayXMLLog(xml_file)
+        try:
+            log=pyMeasure.Code.DataHandlers.XMLModels.EndOfDayXMLLog(xml_file)
+        except:
+            options={"directory":TESTS_DIRECTORY,
+                     "general_descriptor":"Log",
+                     "specific_descriptor":"End_Of_Day"
+                     }
+            log=pyMeasure.Code.DataHandlers.XMLModels.EndOfDayXMLLog(None,**options)
+            log.path=os.path.join(TESTS_DIRECTORY,log.path)
         doc = log.document
         root = doc.documentElement
         log.add_entry()
-        Id=log.current_entry['Id']
+        #print log.path
+        Index=log.current_entry['Index']
         response={'Actions':self.resp1.Value,'Who_Did':self.resp2.Value
     ,'Who_Suggested':self.resp3.Value,'Why':self.resp4.Value,
     'Conclusion':self.resp5.Value,'Data_Location':self.resp6.Value}
         
-        log.add_entry_information(Id,**response)
+        log.add_entry_information(Index,**response)
         # Take care of the files
         if self.data_flag.Value==True and self.file_list!=["None"]:
             for url in self.file_list:
                 url="file:///"+url.replace('\\','/')
-                log.add_entry_information(Id,**{'URL':url})
+                log.add_entry_information(Index,**{'URL':url})
         
         log.save()
 
