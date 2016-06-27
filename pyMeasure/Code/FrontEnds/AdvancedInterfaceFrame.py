@@ -23,7 +23,7 @@ try:
     import pyMeasure
     from pyMeasure.Code.FrontEnds.IEPanel import *
     from pyMeasure.Code.FrontEnds.EndOfDayDialog import *
-    from pyMeasure.Code.FrontEnds.ShellPanel import *
+    #from pyMeasure.Code.FrontEnds.ShellPanel import *
     from pyMeasure.Code.FrontEnds.SimpleLogLowerInterfacePanel import *
     from pyMeasure.Code.FrontEnds.SimpleArbDBLowerInterfacePanel import *
     from pyMeasure.Code.FrontEnds.VisaDialog import *
@@ -165,11 +165,11 @@ class BasicInterfaceFrame(wx.Frame):
     def _init_coll_boxSizer3_Items(self, parent):
         # generated method, don't edit
 
-        parent.AddWindow(self.UpperInterfacePanel, 8, border=2,
+        parent.AddWindow(self.UpperInterfacePanel, 4, border=2,
               flag=wx.ALL | wx.EXPAND)
-        parent.AddWindow(self.LowerInterfacePanel, 2, border=2,
+        parent.AddWindow(self.LowerInterfacePanel, 0, border=2,
               flag=wx.ALL | wx.EXPAND)
-        parent.AddWindow(self.LowerControlPanel, 0, border=2,
+        parent.AddWindow(self.LowerControlPanel,0, border=2,
               flag=wx.ALL | wx.EXPAND)
 
     def _init_coll_boxSizer1_Items(self, parent):
@@ -256,7 +256,7 @@ class BasicInterfaceFrame(wx.Frame):
               kind=wx.ITEM_NORMAL, label=u'Boa',
               longHelp=u'Launch Boa Constructor',
               shortHelp=u'Launch Boa Constructor')
-        parent.DoAddTool(bitmap=wx.Bitmap(str(os.path.join(IMAGE_DIRECTORY,'Sage.png')),
+        parent.DoAddTool(bitmap=wx.Bitmap(str(os.path.join(IMAGE_DIRECTORY,'jupyter-logo.png')),
               wx.BITMAP_TYPE_PNG), bmpDisabled=wx.NullBitmap,
               id=wxID_BASICINTERFACEFRAMEINTERFACETOOLBARSAGE,
               kind=wx.ITEM_NORMAL, label=u'',
@@ -582,7 +582,7 @@ class BasicInterfaceFrame(wx.Frame):
         self.Update()
 
     def OnInterfaceToolBarLaunchboaTool(self, event):
-        os.system(r'start C:\Python27\Lib\site-packages\boa-constructor\Boa.py')
+        os.system(r'start python C:\Anaconda2\Lib\site-packages\boa\Boa.py')
         event.Skip()
 
     def OnExecuteButtonButton(self, event):
@@ -602,8 +602,8 @@ class BasicInterfaceFrame(wx.Frame):
 
     def OnInterfaceToolBarTools1Tool(self, event):
         #sage_script=r'C:\"Program Files"\AutoIt3\Examples\SAGE_NOIE2.exe'
-        #os.system('start %s'%sage_script)
-        #self.Display.ie.Navigate('//192.168.232.128')
+        #os.system('jupyter notebook')
+        self.Display.ie.Navigate('http://localhost:8888/tree')
         pass
     
     def OnBasicInterfaceFrameClose(self, event):
@@ -786,11 +786,11 @@ def test_BasicInterfaceFrame():
 
 
 if __name__ == '__main__':
-    app = wx.PySimpleApp()
+    app = wx.App(False)
     app.RedirectStdio()
+    from pyMeasure.Code.FrontEnds.ShellPanel import *
     frame = create(None)
     frame.Show()
-    
     # This is needed for the execfile command to output properly--can't redirect
     frame.locals=locals()
     
