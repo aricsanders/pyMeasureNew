@@ -3,16 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="4139f2fc-c578-4782-b083-7284792a834c" name="Default" comment="Python Class Material">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../test_site/Test_Site/db.sqlite3" afterPath="$PROJECT_DIR$/../test_site/Test_Site/db.sqlite3" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/.ipynb_checkpoints/Python_Introduction_20160627-checkpoint.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/.ipynb_checkpoints/Python_Introduction_20160627-checkpoint.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/Python_Introduction_20160627.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/Python_Introduction_20160627.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/plotly_example_20160316_001.ipynb" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/plotly_example_20160316_001.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../Jupyter-Notebooks/temp-plot.html" afterPath="$PROJECT_DIR$/../Jupyter-Notebooks/temp-plot.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../pyMeasure/.idea/pyMeasure.iml" afterPath="$PROJECT_DIR$/../pyMeasure/.idea/pyMeasure.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/pyMeasureNew.iml" afterPath="$PROJECT_DIR$/.idea/pyMeasureNew.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/XMLModels.py" afterPath="$PROJECT_DIR$/pyMeasure/Code/DataHandlers/XMLModels.py" />
     </list>
     <ignored path="pyMeasureNew.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -210,8 +202,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="171" />
-    <option name="y" value="11" />
+    <option name="x" value="166" />
+    <option name="y" value="318" />
     <option name="width" value="1692" />
     <option name="height" value="998" />
   </component>
@@ -504,18 +496,6 @@
       <option name="number" value="Default" />
       <updated>1456039207125</updated>
     </task>
-    <task id="LOCAL-00103" summary="Added row pattern handling to NISTModels *Raw and better metadata handling">
-      <created>1462192765943</created>
-      <option name="number" value="00103" />
-      <option name="project" value="LOCAL" />
-      <updated>1462192765943</updated>
-    </task>
-    <task id="LOCAL-00104" summary="Added row pattern handling to NISTModels *Raw and better metadata handling">
-      <created>1462192801772</created>
-      <option name="number" value="00104" />
-      <option name="project" value="LOCAL" />
-      <updated>1462192801772</updated>
-    </task>
     <task id="LOCAL-00105" summary="Fixed problem with add_column">
       <created>1462264329763</created>
       <option name="number" value="00105" />
@@ -798,11 +778,23 @@
       <option name="project" value="LOCAL" />
       <updated>1467218127621</updated>
     </task>
-    <option name="localTasksCounter" value="152" />
+    <task id="LOCAL-00152" summary="Python Extras">
+      <created>1467243477277</created>
+      <option name="number" value="00152" />
+      <option name="project" value="LOCAL" />
+      <updated>1467243477277</updated>
+    </task>
+    <task id="LOCAL-00153" summary="Python Class Material">
+      <created>1467244265846</created>
+      <option name="number" value="00153" />
+      <option name="project" value="LOCAL" />
+      <updated>1467244265846</updated>
+    </task>
+    <option name="localTasksCounter" value="154" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="171" y="11" width="1692" height="998" extended-state="0" />
+    <frame x="166" y="318" width="1692" height="998" extended-state="0" />
     <editor active="false" />
     <layout>
       <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2887828" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -858,7 +850,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_COMMIT_MESSAGE_SPELLING" value="false" />
-    <MESSAGE value="New table processing" />
     <MESSAGE value="Fixed metadata fro raw models, access db tests" />
     <MESSAGE value="Check Standard" />
     <MESSAGE value="Added more calrep handling functionality to compensate for different data types" />
@@ -882,6 +873,7 @@
     <MESSAGE value="Added Instrument Control Class and Instruments XML model" />
     <MESSAGE value="Added Log Interface" />
     <MESSAGE value="Added Interfaces for instrument control" />
+    <MESSAGE value="Python Extras" />
     <MESSAGE value="Python Class Material" />
     <option name="LAST_COMMIT_MESSAGE" value="Python Class Material" />
   </component>
