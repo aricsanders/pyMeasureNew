@@ -63,7 +63,7 @@ except:
     pass
 #-----------------------------------------------------------------------------
 # Module Constants
-PYMEASURE_ROOT=r'C:\Users\sandersa\PyCharm Projects\pyMeasure'
+PYMEASURE_ROOT=r'C:\Users\sandersa\PyCharmProjects\pyMeasure'
 INSTRUMENT_SHEETS=fnmatch.filter(os.listdir(os.path.join(
 PYMEASURE_ROOT,'Instruments')),'*.xml')
 XSLT_REPOSITORY='../XSL'
