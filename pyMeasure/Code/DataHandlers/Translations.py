@@ -211,7 +211,7 @@ def test_OnePortRaw_to_XMLDataTable(input_file="OnePortRawTestFile.txt"):
 
 def test_AsciiDataTable_to_DataFrame(input_file="700437.asc"):
     os.chdir(TESTS_DIRECTORY)
-    one_port=OnePortModel(input_file)
+    one_port=OnePortCalrepModel(input_file)
     data_frame=AsciiDataTable_to_DataFrame(one_port)
     data_frame.to_excel('one_port.xlsx', sheet_name='Sheet1')
     #print data_frame
@@ -237,7 +237,7 @@ def test_S2P_to_XMLDataTable_02(file_path="thru.s2p",**options):
 def test_TwoPortCalrep_to_XMLDataTable(file_path='922729.asc',**options):
     """Test's the conversion of the TwoPortCalrep to XMLDataTable"""
     os.chdir(TESTS_DIRECTORY)
-    two_port=TwoPortCalrep(file_path)
+    two_port=TwoPortCalrepModel(file_path)
     two_port.joined_table.save()
     xml=TwoPortCalrep_to_XMLDataTable(two_port,**options)
     xml.save()
