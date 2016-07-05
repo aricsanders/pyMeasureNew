@@ -11,6 +11,8 @@
 import os
 import re
 import datetime
+import sys
+print sys.path
 #-----------------------------------------------------------------------------
 # Third Party Imports
 try:
@@ -25,7 +27,9 @@ except:
     print("Pandas was not imported")
     pass
 try:
-    from pyMeasure.Code.DataHandlers.NISTModels import *
+    #import pyMeasure.Code.DataHandlers.NISTModels
+    #from pyMeasure.Code.DataHandlers.NISTModels import *
+    from pyMeasure import *
 except:
     print("The module pyMeasure.Code.DataHandlers.NISTModels was not found,"
           "please put it on the python path")
