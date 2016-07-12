@@ -619,6 +619,7 @@ class TwoPortRawModel(AsciiDataTable):
         ax5.set_title('Phase S22')
         plt.tight_layout()
         plt.show()
+
 class TwoPortNRRawModel(AsciiDataTable):
     """ Class that deals with the TwoPort Raw Files after conversion to Ascii using Ron Ginley's converter.
     These files typically have header information seperated from data by !!

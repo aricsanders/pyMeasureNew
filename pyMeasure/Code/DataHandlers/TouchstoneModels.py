@@ -476,10 +476,22 @@ class S1PV1():
             return out_list
         except:raise
 
-    def show(self):
+    def get_column(self,column_name=None,column_index=None):
+        """Returns a column as a list given a column name or column index"""
+        if column_name is None:
+            if column_index is None:
+                return
+            else:
+                column_selector=column_index
+        else:
+            column_selector=self.column_names.index(column_name)
+        out_list=[self.sparameter_data[i][column_selector] for i in range(len(self.sparameter_data))]
+        return out_list
+
+    def show(self,type='matplotlib'):
         """Shows the touchstone file"""
         # plot data
-        if SMITHPLOT:
+        if re.search('smith',type,re.IGNORECASE):
             plt.figure(figsize=(8, 8))
             val1=[row[1] for row in self.sparameter_complex]
             ax = plt.subplot(1, 1, 1, projection='smith', axes_norm=50)
@@ -489,7 +501,15 @@ class S1PV1():
             plt.title("Matplotlib Smith Chart Projection")
             plt.show()
         else:
-            pass
+            current_format=self.format
+            self.change_data_format('MA')
+            fig, (ax0, ax1) = plt.subplots(nrows=2, sharex=True)
+            ax0.plot(self.get_column('Frequency'),self.get_column('magS11'),'k--')
+            ax1.plot(self.get_column('Frequency'),self.get_column('argS11'),'ro')
+            ax0.set_title('Magnitude S11')
+            ax1.set_title('Phase S11')
+            self.change_data_format(current_format)
+            plt.show()
 
 class S2PV1():
     """A container for s2p version 1 files. Files consist of comments, option line, S parameter data
@@ -1048,10 +1068,10 @@ def test_change_format(file_path="thru.s2p"):
 #-----------------------------------------------------------------------------
 # Module Runner
 if __name__ == '__main__':
-    #test_S1PV1()
+    test_S1PV1()
     #test_option_string()
     #test_s2pv1()
     #test_s2pv1('TwoPortTouchstoneTestFile.s2p')
-    test_change_format()
+    #test_change_format()
     #test_change_format('TwoPortTouchstoneTestFile.s2p')
     #test_change_format('20160301_30ft_cable_0.s2p')
