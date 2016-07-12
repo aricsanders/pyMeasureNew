@@ -932,12 +932,22 @@ class S2PV1():
             S12_corrected=(S12-S11*S12*SWR)/D
             S22_corrected=(S22-S12*S21*SWR)/D
             self.corrected_sparameter_data.append([row[0],S11_corrected,S21_corrected,S12_corrected,S22_corrected])
+    def get_column(self,column_name=None,column_index=None):
+        """Returns a column as a list given a column name or column index"""
+        if column_name is None:
+            if column_index is None:
+                return
+            else:
+                column_selector=column_index
+        else:
+            column_selector=self.column_names.index(column_name)
+        out_list=[self.sparameter_data[i][column_selector] for i in range(len(self.sparameter_data))]
+        return out_list
 
-
-    def show(self):
+    def show(self,type='matplotlib'):
         """Shows the touchstone file"""
         # plot data
-        if SMITHPLOT:
+        if re.search('smith',type,re.IGNORECASE):
             plt.figure(figsize=(8, 8))
             val1=[row[1] for row in self.sparameter_complex]
             val2=[row[4] for row in self.sparameter_complex]
@@ -949,7 +959,28 @@ class S2PV1():
             plt.title("Matplotlib Smith Chart Projection")
             plt.show()
         else:
-            pass
+            current_format=self.format
+            self.change_data_format('MA')
+            fig, axes = plt.subplots(nrows=3, ncols=2)
+            ax0, ax1, ax2, ax3, ax4, ax5 = axes.flat
+            ax0.plot(self.get_column('Frequency'),self.get_column('magS11'),'k-o')
+            ax0.set_title('Magnitude S11')
+            ax1.plot(self.get_column('Frequency'),self.get_column('argS11'),'ro')
+            ax1.set_title('Phase S11')
+            ax2.plot(self.get_column('Frequency'),self.get_column('magS21'),'k-o')
+            ax2.plot(self.get_column('Frequency'),self.get_column('magS12'),'b-o')
+            ax2.set_title('Magnitude S21 and S12')
+            ax3.plot(self.get_column('Frequency'),self.get_column('argS21'),'ro')
+            ax3.plot(self.get_column('Frequency'),self.get_column('argS12'),'bo')
+            ax3.set_title('Phase S21 and S12')
+            ax4.plot(self.get_column('Frequency'),self.get_column('magS22'),'k-o')
+            ax4.set_title('Magnitude S22')
+            ax5.plot(self.get_column('Frequency'),self.get_column('argS22'),'ro')
+            ax5.set_title('Phase S22')
+            plt.tight_layout()
+            self.change_data_format(current_format)
+            plt.show()
+
 
 #-----------------------------------------------------------------------------
 # Module Scripts
@@ -1020,7 +1051,7 @@ if __name__ == '__main__':
     #test_S1PV1()
     #test_option_string()
     #test_s2pv1()
-    test_s2pv1('TwoPortTouchstoneTestFile.s2p')
-    #test_change_format()
+    #test_s2pv1('TwoPortTouchstoneTestFile.s2p')
+    test_change_format()
     #test_change_format('TwoPortTouchstoneTestFile.s2p')
     #test_change_format('20160301_30ft_cable_0.s2p')
