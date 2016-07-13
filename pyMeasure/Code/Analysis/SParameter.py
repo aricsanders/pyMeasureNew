@@ -249,7 +249,11 @@ def raw_comparision_plot_with_residuals(raw_nist,mean_frame,difference_frame,**o
     defaults={"display_mean":True,
               "display_difference":True,
               "display_raw":True,
-              "display_legend":True}
+              "display_legend":True,
+              "save_plot":False,
+              "directory":None,
+              "specific_descriptor":raw_nist.metadata["Device_Id"]+"_Check_Standard",
+              "general_descriptor":"Plot","file_name":None}
     comparison_plot_options={}
     for key,value in defaults.iteritems():
         comparison_plot_options[key]=value
@@ -290,7 +294,17 @@ def raw_comparision_plot_with_residuals(raw_nist,mean_frame,difference_frame,**o
     fig.subplots_adjust(hspace=0)
     fig.suptitle(raw_nist.metadata["Device_Id"]+"\n",fontsize=18,fontweight='bold')
     plt.tight_layout()
-    plt.show()
+    if comparison_plot_options["file_name"] is None:
+        file_name=auto_name(specific_descriptor=comparison_plot_options["specific_descriptor"],
+                            general_descriptor=comparison_plot_options["general_descriptor"],
+                            directory=comparison_plot_options["directory"],extension='png',padding=3)
+    else:
+        file_name=comparison_plot_options["file_name"]
+    if comparison_plot_options["save_plot"]:
+        #print file_name
+        plt.savefig(os.path.join(comparison_plot_options["directory"],file_name))
+    else:
+        plt.show()
 #-----------------------------------------------------------------------------
 # Module Classes
 
